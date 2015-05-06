@@ -1,4 +1,5 @@
-lib_LTLIBRARIES = app_impv.la app_impvbaw.la app_greeks.la app_greeksbaw.la
+lib_LTLIBRARIES = app_impv.la app_impvbaw.la app_greeks.la app_greeksbaw.la    \
+app_quote.la
 app_impv_la_SOURCES = norms.c bs.c impv.c app_impv.c
 app_impv_la_CPPFLAGS = -I$(top_srcdir)/include
 app_impv_la_CFLAGS = -fPIC -Wall
@@ -15,4 +16,8 @@ app_greeksbaw_la_SOURCES = norms.c bs.c baw.c app_greeksbaw.c
 app_greeksbaw_la_CPPFLAGS = -I$(top_srcdir)/include
 app_greeksbaw_la_CFLAGS = -fPIC -Wall
 app_greeksbaw_la_LDFLAGS = -module -avoid-version -ltcmalloc
+app_quote_la_SOURCES = app_quote.c
+app_quote_la_CPPFLAGS = -I$(top_srcdir)/include
+app_quote_la_CFLAGS = -fPIC -Wall
+app_quote_la_LDFLAGS = -module -avoid-version -ltcmalloc
 

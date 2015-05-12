@@ -76,6 +76,20 @@ app_greeks_la_OBJECTS = $(am_app_greeks_la_OBJECTS)
 app_greeks_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_greeks_la_CFLAGS) \
 	$(CFLAGS) $(app_greeks_la_LDFLAGS) $(LDFLAGS) -o $@
+app_greeks2_la_LIBADD =
+am_app_greeks2_la_OBJECTS = app_greeks2_la-binomial.lo \
+	app_greeks2_la-app_greeks2.lo
+app_greeks2_la_OBJECTS = $(am_app_greeks2_la_OBJECTS)
+app_greeks2_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_greeks2_la_CFLAGS) \
+	$(CFLAGS) $(app_greeks2_la_LDFLAGS) $(LDFLAGS) -o $@
+app_greeks3_la_LIBADD =
+am_app_greeks3_la_OBJECTS = app_greeks3_la-trinomial.lo \
+	app_greeks3_la-app_greeks3.lo
+app_greeks3_la_OBJECTS = $(am_app_greeks3_la_OBJECTS)
+app_greeks3_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_greeks3_la_CFLAGS) \
+	$(CFLAGS) $(app_greeks3_la_LDFLAGS) $(LDFLAGS) -o $@
 app_greeksbaw_la_LIBADD =
 am_app_greeksbaw_la_OBJECTS = app_greeksbaw_la-norms.lo \
 	app_greeksbaw_la-bs.lo app_greeksbaw_la-baw.lo \
@@ -91,6 +105,20 @@ app_impv_la_OBJECTS = $(am_app_impv_la_OBJECTS)
 app_impv_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_impv_la_CFLAGS) \
 	$(CFLAGS) $(app_impv_la_LDFLAGS) $(LDFLAGS) -o $@
+app_impv2_la_LIBADD =
+am_app_impv2_la_OBJECTS = app_impv2_la-binomial.lo \
+	app_impv2_la-impv.lo app_impv2_la-app_impv2.lo
+app_impv2_la_OBJECTS = $(am_app_impv2_la_OBJECTS)
+app_impv2_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_impv2_la_CFLAGS) \
+	$(CFLAGS) $(app_impv2_la_LDFLAGS) $(LDFLAGS) -o $@
+app_impv3_la_LIBADD =
+am_app_impv3_la_OBJECTS = app_impv3_la-trinomial.lo \
+	app_impv3_la-impv.lo app_impv3_la-app_impv3.lo
+app_impv3_la_OBJECTS = $(am_app_impv3_la_OBJECTS)
+app_impv3_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_impv3_la_CFLAGS) \
+	$(CFLAGS) $(app_impv3_la_LDFLAGS) $(LDFLAGS) -o $@
 app_impvbaw_la_LIBADD =
 am_app_impvbaw_la_OBJECTS = app_impvbaw_la-norms.lo \
 	app_impvbaw_la-bs.lo app_impvbaw_la-baw.lo \
@@ -118,11 +146,15 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(app_greeks_la_SOURCES) $(app_greeksbaw_la_SOURCES) \
-	$(app_impv_la_SOURCES) $(app_impvbaw_la_SOURCES) \
+SOURCES = $(app_greeks_la_SOURCES) $(app_greeks2_la_SOURCES) \
+	$(app_greeks3_la_SOURCES) $(app_greeksbaw_la_SOURCES) \
+	$(app_impv_la_SOURCES) $(app_impv2_la_SOURCES) \
+	$(app_impv3_la_SOURCES) $(app_impvbaw_la_SOURCES) \
 	$(app_quote_la_SOURCES)
-DIST_SOURCES = $(app_greeks_la_SOURCES) $(app_greeksbaw_la_SOURCES) \
-	$(app_impv_la_SOURCES) $(app_impvbaw_la_SOURCES) \
+DIST_SOURCES = $(app_greeks_la_SOURCES) $(app_greeks2_la_SOURCES) \
+	$(app_greeks3_la_SOURCES) $(app_greeksbaw_la_SOURCES) \
+	$(app_impv_la_SOURCES) $(app_impv2_la_SOURCES) \
+	$(app_impv3_la_SOURCES) $(app_impvbaw_la_SOURCES) \
 	$(app_quote_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
@@ -237,8 +269,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-lib_LTLIBRARIES = app_impv.la app_impvbaw.la app_greeks.la app_greeksbaw.la    \
-app_quote.la
+lib_LTLIBRARIES = app_impv.la app_impvbaw.la app_impv2.la app_impv3.la         \
+app_greeks.la app_greeksbaw.la app_greeks2.la app_greeks3.la app_quote.la
 
 app_impv_la_SOURCES = norms.c bs.c impv.c app_impv.c
 app_impv_la_CPPFLAGS = -I$(top_srcdir)/include
@@ -248,6 +280,14 @@ app_impvbaw_la_SOURCES = norms.c bs.c baw.c impv.c app_impvbaw.c
 app_impvbaw_la_CPPFLAGS = -I$(top_srcdir)/include
 app_impvbaw_la_CFLAGS = -fPIC -Wall
 app_impvbaw_la_LDFLAGS = -module -avoid-version -ltcmalloc
+app_impv2_la_SOURCES = binomial.c impv.c app_impv2.c
+app_impv2_la_CPPFLAGS = -I$(top_srcdir)/include
+app_impv2_la_CFLAGS = -fPIC -Wall
+app_impv2_la_LDFLAGS = -module -avoid-version -ltcmalloc
+app_impv3_la_SOURCES = trinomial.c impv.c app_impv3.c
+app_impv3_la_CPPFLAGS = -I$(top_srcdir)/include
+app_impv3_la_CFLAGS = -fPIC -Wall
+app_impv3_la_LDFLAGS = -module -avoid-version -ltcmalloc
 app_greeks_la_SOURCES = norms.c bs.c app_greeks.c
 app_greeks_la_CPPFLAGS = -I$(top_srcdir)/include
 app_greeks_la_CFLAGS = -fPIC -Wall
@@ -256,6 +296,14 @@ app_greeksbaw_la_SOURCES = norms.c bs.c baw.c app_greeksbaw.c
 app_greeksbaw_la_CPPFLAGS = -I$(top_srcdir)/include
 app_greeksbaw_la_CFLAGS = -fPIC -Wall
 app_greeksbaw_la_LDFLAGS = -module -avoid-version -ltcmalloc
+app_greeks2_la_SOURCES = binomial.c app_greeks2.c
+app_greeks2_la_CPPFLAGS = -I$(top_srcdir)/include
+app_greeks2_la_CFLAGS = -fPIC -Wall
+app_greeks2_la_LDFLAGS = -module -avoid-version -ltcmalloc
+app_greeks3_la_SOURCES = trinomial.c app_greeks3.c
+app_greeks3_la_CPPFLAGS = -I$(top_srcdir)/include
+app_greeks3_la_CFLAGS = -fPIC -Wall
+app_greeks3_la_LDFLAGS = -module -avoid-version -ltcmalloc
 app_quote_la_SOURCES = app_quote.c
 app_quote_la_CPPFLAGS = -I$(top_srcdir)/include
 app_quote_la_CFLAGS = -fPIC -Wall
@@ -327,10 +375,18 @@ clean-libLTLIBRARIES:
 	done
 app_greeks.la: $(app_greeks_la_OBJECTS) $(app_greeks_la_DEPENDENCIES) 
 	$(app_greeks_la_LINK) -rpath $(libdir) $(app_greeks_la_OBJECTS) $(app_greeks_la_LIBADD) $(LIBS)
+app_greeks2.la: $(app_greeks2_la_OBJECTS) $(app_greeks2_la_DEPENDENCIES) 
+	$(app_greeks2_la_LINK) -rpath $(libdir) $(app_greeks2_la_OBJECTS) $(app_greeks2_la_LIBADD) $(LIBS)
+app_greeks3.la: $(app_greeks3_la_OBJECTS) $(app_greeks3_la_DEPENDENCIES) 
+	$(app_greeks3_la_LINK) -rpath $(libdir) $(app_greeks3_la_OBJECTS) $(app_greeks3_la_LIBADD) $(LIBS)
 app_greeksbaw.la: $(app_greeksbaw_la_OBJECTS) $(app_greeksbaw_la_DEPENDENCIES) 
 	$(app_greeksbaw_la_LINK) -rpath $(libdir) $(app_greeksbaw_la_OBJECTS) $(app_greeksbaw_la_LIBADD) $(LIBS)
 app_impv.la: $(app_impv_la_OBJECTS) $(app_impv_la_DEPENDENCIES) 
 	$(app_impv_la_LINK) -rpath $(libdir) $(app_impv_la_OBJECTS) $(app_impv_la_LIBADD) $(LIBS)
+app_impv2.la: $(app_impv2_la_OBJECTS) $(app_impv2_la_DEPENDENCIES) 
+	$(app_impv2_la_LINK) -rpath $(libdir) $(app_impv2_la_OBJECTS) $(app_impv2_la_LIBADD) $(LIBS)
+app_impv3.la: $(app_impv3_la_OBJECTS) $(app_impv3_la_DEPENDENCIES) 
+	$(app_impv3_la_LINK) -rpath $(libdir) $(app_impv3_la_OBJECTS) $(app_impv3_la_LIBADD) $(LIBS)
 app_impvbaw.la: $(app_impvbaw_la_OBJECTS) $(app_impvbaw_la_DEPENDENCIES) 
 	$(app_impvbaw_la_LINK) -rpath $(libdir) $(app_impvbaw_la_OBJECTS) $(app_impvbaw_la_LIBADD) $(LIBS)
 app_quote.la: $(app_quote_la_OBJECTS) $(app_quote_la_DEPENDENCIES) 
@@ -342,6 +398,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_greeks2_la-app_greeks2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_greeks2_la-binomial.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_greeks3_la-app_greeks3.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_greeks3_la-trinomial.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_greeks_la-app_greeks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_greeks_la-bs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_greeks_la-norms.Plo@am__quote@
@@ -349,6 +409,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_greeksbaw_la-baw.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_greeksbaw_la-bs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_greeksbaw_la-norms.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv2_la-app_impv2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv2_la-binomial.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv2_la-impv.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv3_la-app_impv3.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv3_la-impv.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv3_la-trinomial.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv_la-app_impv.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv_la-bs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv_la-impv.Plo@am__quote@
@@ -401,6 +467,34 @@ app_greeks_la-app_greeks.lo: app_greeks.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='app_greeks.c' object='app_greeks_la-app_greeks.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_greeks_la_CPPFLAGS) $(CPPFLAGS) $(app_greeks_la_CFLAGS) $(CFLAGS) -c -o app_greeks_la-app_greeks.lo `test -f 'app_greeks.c' || echo '$(srcdir)/'`app_greeks.c
+
+app_greeks2_la-binomial.lo: binomial.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_greeks2_la_CPPFLAGS) $(CPPFLAGS) $(app_greeks2_la_CFLAGS) $(CFLAGS) -MT app_greeks2_la-binomial.lo -MD -MP -MF $(DEPDIR)/app_greeks2_la-binomial.Tpo -c -o app_greeks2_la-binomial.lo `test -f 'binomial.c' || echo '$(srcdir)/'`binomial.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_greeks2_la-binomial.Tpo $(DEPDIR)/app_greeks2_la-binomial.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='binomial.c' object='app_greeks2_la-binomial.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_greeks2_la_CPPFLAGS) $(CPPFLAGS) $(app_greeks2_la_CFLAGS) $(CFLAGS) -c -o app_greeks2_la-binomial.lo `test -f 'binomial.c' || echo '$(srcdir)/'`binomial.c
+
+app_greeks2_la-app_greeks2.lo: app_greeks2.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_greeks2_la_CPPFLAGS) $(CPPFLAGS) $(app_greeks2_la_CFLAGS) $(CFLAGS) -MT app_greeks2_la-app_greeks2.lo -MD -MP -MF $(DEPDIR)/app_greeks2_la-app_greeks2.Tpo -c -o app_greeks2_la-app_greeks2.lo `test -f 'app_greeks2.c' || echo '$(srcdir)/'`app_greeks2.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_greeks2_la-app_greeks2.Tpo $(DEPDIR)/app_greeks2_la-app_greeks2.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='app_greeks2.c' object='app_greeks2_la-app_greeks2.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_greeks2_la_CPPFLAGS) $(CPPFLAGS) $(app_greeks2_la_CFLAGS) $(CFLAGS) -c -o app_greeks2_la-app_greeks2.lo `test -f 'app_greeks2.c' || echo '$(srcdir)/'`app_greeks2.c
+
+app_greeks3_la-trinomial.lo: trinomial.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_greeks3_la_CPPFLAGS) $(CPPFLAGS) $(app_greeks3_la_CFLAGS) $(CFLAGS) -MT app_greeks3_la-trinomial.lo -MD -MP -MF $(DEPDIR)/app_greeks3_la-trinomial.Tpo -c -o app_greeks3_la-trinomial.lo `test -f 'trinomial.c' || echo '$(srcdir)/'`trinomial.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_greeks3_la-trinomial.Tpo $(DEPDIR)/app_greeks3_la-trinomial.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='trinomial.c' object='app_greeks3_la-trinomial.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_greeks3_la_CPPFLAGS) $(CPPFLAGS) $(app_greeks3_la_CFLAGS) $(CFLAGS) -c -o app_greeks3_la-trinomial.lo `test -f 'trinomial.c' || echo '$(srcdir)/'`trinomial.c
+
+app_greeks3_la-app_greeks3.lo: app_greeks3.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_greeks3_la_CPPFLAGS) $(CPPFLAGS) $(app_greeks3_la_CFLAGS) $(CFLAGS) -MT app_greeks3_la-app_greeks3.lo -MD -MP -MF $(DEPDIR)/app_greeks3_la-app_greeks3.Tpo -c -o app_greeks3_la-app_greeks3.lo `test -f 'app_greeks3.c' || echo '$(srcdir)/'`app_greeks3.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_greeks3_la-app_greeks3.Tpo $(DEPDIR)/app_greeks3_la-app_greeks3.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='app_greeks3.c' object='app_greeks3_la-app_greeks3.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_greeks3_la_CPPFLAGS) $(CPPFLAGS) $(app_greeks3_la_CFLAGS) $(CFLAGS) -c -o app_greeks3_la-app_greeks3.lo `test -f 'app_greeks3.c' || echo '$(srcdir)/'`app_greeks3.c
 
 app_greeksbaw_la-norms.lo: norms.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_greeksbaw_la_CPPFLAGS) $(CPPFLAGS) $(app_greeksbaw_la_CFLAGS) $(CFLAGS) -MT app_greeksbaw_la-norms.lo -MD -MP -MF $(DEPDIR)/app_greeksbaw_la-norms.Tpo -c -o app_greeksbaw_la-norms.lo `test -f 'norms.c' || echo '$(srcdir)/'`norms.c
@@ -457,6 +551,48 @@ app_impv_la-app_impv.lo: app_impv.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='app_impv.c' object='app_impv_la-app_impv.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv_la_CPPFLAGS) $(CPPFLAGS) $(app_impv_la_CFLAGS) $(CFLAGS) -c -o app_impv_la-app_impv.lo `test -f 'app_impv.c' || echo '$(srcdir)/'`app_impv.c
+
+app_impv2_la-binomial.lo: binomial.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv2_la_CPPFLAGS) $(CPPFLAGS) $(app_impv2_la_CFLAGS) $(CFLAGS) -MT app_impv2_la-binomial.lo -MD -MP -MF $(DEPDIR)/app_impv2_la-binomial.Tpo -c -o app_impv2_la-binomial.lo `test -f 'binomial.c' || echo '$(srcdir)/'`binomial.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_impv2_la-binomial.Tpo $(DEPDIR)/app_impv2_la-binomial.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='binomial.c' object='app_impv2_la-binomial.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv2_la_CPPFLAGS) $(CPPFLAGS) $(app_impv2_la_CFLAGS) $(CFLAGS) -c -o app_impv2_la-binomial.lo `test -f 'binomial.c' || echo '$(srcdir)/'`binomial.c
+
+app_impv2_la-impv.lo: impv.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv2_la_CPPFLAGS) $(CPPFLAGS) $(app_impv2_la_CFLAGS) $(CFLAGS) -MT app_impv2_la-impv.lo -MD -MP -MF $(DEPDIR)/app_impv2_la-impv.Tpo -c -o app_impv2_la-impv.lo `test -f 'impv.c' || echo '$(srcdir)/'`impv.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_impv2_la-impv.Tpo $(DEPDIR)/app_impv2_la-impv.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='impv.c' object='app_impv2_la-impv.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv2_la_CPPFLAGS) $(CPPFLAGS) $(app_impv2_la_CFLAGS) $(CFLAGS) -c -o app_impv2_la-impv.lo `test -f 'impv.c' || echo '$(srcdir)/'`impv.c
+
+app_impv2_la-app_impv2.lo: app_impv2.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv2_la_CPPFLAGS) $(CPPFLAGS) $(app_impv2_la_CFLAGS) $(CFLAGS) -MT app_impv2_la-app_impv2.lo -MD -MP -MF $(DEPDIR)/app_impv2_la-app_impv2.Tpo -c -o app_impv2_la-app_impv2.lo `test -f 'app_impv2.c' || echo '$(srcdir)/'`app_impv2.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_impv2_la-app_impv2.Tpo $(DEPDIR)/app_impv2_la-app_impv2.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='app_impv2.c' object='app_impv2_la-app_impv2.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv2_la_CPPFLAGS) $(CPPFLAGS) $(app_impv2_la_CFLAGS) $(CFLAGS) -c -o app_impv2_la-app_impv2.lo `test -f 'app_impv2.c' || echo '$(srcdir)/'`app_impv2.c
+
+app_impv3_la-trinomial.lo: trinomial.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv3_la_CPPFLAGS) $(CPPFLAGS) $(app_impv3_la_CFLAGS) $(CFLAGS) -MT app_impv3_la-trinomial.lo -MD -MP -MF $(DEPDIR)/app_impv3_la-trinomial.Tpo -c -o app_impv3_la-trinomial.lo `test -f 'trinomial.c' || echo '$(srcdir)/'`trinomial.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_impv3_la-trinomial.Tpo $(DEPDIR)/app_impv3_la-trinomial.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='trinomial.c' object='app_impv3_la-trinomial.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv3_la_CPPFLAGS) $(CPPFLAGS) $(app_impv3_la_CFLAGS) $(CFLAGS) -c -o app_impv3_la-trinomial.lo `test -f 'trinomial.c' || echo '$(srcdir)/'`trinomial.c
+
+app_impv3_la-impv.lo: impv.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv3_la_CPPFLAGS) $(CPPFLAGS) $(app_impv3_la_CFLAGS) $(CFLAGS) -MT app_impv3_la-impv.lo -MD -MP -MF $(DEPDIR)/app_impv3_la-impv.Tpo -c -o app_impv3_la-impv.lo `test -f 'impv.c' || echo '$(srcdir)/'`impv.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_impv3_la-impv.Tpo $(DEPDIR)/app_impv3_la-impv.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='impv.c' object='app_impv3_la-impv.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv3_la_CPPFLAGS) $(CPPFLAGS) $(app_impv3_la_CFLAGS) $(CFLAGS) -c -o app_impv3_la-impv.lo `test -f 'impv.c' || echo '$(srcdir)/'`impv.c
+
+app_impv3_la-app_impv3.lo: app_impv3.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv3_la_CPPFLAGS) $(CPPFLAGS) $(app_impv3_la_CFLAGS) $(CFLAGS) -MT app_impv3_la-app_impv3.lo -MD -MP -MF $(DEPDIR)/app_impv3_la-app_impv3.Tpo -c -o app_impv3_la-app_impv3.lo `test -f 'app_impv3.c' || echo '$(srcdir)/'`app_impv3.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_impv3_la-app_impv3.Tpo $(DEPDIR)/app_impv3_la-app_impv3.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='app_impv3.c' object='app_impv3_la-app_impv3.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv3_la_CPPFLAGS) $(CPPFLAGS) $(app_impv3_la_CFLAGS) $(CFLAGS) -c -o app_impv3_la-app_impv3.lo `test -f 'app_impv3.c' || echo '$(srcdir)/'`app_impv3.c
 
 app_impvbaw_la-norms.lo: norms.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impvbaw_la_CPPFLAGS) $(CPPFLAGS) $(app_impvbaw_la_CFLAGS) $(CFLAGS) -MT app_impvbaw_la-norms.lo -MD -MP -MF $(DEPDIR)/app_impvbaw_la-norms.Tpo -c -o app_impvbaw_la-norms.lo `test -f 'norms.c' || echo '$(srcdir)/'`norms.c

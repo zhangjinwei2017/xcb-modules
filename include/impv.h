@@ -32,6 +32,10 @@ extern double impv_bs(double spot, double strike, double r, double d, double exp
 		double price, int type);
 extern double impv_baw(double spot, double strike, double r, double d, double expiry,
 		double price, int type);
+extern double impv_binomial(double spot, double strike, double r, double d, double expiry, int steps,
+		double price, int type);
+extern double impv_trinomial(double spot, double strike, double r, double d, double expiry, int steps,
+		double price, int type);
 
 #endif /* IMPV_INCLUDED */
 

@@ -36,9 +36,9 @@ static char *fmt = "QUOTE,timestamp,contract,exchange,presettlement,settlement,a
 static int quote_exec(void *data, void *data2) {
 	RAII_VAR(struct msg *, msg, (struct msg *)data, msg_decr);
 	Quote *quote = (Quote *)msg->data;
-	struct tm lt;
 	time_t t = (time_t)quote->thyquote.m_nTime;
-	char res[2048], datestr[64];
+	struct tm lt;
+	char datestr[64], res[2048];
 	NOT_USED(data2);
 
 	strftime(datestr, sizeof datestr, "%F %T", localtime_r(&t, &lt));

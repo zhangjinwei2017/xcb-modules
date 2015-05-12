@@ -1,3 +1,4 @@
 xcbconfdir = $(sysconfdir)/xcb
-xcbconf_DATA = impv.conf impvbaw.conf impv2.conf impv3.conf expiries.conf
+xcbconf_DATA = impv.conf impvbaw.conf impv2.conf impv3.conf sse50etf.conf      \
+expiries.conf
 

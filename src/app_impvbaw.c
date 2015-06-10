@@ -54,7 +54,7 @@ static table_t optns;
 static table_t expiries;
 static struct msgs *impvbaw_msgs;
 static struct config *cfg;
-static double r = 0.0325;
+static double r = 0.033;
 static char *app2 = "mm_impvbaw";
 static char *desc2 = "Min & Max of Implied Volatility (BAW)";
 static char *fmt2 = "MM_IMPVBAW,timestamp,contract,min,max";

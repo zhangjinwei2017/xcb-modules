@@ -139,6 +139,12 @@ app_sse50etf_la_OBJECTS = $(am_app_sse50etf_la_OBJECTS)
 app_sse50etf_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_sse50etf_la_CFLAGS) \
 	$(CFLAGS) $(app_sse50etf_la_LDFLAGS) $(LDFLAGS) -o $@
+app_vxo_la_LIBADD =
+am_app_vxo_la_OBJECTS = app_vxo_la-app_vxo.lo
+app_vxo_la_OBJECTS = $(am_app_vxo_la_OBJECTS)
+app_vxo_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_vxo_la_CFLAGS) \
+	$(CFLAGS) $(app_vxo_la_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -156,12 +162,14 @@ SOURCES = $(app_greeks_la_SOURCES) $(app_greeks2_la_SOURCES) \
 	$(app_greeks3_la_SOURCES) $(app_greeksbaw_la_SOURCES) \
 	$(app_impv_la_SOURCES) $(app_impv2_la_SOURCES) \
 	$(app_impv3_la_SOURCES) $(app_impvbaw_la_SOURCES) \
-	$(app_quote_la_SOURCES) $(app_sse50etf_la_SOURCES)
+	$(app_quote_la_SOURCES) $(app_sse50etf_la_SOURCES) \
+	$(app_vxo_la_SOURCES)
 DIST_SOURCES = $(app_greeks_la_SOURCES) $(app_greeks2_la_SOURCES) \
 	$(app_greeks3_la_SOURCES) $(app_greeksbaw_la_SOURCES) \
 	$(app_impv_la_SOURCES) $(app_impv2_la_SOURCES) \
 	$(app_impv3_la_SOURCES) $(app_impvbaw_la_SOURCES) \
-	$(app_quote_la_SOURCES) $(app_sse50etf_la_SOURCES)
+	$(app_quote_la_SOURCES) $(app_sse50etf_la_SOURCES) \
+	$(app_vxo_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -276,8 +284,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = app_impv.la app_impvbaw.la app_impv2.la app_impv3.la         \
-app_greeks.la app_greeksbaw.la app_greeks2.la app_greeks3.la app_sse50etf.la   \
-app_quote.la
+app_greeks.la app_greeksbaw.la app_greeks2.la app_greeks3.la app_vxo.la        \
+app_sse50etf.la app_quote.la
 
 app_impv_la_SOURCES = norms.c bs.c impv.c app_impv.c
 app_impv_la_CPPFLAGS = -I$(top_srcdir)/include
@@ -313,8 +321,12 @@ app_greeks3_la_CFLAGS = -fPIC -Wall
 app_greeks3_la_LDFLAGS = -module -avoid-version -ltcmalloc
 app_sse50etf_la_SOURCES = app_sse50etf.c
 app_sse50etf_la_CPPFLAGS = -I$(top_srcdir)/include
-app_sse50etf_la_CFLAGS = -fPIC -Wall -pthread
+app_sse50etf_la_CFLAGS = -fPIC -Wall
 app_sse50etf_la_LDFLAGS = -module -avoid-version -ltcmalloc
+app_vxo_la_SOURCES = app_vxo.c
+app_vxo_la_CPPFLAGS = -I$(top_srcdir)/include
+app_vxo_la_CFLAGS = -fPIC -Wall
+app_vxo_la_LDFLAGS = -module -avoid-version -ltcmalloc
 app_quote_la_SOURCES = app_quote.c
 app_quote_la_CPPFLAGS = -I$(top_srcdir)/include
 app_quote_la_CFLAGS = -fPIC -Wall
@@ -404,6 +416,8 @@ app_quote.la: $(app_quote_la_OBJECTS) $(app_quote_la_DEPENDENCIES)
 	$(app_quote_la_LINK) -rpath $(libdir) $(app_quote_la_OBJECTS) $(app_quote_la_LIBADD) $(LIBS)
 app_sse50etf.la: $(app_sse50etf_la_OBJECTS) $(app_sse50etf_la_DEPENDENCIES) 
 	$(app_sse50etf_la_LINK) -rpath $(libdir) $(app_sse50etf_la_OBJECTS) $(app_sse50etf_la_LIBADD) $(LIBS)
+app_vxo.la: $(app_vxo_la_OBJECTS) $(app_vxo_la_DEPENDENCIES) 
+	$(app_vxo_la_LINK) -rpath $(libdir) $(app_vxo_la_OBJECTS) $(app_vxo_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -439,6 +453,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvbaw_la-norms.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_quote_la-app_quote.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_sse50etf_la-app_sse50etf.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_vxo_la-app_vxo.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -656,6 +671,13 @@ app_sse50etf_la-app_sse50etf.lo: app_sse50etf.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='app_sse50etf.c' object='app_sse50etf_la-app_sse50etf.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_sse50etf_la_CPPFLAGS) $(CPPFLAGS) $(app_sse50etf_la_CFLAGS) $(CFLAGS) -c -o app_sse50etf_la-app_sse50etf.lo `test -f 'app_sse50etf.c' || echo '$(srcdir)/'`app_sse50etf.c
+
+app_vxo_la-app_vxo.lo: app_vxo.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_vxo_la_CPPFLAGS) $(CPPFLAGS) $(app_vxo_la_CFLAGS) $(CFLAGS) -MT app_vxo_la-app_vxo.lo -MD -MP -MF $(DEPDIR)/app_vxo_la-app_vxo.Tpo -c -o app_vxo_la-app_vxo.lo `test -f 'app_vxo.c' || echo '$(srcdir)/'`app_vxo.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_vxo_la-app_vxo.Tpo $(DEPDIR)/app_vxo_la-app_vxo.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='app_vxo.c' object='app_vxo_la-app_vxo.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_vxo_la_CPPFLAGS) $(CPPFLAGS) $(app_vxo_la_CFLAGS) $(CFLAGS) -c -o app_vxo_la-app_vxo.lo `test -f 'app_vxo.c' || echo '$(srcdir)/'`app_vxo.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

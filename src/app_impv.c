@@ -54,7 +54,7 @@ static table_t optns;
 static table_t expiries;
 static struct msgs *impv_msgs;
 static struct config *cfg;
-static double r = 0.0325;
+static double r = 0.033;
 static const char *uio = "SH000300";
 static const char *uho = "SH000016";
 static char *app2 = "mm_impv";

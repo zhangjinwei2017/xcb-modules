@@ -183,8 +183,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 xcbconfdir = $(sysconfdir)/xcb
-xcbconf_DATA = impv.conf impvbaw.conf impv2.conf impv3.conf sse50etf.conf      \
-expiries.conf
+xcbconf_DATA = impv.conf impvbaw.conf impv2.conf impv3.conf vxo.conf           \
+sse50etf.conf expiries.conf
 
 all: all-am
 

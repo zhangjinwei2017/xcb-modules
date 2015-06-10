@@ -51,7 +51,7 @@ static table_t optns;
 static table_t expiries;
 static struct msgs *impv3_msgs;
 static struct config *cfg;
-static double r = 0.0325;
+static double r = 0.033;
 static int steps = 4096;
 
 static inline void load_config(void) {

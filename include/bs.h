@@ -16,6 +16,8 @@
 #ifndef BS_INCLUDED
 #define BS_INCLUDED
 
+#include "impv.h"
+
 /* FIXME: exported functions */
 extern double bs_call(double spot, double strike, double r, double d, double vol, double expiry);
 extern double bs_put (double spot, double strike, double r, double d, double vol, double expiry);
@@ -29,6 +31,7 @@ extern double bs_call_vega (double spot, double strike, double r, double d, doub
 extern double bs_put_vega  (double spot, double strike, double r, double d, double vol, double expiry);
 extern double bs_call_rho  (double spot, double strike, double r, double d, double vol, double expiry);
 extern double bs_put_rho   (double spot, double strike, double r, double d, double vol, double expiry);
+extern double impv_bs(double spot, double strike, double r, double d, double expiry, double price, int type);
 
 #endif /* BS_INCLUDED */
 

@@ -234,3 +234,36 @@ void tri_amer_put_greeks(double spot, double strike, double r, double d, double 
 	FREE(prices);
 }
 
+/* FIXME */
+double impv_trinomial(double spot, double strike, double r, double d, double expiry, int steps,
+	double price, int type) {
+	double low = 0.000001, high = 0.3, ce;
+	int niters = 0;
+
+	/* FIXME */
+	if (type != AMER_CALL && type != AMER_PUT)
+		return NAN;
+	ce = type == AMER_CALL ? tri_amer_call(spot, strike, r, d, high, expiry, steps) :
+		tri_amer_put(spot, strike, r, d, high, expiry, steps);
+	while (ce < price) {
+		high *= 2.0;
+		if (high > 1e10)
+			return NAN;
+		ce = type == AMER_CALL ? tri_amer_call(spot, strike, r, d, high, expiry, steps) :
+			tri_amer_put(spot, strike, r, d, high, expiry, steps);
+	}
+	while (++niters < 500) {
+		double vol = 0.5 * (low + high);
+
+		ce = type == AMER_CALL ? tri_amer_call(spot, strike, r, d, vol, expiry, steps) :
+			tri_amer_put(spot, strike, r, d, vol, expiry, steps);
+		if (fabs(ce - price) <= 0.000001)
+			return vol;
+		if (ce < price)
+			low  = vol;
+		else
+			high = vol;
+	}
+	return NAN;
+}
+

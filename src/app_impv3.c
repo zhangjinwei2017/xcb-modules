@@ -35,7 +35,7 @@
 #include <xcb/module.h>
 #include <xcb/utilities.h>
 #include <xcb/basics.h>
-#include "impv.h"
+#include "trinomial.h"
 
 /* FIXME */
 struct prices {

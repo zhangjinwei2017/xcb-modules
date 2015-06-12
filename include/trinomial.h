@@ -22,6 +22,8 @@
 #ifndef TRINOMIAL_INCLUDED
 #define TRINOMIAL_INCLUDED
 
+#include "impv.h"
+
 /* FIXME: exported functions */
 extern double tri_euro_call(double spot, double strike, double r, double d, double vol,
 		double expiry, int steps);
@@ -35,6 +37,8 @@ extern void   tri_amer_call_greeks(double spot, double strike, double r, double 
 		double expiry, int steps, double *delta, double *gamma, double *theta, double *vega, double *rho);
 extern void   tri_amer_put_greeks (double spot, double strike, double r, double d, double vol,
 		double expiry, int steps, double *delta, double *gamma, double *theta, double *vega, double *rho);
+extern double impv_trinomial(double spot, double strike, double r, double d, double expiry, int steps,
+		double price, int type);
 
 #endif /* TRINOMIAL_INCLUDED */
 

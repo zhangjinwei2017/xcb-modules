@@ -1,19 +1,19 @@
 lib_LTLIBRARIES = app_impv.la app_impvbaw.la app_impv2.la app_impv3.la         \
 app_greeks.la app_greeksbaw.la app_greeks2.la app_greeks3.la app_vxo.la        \
 app_otv.la app_otvbaw.la app_sse50etf.la app_quote.la
-app_impv_la_SOURCES = norms.c bs.c brent.c impv.c app_impv.c
+app_impv_la_SOURCES = norms.c brent.c bs.c app_impv.c
 app_impv_la_CPPFLAGS = -I$(top_srcdir)/include
 app_impv_la_CFLAGS = -fPIC -Wall
 app_impv_la_LDFLAGS = -module -avoid-version -ltcmalloc
-app_impvbaw_la_SOURCES = norms.c bs.c baw.c brent.c impv.c app_impvbaw.c
+app_impvbaw_la_SOURCES = norms.c brent.c bs.c baw.c app_impvbaw.c
 app_impvbaw_la_CPPFLAGS = -I$(top_srcdir)/include
 app_impvbaw_la_CFLAGS = -fPIC -Wall
 app_impvbaw_la_LDFLAGS = -module -avoid-version -ltcmalloc
-app_impv2_la_SOURCES = binomial.c impv.c app_impv2.c
+app_impv2_la_SOURCES = binomial.c app_impv2.c
 app_impv2_la_CPPFLAGS = -I$(top_srcdir)/include
 app_impv2_la_CFLAGS = -fPIC -Wall
 app_impv2_la_LDFLAGS = -module -avoid-version -ltcmalloc
-app_impv3_la_SOURCES = trinomial.c impv.c app_impv3.c
+app_impv3_la_SOURCES = trinomial.c app_impv3.c
 app_impv3_la_CPPFLAGS = -I$(top_srcdir)/include
 app_impv3_la_CFLAGS = -fPIC -Wall
 app_impv3_la_LDFLAGS = -module -avoid-version -ltcmalloc

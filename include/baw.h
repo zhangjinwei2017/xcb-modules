@@ -22,6 +22,8 @@
 #ifndef BAW_INCLUDED
 #define BAW_INCLUDED
 
+#include "impv.h"
+
 /* FIXME: exported functions */
 extern double baw_call(double spot, double strike, double r, double d, double vol, double expiry);
 extern double baw_put(double spot, double strike, double r, double d, double vol, double expiry);
@@ -35,6 +37,7 @@ extern double baw_call_vega (double spot, double strike, double r, double d, dou
 extern double baw_put_vega  (double spot, double strike, double r, double d, double vol, double expiry);
 extern double baw_call_rho  (double spot, double strike, double r, double d, double vol, double expiry);
 extern double baw_put_rho   (double spot, double strike, double r, double d, double vol, double expiry);
+extern double impv_baw(double spot, double strike, double r, double d, double expiry, double price, int type);
 
 #endif /* BAW_INCLUDED */
 

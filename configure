@@ -749,7 +749,7 @@ PACKAGE_VERSION='0.0.1'
 PACKAGE_STRING='xcb-modules 0.0.1'
 PACKAGE_BUGREPORT='mengxiaoye@dce.com.cn'
 
-ac_unique_file="src/impv.c"
+ac_unique_file="src/bs.c"
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>

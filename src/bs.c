@@ -15,6 +15,7 @@
 
 #include <math.h>
 #include "norms.h"
+#include "brent.h"
 #include "bs.h"
 
 double bs_call(double spot, double strike, double r, double d, double vol, double expiry) {
@@ -113,5 +114,29 @@ double bs_put_rho(double spot, double strike, double r, double d, double vol, do
 	double d2 = d1 - stddev;
 
 	return -strike * expiry * exp(-r * expiry) * cum_norm(-d2);
+}
+
+double impv_bs(double spot, double strike, double r, double d, double expiry, double price, int type) {
+	double low = 0.000001, high = 0.3, ce;
+
+	if (type != EURO_CALL && type != EURO_PUT)
+		return NAN;
+	/*
+	else if (type == EURO_CALL && price < 0.99 * (spot * exp(-d * expiry) - strike * exp(-r * expiry)))
+		return NAN;
+	else if (type == EURO_PUT  && price < 0.99 * (strike * exp(-r * expiry) - spot * exp(-d * expiry)))
+		return NAN;
+	*/
+	ce = type == EURO_CALL ? bs_call(spot, strike, r, d, high, expiry) :
+		bs_put(spot, strike, r, d, high, expiry);
+	while (ce < price) {
+		high *= 2.0;
+		if (high > 1e10)
+			return NAN;
+		ce = type == EURO_CALL ? bs_call(spot, strike, r, d, high, expiry) :
+			bs_put(spot, strike, r, d, high, expiry);
+	}
+	return type == EURO_CALL ? brent(low, high, price, bs_call, spot, strike, r, d, expiry) :
+		brent(low, high, price, bs_put, spot, strike, r, d, expiry);
 }
 

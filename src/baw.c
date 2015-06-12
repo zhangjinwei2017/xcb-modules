@@ -22,6 +22,7 @@
 #include <math.h>
 #include "norms.h"
 #include "bs.h"
+#include "brent.h"
 #include "baw.h"
 
 /* FIXME */
@@ -164,5 +165,25 @@ inline double baw_call_rho(double spot, double strike, double r, double d, doubl
 inline double baw_put_rho(double spot, double strike, double r, double d, double vol, double expiry) {
 	return (baw_put(spot, strike, 1.01 * r, d, vol, expiry) -
 		baw_put(spot, strike, 0.99 * r, d, vol, expiry)) / (0.02 * r);
+}
+
+/* FIXME */
+double impv_baw(double spot, double strike, double r, double d, double expiry, double price, int type) {
+	double low = 0.000001, high = 0.3, ce;
+
+	/* FIXME */
+	if (type != AMER_CALL && type != AMER_PUT)
+		return NAN;
+	ce = type == AMER_CALL ? baw_call(spot, strike, r, d, high, expiry) :
+		baw_put(spot, strike, r, d, high, expiry);
+	while (ce < price) {
+		high *= 2.0;
+		if (high > 1e10)
+			return NAN;
+		ce = type == AMER_CALL ? baw_call(spot, strike, r, d, high, expiry) :
+			baw_put(spot, strike, r, d, high, expiry);
+	}
+	return type == AMER_CALL ? brent(low, high, price, baw_call, spot, strike, r, d, expiry) :
+		brent(low, high, price, baw_put, spot, strike, r, d, expiry);
 }
 

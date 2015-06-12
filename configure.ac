@@ -5,7 +5,7 @@ AC_PREREQ([2.63])
 AC_INIT([xcb-modules], [0.0.1], [mengxiaoye@dce.com.cn])
 AM_INIT_AUTOMAKE([-Wall -Werror])
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_SRCDIR([src/impv.c])
+AC_CONFIG_SRCDIR([src/bs.c])
 
 # Checks for programs.
 AC_PROG_CC

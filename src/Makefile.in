@@ -100,7 +100,8 @@ app_greeksbaw_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(CFLAGS) $(app_greeksbaw_la_LDFLAGS) $(LDFLAGS) -o $@
 app_impv_la_LIBADD =
 am_app_impv_la_OBJECTS = app_impv_la-norms.lo app_impv_la-bs.lo \
-	app_impv_la-impv.lo app_impv_la-app_impv.lo
+	app_impv_la-brent.lo app_impv_la-impv.lo \
+	app_impv_la-app_impv.lo
 app_impv_la_OBJECTS = $(am_app_impv_la_OBJECTS)
 app_impv_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_impv_la_CFLAGS) \
@@ -122,19 +123,22 @@ app_impv3_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 app_impvbaw_la_LIBADD =
 am_app_impvbaw_la_OBJECTS = app_impvbaw_la-norms.lo \
 	app_impvbaw_la-bs.lo app_impvbaw_la-baw.lo \
-	app_impvbaw_la-impv.lo app_impvbaw_la-app_impvbaw.lo
+	app_impvbaw_la-brent.lo app_impvbaw_la-impv.lo \
+	app_impvbaw_la-app_impvbaw.lo
 app_impvbaw_la_OBJECTS = $(am_app_impvbaw_la_OBJECTS)
 app_impvbaw_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_impvbaw_la_CFLAGS) \
 	$(CFLAGS) $(app_impvbaw_la_LDFLAGS) $(LDFLAGS) -o $@
 app_otv_la_LIBADD =
-am_app_otv_la_OBJECTS = app_otv_la-app_otv.lo
+am_app_otv_la_OBJECTS = app_otv_la-norms.lo app_otv_la-bs.lo \
+	app_otv_la-app_otv.lo
 app_otv_la_OBJECTS = $(am_app_otv_la_OBJECTS)
 app_otv_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_otv_la_CFLAGS) \
 	$(CFLAGS) $(app_otv_la_LDFLAGS) $(LDFLAGS) -o $@
 app_otvbaw_la_LIBADD =
-am_app_otvbaw_la_OBJECTS = app_otvbaw_la-app_otvbaw.lo
+am_app_otvbaw_la_OBJECTS = app_otvbaw_la-norms.lo app_otvbaw_la-bs.lo \
+	app_otvbaw_la-baw.lo app_otvbaw_la-app_otvbaw.lo
 app_otvbaw_la_OBJECTS = $(am_app_otvbaw_la_OBJECTS)
 app_otvbaw_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_otvbaw_la_CFLAGS) \
@@ -301,11 +305,11 @@ lib_LTLIBRARIES = app_impv.la app_impvbaw.la app_impv2.la app_impv3.la         \
 app_greeks.la app_greeksbaw.la app_greeks2.la app_greeks3.la app_vxo.la        \
 app_otv.la app_otvbaw.la app_sse50etf.la app_quote.la
 
-app_impv_la_SOURCES = norms.c bs.c impv.c app_impv.c
+app_impv_la_SOURCES = norms.c bs.c brent.c impv.c app_impv.c
 app_impv_la_CPPFLAGS = -I$(top_srcdir)/include
 app_impv_la_CFLAGS = -fPIC -Wall
 app_impv_la_LDFLAGS = -module -avoid-version -ltcmalloc
-app_impvbaw_la_SOURCES = norms.c bs.c baw.c impv.c app_impvbaw.c
+app_impvbaw_la_SOURCES = norms.c bs.c baw.c brent.c impv.c app_impvbaw.c
 app_impvbaw_la_CPPFLAGS = -I$(top_srcdir)/include
 app_impvbaw_la_CFLAGS = -fPIC -Wall
 app_impvbaw_la_LDFLAGS = -module -avoid-version -ltcmalloc
@@ -341,11 +345,11 @@ app_vxo_la_SOURCES = app_vxo.c
 app_vxo_la_CPPFLAGS = -I$(top_srcdir)/include
 app_vxo_la_CFLAGS = -fPIC -Wall
 app_vxo_la_LDFLAGS = -module -avoid-version -ltcmalloc
-app_otv_la_SOURCES = app_otv.c
+app_otv_la_SOURCES = norms.c bs.c app_otv.c
 app_otv_la_CPPFLAGS = -I$(top_srcdir)/include
 app_otv_la_CFLAGS = -fPIC -Wall
 app_otv_la_LDFLAGS = -module -avoid-version -ltcmalloc
-app_otvbaw_la_SOURCES = app_otvbaw.c
+app_otvbaw_la_SOURCES = norms.c bs.c baw.c app_otvbaw.c
 app_otvbaw_la_CPPFLAGS = -I$(top_srcdir)/include
 app_otvbaw_la_CFLAGS = -fPIC -Wall
 app_otvbaw_la_LDFLAGS = -module -avoid-version -ltcmalloc
@@ -469,16 +473,23 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv3_la-impv.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv3_la-trinomial.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv_la-app_impv.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv_la-brent.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv_la-bs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv_la-impv.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv_la-norms.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvbaw_la-app_impvbaw.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvbaw_la-baw.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvbaw_la-brent.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvbaw_la-bs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvbaw_la-impv.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvbaw_la-norms.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_otv_la-app_otv.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_otv_la-bs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_otv_la-norms.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_otvbaw_la-app_otvbaw.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_otvbaw_la-baw.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_otvbaw_la-bs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_otvbaw_la-norms.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_quote_la-app_quote.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_sse50etf_la-app_sse50etf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_vxo_la-app_vxo.Plo@am__quote@
@@ -595,6 +606,13 @@ app_impv_la-bs.lo: bs.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv_la_CPPFLAGS) $(CPPFLAGS) $(app_impv_la_CFLAGS) $(CFLAGS) -c -o app_impv_la-bs.lo `test -f 'bs.c' || echo '$(srcdir)/'`bs.c
 
+app_impv_la-brent.lo: brent.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv_la_CPPFLAGS) $(CPPFLAGS) $(app_impv_la_CFLAGS) $(CFLAGS) -MT app_impv_la-brent.lo -MD -MP -MF $(DEPDIR)/app_impv_la-brent.Tpo -c -o app_impv_la-brent.lo `test -f 'brent.c' || echo '$(srcdir)/'`brent.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_impv_la-brent.Tpo $(DEPDIR)/app_impv_la-brent.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='brent.c' object='app_impv_la-brent.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv_la_CPPFLAGS) $(CPPFLAGS) $(app_impv_la_CFLAGS) $(CFLAGS) -c -o app_impv_la-brent.lo `test -f 'brent.c' || echo '$(srcdir)/'`brent.c
+
 app_impv_la-impv.lo: impv.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv_la_CPPFLAGS) $(CPPFLAGS) $(app_impv_la_CFLAGS) $(CFLAGS) -MT app_impv_la-impv.lo -MD -MP -MF $(DEPDIR)/app_impv_la-impv.Tpo -c -o app_impv_la-impv.lo `test -f 'impv.c' || echo '$(srcdir)/'`impv.c
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_impv_la-impv.Tpo $(DEPDIR)/app_impv_la-impv.Plo
@@ -672,6 +690,13 @@ app_impvbaw_la-baw.lo: baw.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impvbaw_la_CPPFLAGS) $(CPPFLAGS) $(app_impvbaw_la_CFLAGS) $(CFLAGS) -c -o app_impvbaw_la-baw.lo `test -f 'baw.c' || echo '$(srcdir)/'`baw.c
 
+app_impvbaw_la-brent.lo: brent.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impvbaw_la_CPPFLAGS) $(CPPFLAGS) $(app_impvbaw_la_CFLAGS) $(CFLAGS) -MT app_impvbaw_la-brent.lo -MD -MP -MF $(DEPDIR)/app_impvbaw_la-brent.Tpo -c -o app_impvbaw_la-brent.lo `test -f 'brent.c' || echo '$(srcdir)/'`brent.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_impvbaw_la-brent.Tpo $(DEPDIR)/app_impvbaw_la-brent.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='brent.c' object='app_impvbaw_la-brent.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impvbaw_la_CPPFLAGS) $(CPPFLAGS) $(app_impvbaw_la_CFLAGS) $(CFLAGS) -c -o app_impvbaw_la-brent.lo `test -f 'brent.c' || echo '$(srcdir)/'`brent.c
+
 app_impvbaw_la-impv.lo: impv.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impvbaw_la_CPPFLAGS) $(CPPFLAGS) $(app_impvbaw_la_CFLAGS) $(CFLAGS) -MT app_impvbaw_la-impv.lo -MD -MP -MF $(DEPDIR)/app_impvbaw_la-impv.Tpo -c -o app_impvbaw_la-impv.lo `test -f 'impv.c' || echo '$(srcdir)/'`impv.c
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_impvbaw_la-impv.Tpo $(DEPDIR)/app_impvbaw_la-impv.Plo
@@ -686,12 +711,47 @@ app_impvbaw_la-app_impvbaw.lo: app_impvbaw.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impvbaw_la_CPPFLAGS) $(CPPFLAGS) $(app_impvbaw_la_CFLAGS) $(CFLAGS) -c -o app_impvbaw_la-app_impvbaw.lo `test -f 'app_impvbaw.c' || echo '$(srcdir)/'`app_impvbaw.c
 
+app_otv_la-norms.lo: norms.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_otv_la_CPPFLAGS) $(CPPFLAGS) $(app_otv_la_CFLAGS) $(CFLAGS) -MT app_otv_la-norms.lo -MD -MP -MF $(DEPDIR)/app_otv_la-norms.Tpo -c -o app_otv_la-norms.lo `test -f 'norms.c' || echo '$(srcdir)/'`norms.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_otv_la-norms.Tpo $(DEPDIR)/app_otv_la-norms.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='norms.c' object='app_otv_la-norms.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_otv_la_CPPFLAGS) $(CPPFLAGS) $(app_otv_la_CFLAGS) $(CFLAGS) -c -o app_otv_la-norms.lo `test -f 'norms.c' || echo '$(srcdir)/'`norms.c
+
+app_otv_la-bs.lo: bs.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_otv_la_CPPFLAGS) $(CPPFLAGS) $(app_otv_la_CFLAGS) $(CFLAGS) -MT app_otv_la-bs.lo -MD -MP -MF $(DEPDIR)/app_otv_la-bs.Tpo -c -o app_otv_la-bs.lo `test -f 'bs.c' || echo '$(srcdir)/'`bs.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_otv_la-bs.Tpo $(DEPDIR)/app_otv_la-bs.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='bs.c' object='app_otv_la-bs.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_otv_la_CPPFLAGS) $(CPPFLAGS) $(app_otv_la_CFLAGS) $(CFLAGS) -c -o app_otv_la-bs.lo `test -f 'bs.c' || echo '$(srcdir)/'`bs.c
+
 app_otv_la-app_otv.lo: app_otv.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_otv_la_CPPFLAGS) $(CPPFLAGS) $(app_otv_la_CFLAGS) $(CFLAGS) -MT app_otv_la-app_otv.lo -MD -MP -MF $(DEPDIR)/app_otv_la-app_otv.Tpo -c -o app_otv_la-app_otv.lo `test -f 'app_otv.c' || echo '$(srcdir)/'`app_otv.c
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_otv_la-app_otv.Tpo $(DEPDIR)/app_otv_la-app_otv.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='app_otv.c' object='app_otv_la-app_otv.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_otv_la_CPPFLAGS) $(CPPFLAGS) $(app_otv_la_CFLAGS) $(CFLAGS) -c -o app_otv_la-app_otv.lo `test -f 'app_otv.c' || echo '$(srcdir)/'`app_otv.c
+
+app_otvbaw_la-norms.lo: norms.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_otvbaw_la_CPPFLAGS) $(CPPFLAGS) $(app_otvbaw_la_CFLAGS) $(CFLAGS) -MT app_otvbaw_la-norms.lo -MD -MP -MF $(DEPDIR)/app_otvbaw_la-norms.Tpo -c -o app_otvbaw_la-norms.lo `test -f 'norms.c' || echo '$(srcdir)/'`norms.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_otvbaw_la-norms.Tpo $(DEPDIR)/app_otvbaw_la-norms.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='norms.c' object='app_otvbaw_la-norms.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_otvbaw_la_CPPFLAGS) $(CPPFLAGS) $(app_otvbaw_la_CFLAGS) $(CFLAGS) -c -o app_otvbaw_la-norms.lo `test -f 'norms.c' || echo '$(srcdir)/'`norms.c
+
+app_otvbaw_la-bs.lo: bs.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_otvbaw_la_CPPFLAGS) $(CPPFLAGS) $(app_otvbaw_la_CFLAGS) $(CFLAGS) -MT app_otvbaw_la-bs.lo -MD -MP -MF $(DEPDIR)/app_otvbaw_la-bs.Tpo -c -o app_otvbaw_la-bs.lo `test -f 'bs.c' || echo '$(srcdir)/'`bs.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_otvbaw_la-bs.Tpo $(DEPDIR)/app_otvbaw_la-bs.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='bs.c' object='app_otvbaw_la-bs.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_otvbaw_la_CPPFLAGS) $(CPPFLAGS) $(app_otvbaw_la_CFLAGS) $(CFLAGS) -c -o app_otvbaw_la-bs.lo `test -f 'bs.c' || echo '$(srcdir)/'`bs.c
+
+app_otvbaw_la-baw.lo: baw.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_otvbaw_la_CPPFLAGS) $(CPPFLAGS) $(app_otvbaw_la_CFLAGS) $(CFLAGS) -MT app_otvbaw_la-baw.lo -MD -MP -MF $(DEPDIR)/app_otvbaw_la-baw.Tpo -c -o app_otvbaw_la-baw.lo `test -f 'baw.c' || echo '$(srcdir)/'`baw.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_otvbaw_la-baw.Tpo $(DEPDIR)/app_otvbaw_la-baw.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='baw.c' object='app_otvbaw_la-baw.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_otvbaw_la_CPPFLAGS) $(CPPFLAGS) $(app_otvbaw_la_CFLAGS) $(CFLAGS) -c -o app_otvbaw_la-baw.lo `test -f 'baw.c' || echo '$(srcdir)/'`baw.c
 
 app_otvbaw_la-app_otvbaw.lo: app_otvbaw.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_otvbaw_la_CPPFLAGS) $(CPPFLAGS) $(app_otvbaw_la_CFLAGS) $(CFLAGS) -MT app_otvbaw_la-app_otvbaw.lo -MD -MP -MF $(DEPDIR)/app_otvbaw_la-app_otvbaw.Tpo -c -o app_otvbaw_la-app_otvbaw.lo `test -f 'app_otvbaw.c' || echo '$(srcdir)/'`app_otvbaw.c

@@ -49,7 +49,7 @@ struct pd {
 
 /* FIXME */
 static char *app = "vxo";
-static char *desc = "VIX Old";
+static char *desc = "Volatility Index Old";
 static char *fmt = "VXO,timestamp,contract,vxo,vxo2,vxo3";
 static table_t spots;
 static struct msgs *vxo_msgs;
@@ -406,5 +406,5 @@ static int reload_module(void) {
 	return MODULE_LOAD_SUCCESS;
 }
 
-MODULE_INFO(load_module, unload_module, reload_module, "VIX Old Application");
+MODULE_INFO(load_module, unload_module, reload_module, "Volatility Index Old Application");
 

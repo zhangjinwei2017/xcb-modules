@@ -23,12 +23,12 @@
 #include "baw.h"
 #include "binomial.h"
 #include "trinomial.h"
+#include "brent.h"
 #include "impv.h"
 
 double impv_bs(double spot, double strike, double r, double d, double expiry,
 	double price, int type) {
 	double low = 0.000001, high = 0.3, ce;
-	int niters = 0;
 
 	if (type != EURO_CALL && type != EURO_PUT)
 		return NAN;
@@ -47,25 +47,13 @@ double impv_bs(double spot, double strike, double r, double d, double expiry,
 		ce = type == EURO_CALL ? bs_call(spot, strike, r, d, high, expiry) :
 			bs_put(spot, strike, r, d, high, expiry);
 	}
-	while (++niters < 500) {
-		double vol = 0.5 * (low + high);
-
-		ce = type == EURO_CALL ? bs_call(spot, strike, r, d, vol, expiry) :
-			bs_put(spot, strike, r, d, vol, expiry);
-		if (fabs(ce - price) <= 0.000001)
-			return vol;
-		if (ce < price)
-			low  = vol;
-		else
-			high = vol;
-	}
-	return NAN;
+	return type == EURO_CALL ? brent(low, high, price, bs_call, spot, strike, r, d, expiry) :
+		brent(low, high, price, bs_put, spot, strike, r, d, expiry);
 }
 
 double impv_baw(double spot, double strike, double r, double d, double expiry,
 	double price, int type) {
 	double low = 0.000001, high = 0.3, ce;
-	int niters = 0;
 
 	/* FIXME */
 	if (type != AMER_CALL && type != AMER_PUT)
@@ -79,19 +67,8 @@ double impv_baw(double spot, double strike, double r, double d, double expiry,
 		ce = type == AMER_CALL ? baw_call(spot, strike, r, d, high, expiry) :
 			baw_put(spot, strike, r, d, high, expiry);
 	}
-	while (++niters < 500) {
-		double vol = 0.5 * (low + high);
-
-		ce = type == AMER_CALL ? baw_call(spot, strike, r, d, vol, expiry) :
-			baw_put(spot, strike, r, d, vol, expiry);
-		if (fabs(ce - price) <= 0.000001)
-			return vol;
-		if (ce < price)
-			low  = vol;
-		else
-			high = vol;
-	}
-	return NAN;
+	return type == AMER_CALL ? brent(low, high, price, baw_call, spot, strike, r, d, expiry) :
+		brent(low, high, price, baw_put, spot, strike, r, d, expiry);
 }
 
 double impv_binomial(double spot, double strike, double r, double d, double expiry, int steps,

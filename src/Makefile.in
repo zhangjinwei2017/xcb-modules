@@ -153,6 +153,12 @@ app_sse50etf_la_OBJECTS = $(am_app_sse50etf_la_OBJECTS)
 app_sse50etf_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_sse50etf_la_CFLAGS) \
 	$(CFLAGS) $(app_sse50etf_la_LDFLAGS) $(LDFLAGS) -o $@
+app_vxfc_la_LIBADD =
+am_app_vxfc_la_OBJECTS = app_vxfc_la-app_vxfc.lo
+app_vxfc_la_OBJECTS = $(am_app_vxfc_la_OBJECTS)
+app_vxfc_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_vxfc_la_CFLAGS) \
+	$(CFLAGS) $(app_vxfc_la_LDFLAGS) $(LDFLAGS) -o $@
 app_vxo_la_LIBADD =
 am_app_vxo_la_OBJECTS = app_vxo_la-app_vxo.lo
 app_vxo_la_OBJECTS = $(am_app_vxo_la_OBJECTS)
@@ -178,14 +184,14 @@ SOURCES = $(app_greeks_la_SOURCES) $(app_greeks2_la_SOURCES) \
 	$(app_impv3_la_SOURCES) $(app_impvbaw_la_SOURCES) \
 	$(app_otv_la_SOURCES) $(app_otvbaw_la_SOURCES) \
 	$(app_quote_la_SOURCES) $(app_sse50etf_la_SOURCES) \
-	$(app_vxo_la_SOURCES)
+	$(app_vxfc_la_SOURCES) $(app_vxo_la_SOURCES)
 DIST_SOURCES = $(app_greeks_la_SOURCES) $(app_greeks2_la_SOURCES) \
 	$(app_greeks3_la_SOURCES) $(app_greeksbaw_la_SOURCES) \
 	$(app_impv_la_SOURCES) $(app_impv2_la_SOURCES) \
 	$(app_impv3_la_SOURCES) $(app_impvbaw_la_SOURCES) \
 	$(app_otv_la_SOURCES) $(app_otvbaw_la_SOURCES) \
 	$(app_quote_la_SOURCES) $(app_sse50etf_la_SOURCES) \
-	$(app_vxo_la_SOURCES)
+	$(app_vxfc_la_SOURCES) $(app_vxo_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -301,7 +307,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = app_impv.la app_impvbaw.la app_impv2.la app_impv3.la         \
 app_greeks.la app_greeksbaw.la app_greeks2.la app_greeks3.la app_vxo.la        \
-app_otv.la app_otvbaw.la app_sse50etf.la app_quote.la
+app_otv.la app_otvbaw.la app_sse50etf.la app_vxfc.la app_quote.la
 
 app_impv_la_SOURCES = norms.c brent.c bs.c app_impv.c
 app_impv_la_CPPFLAGS = -I$(top_srcdir)/include
@@ -335,10 +341,6 @@ app_greeks3_la_SOURCES = trinomial.c app_greeks3.c
 app_greeks3_la_CPPFLAGS = -I$(top_srcdir)/include
 app_greeks3_la_CFLAGS = -fPIC -Wall
 app_greeks3_la_LDFLAGS = -module -avoid-version -ltcmalloc
-app_sse50etf_la_SOURCES = app_sse50etf.c
-app_sse50etf_la_CPPFLAGS = -I$(top_srcdir)/include
-app_sse50etf_la_CFLAGS = -fPIC -Wall
-app_sse50etf_la_LDFLAGS = -module -avoid-version -ltcmalloc
 app_vxo_la_SOURCES = app_vxo.c
 app_vxo_la_CPPFLAGS = -I$(top_srcdir)/include
 app_vxo_la_CFLAGS = -fPIC -Wall
@@ -351,6 +353,14 @@ app_otvbaw_la_SOURCES = norms.c bs.c baw.c app_otvbaw.c
 app_otvbaw_la_CPPFLAGS = -I$(top_srcdir)/include
 app_otvbaw_la_CFLAGS = -fPIC -Wall
 app_otvbaw_la_LDFLAGS = -module -avoid-version -ltcmalloc
+app_sse50etf_la_SOURCES = app_sse50etf.c
+app_sse50etf_la_CPPFLAGS = -I$(top_srcdir)/include
+app_sse50etf_la_CFLAGS = -fPIC -Wall
+app_sse50etf_la_LDFLAGS = -module -avoid-version -ltcmalloc
+app_vxfc_la_SOURCES = app_vxfc.c
+app_vxfc_la_CPPFLAGS = -I$(top_srcdir)/include
+app_vxfc_la_CFLAGS = -fPIC -Wall
+app_vxfc_la_LDFLAGS = -module -avoid-version -ltcmalloc
 app_quote_la_SOURCES = app_quote.c
 app_quote_la_CPPFLAGS = -I$(top_srcdir)/include
 app_quote_la_CFLAGS = -fPIC -Wall
@@ -444,6 +454,8 @@ app_quote.la: $(app_quote_la_OBJECTS) $(app_quote_la_DEPENDENCIES)
 	$(app_quote_la_LINK) -rpath $(libdir) $(app_quote_la_OBJECTS) $(app_quote_la_LIBADD) $(LIBS)
 app_sse50etf.la: $(app_sse50etf_la_OBJECTS) $(app_sse50etf_la_DEPENDENCIES) 
 	$(app_sse50etf_la_LINK) -rpath $(libdir) $(app_sse50etf_la_OBJECTS) $(app_sse50etf_la_LIBADD) $(LIBS)
+app_vxfc.la: $(app_vxfc_la_OBJECTS) $(app_vxfc_la_DEPENDENCIES) 
+	$(app_vxfc_la_LINK) -rpath $(libdir) $(app_vxfc_la_OBJECTS) $(app_vxfc_la_LIBADD) $(LIBS)
 app_vxo.la: $(app_vxo_la_OBJECTS) $(app_vxo_la_DEPENDENCIES) 
 	$(app_vxo_la_LINK) -rpath $(libdir) $(app_vxo_la_OBJECTS) $(app_vxo_la_LIBADD) $(LIBS)
 
@@ -486,6 +498,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_otvbaw_la-norms.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_quote_la-app_quote.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_sse50etf_la-app_sse50etf.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_vxfc_la-app_vxfc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_vxo_la-app_vxo.Plo@am__quote@
 
 .c.o:
@@ -739,6 +752,13 @@ app_sse50etf_la-app_sse50etf.lo: app_sse50etf.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='app_sse50etf.c' object='app_sse50etf_la-app_sse50etf.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_sse50etf_la_CPPFLAGS) $(CPPFLAGS) $(app_sse50etf_la_CFLAGS) $(CFLAGS) -c -o app_sse50etf_la-app_sse50etf.lo `test -f 'app_sse50etf.c' || echo '$(srcdir)/'`app_sse50etf.c
+
+app_vxfc_la-app_vxfc.lo: app_vxfc.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_vxfc_la_CPPFLAGS) $(CPPFLAGS) $(app_vxfc_la_CFLAGS) $(CFLAGS) -MT app_vxfc_la-app_vxfc.lo -MD -MP -MF $(DEPDIR)/app_vxfc_la-app_vxfc.Tpo -c -o app_vxfc_la-app_vxfc.lo `test -f 'app_vxfc.c' || echo '$(srcdir)/'`app_vxfc.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_vxfc_la-app_vxfc.Tpo $(DEPDIR)/app_vxfc_la-app_vxfc.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='app_vxfc.c' object='app_vxfc_la-app_vxfc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_vxfc_la_CPPFLAGS) $(CPPFLAGS) $(app_vxfc_la_CFLAGS) $(CFLAGS) -c -o app_vxfc_la-app_vxfc.lo `test -f 'app_vxfc.c' || echo '$(srcdir)/'`app_vxfc.c
 
 app_vxo_la-app_vxo.lo: app_vxo.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_vxo_la_CPPFLAGS) $(CPPFLAGS) $(app_vxo_la_CFLAGS) $(CFLAGS) -MT app_vxo_la-app_vxo.lo -MD -MP -MF $(DEPDIR)/app_vxo_la-app_vxo.Tpo -c -o app_vxo_la-app_vxo.lo `test -f 'app_vxo.c' || echo '$(srcdir)/'`app_vxo.c

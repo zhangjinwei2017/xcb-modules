@@ -225,7 +225,6 @@ static int vxo_exec(void *data, void *data2) {
 			if (scp->strike > strike || fabs(scp->strike - strike) <= 0.000001)
 				break;
 		}
-		dlist_iter_free(&iter);
 		if (node && fabs(scp->strike - strike) <= 0.000001) {
 			if (!strcasecmp(type, "C")) {
 				scp->cvol  = vol;
@@ -264,7 +263,7 @@ static int vxo_exec(void *data, void *data2) {
 			else
 				dlist_insert(pd->dlist, node, scp, 0);
 		}
-		iter = dlist_iter_new(pd->dlist, DLIST_START_HEAD);
+		dlist_iter_rewind_head(iter, pd->dlist);
 		while ((node = dlist_next(iter))) {
 			scp = (struct scp *)dlist_node_value(node);
 			if (scp->strike > spot || fabs(scp->strike - spot) <= 0.000001)

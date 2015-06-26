@@ -52,7 +52,7 @@ static table_t spots;
 static struct config *cfg;
 static double r = 0.033;
 static const char *contract1, *contract2;
-static double sigma1 = NAN, T1 = NAN, sigma2 = NAN, T2 = NAN;
+static double T1 = NAN, sigma1 = NAN, T2 = NAN, sigma2 = NAN;
 
 static void scpfree(void *value) {
 	FREE(value);
@@ -163,8 +163,8 @@ static double compute_T(int expiry) {
 	le.tm_mday = expiry % 100;
 	le.tm_mon  = expiry / 100 % 100 - 1;
 	le.tm_year = expiry / 10000 - 1900;
-	return ((24 - le.tm_hour - 1) * 60 + le.tm_min + difftime(mktime(&le), t) / 60.0 - 24 * 60 +
-		8.5 * 60) / (365 * 24 * 60);
+	return ((24 - le.tm_hour - 1) * 60 + le.tm_min +
+		difftime(mktime(&le), t) / 60.0 - 1440 + 900) / 525600;
 }
 
 static int vxfc_exec(void *data, void *data2) {
@@ -177,9 +177,9 @@ static int vxfc_exec(void *data, void *data2) {
 
 	contract = dstr_new(quote->thyquote.m_cHYDM);
 	if (!memcmp(contract1, contract, strlen(contract1)))
-		flag = 0;
-	else if (!memcmp(contract2, contract, strlen(contract2)))
 		flag = 1;
+	else if (!memcmp(contract2, contract, strlen(contract2)))
+		flag = 2;
 	else
 		goto end;
 	if ((p = strrchr(contract, 'C')) == NULL)
@@ -202,7 +202,7 @@ static int vxfc_exec(void *data, void *data2) {
 			if (NEW(scp) == NULL) {
 				xcb_log(XCB_LOG_WARNING, "Error allocating memory for scp");
 				dstr_free(spotname);
-				goto free;
+				goto err;
 			}
 			scp->strike = atof(strike);
 			if (!strcasecmp(type, "C")) {
@@ -243,7 +243,7 @@ static int vxfc_exec(void *data, void *data2) {
 				/* can't happen */
 				if (NEW(scp) == NULL) {
 					xcb_log(XCB_LOG_WARNING, "Error allocating memory for scp");
-					goto free;
+					goto err;
 				}
 				scp->strike = atof(strike);
 				if (!strcasecmp(type, "C")) {
@@ -280,13 +280,13 @@ static int vxfc_exec(void *data, void *data2) {
 			}
 			dlist_iter_free(&iter);
 			if (isnan(mindiff))
-				goto free;
+				goto err;
 			T = compute_T(scp->expiry);
 			F = K0 + exp(r * T) * mindiff;
 			/* determine K0 */
 			while (K0 >= F) {
 				if ((node0 = dlist_node_prev(node0)) == NULL)
-					goto free;
+					goto err;
 				scp = (struct scp *)dlist_node_value(node0);
 				K0  = scp->strike;
 			}
@@ -307,7 +307,9 @@ static int vxfc_exec(void *data, void *data2) {
 			scp2 = (struct scp *)dlist_node_value(prev);
 			scp3 = (struct scp *)dlist_node_value(next);
 			/* FIXME */
-			if (prev == NULL)
+			if (prev == NULL && next == NULL)
+				goto err;
+			else if (prev == NULL)
 				deltaK = scp3->strike - K0;
 			else if (next == NULL)
 				deltaK = K0 - scp2->strike;
@@ -329,8 +331,8 @@ static int vxfc_exec(void *data, void *data2) {
 					break;
 				if (fabs(scp->pbid) <= 0.000001)
 					continue;
-				deltaK = prev
-					? (scp3->strike - scp2->strike) / 2.0 : scp3->strike - scp->strike;
+				deltaK = prev ? (scp3->strike - scp2->strike) / 2.0 :
+					scp3->strike - scp->strike;
 				QK = (scp->pbid + scp->pask) / 2.0;
 				sum += deltaK * exp(r * T) * QK / (scp->strike * scp->strike);
 			}
@@ -348,17 +350,17 @@ static int vxfc_exec(void *data, void *data2) {
 					break;
 				if (fabs(scp->cbid) <= 0.000001)
 					continue;
-				deltaK = next
-					? (scp3->strike - scp2->strike) / 2.0 : scp->strike - scp2->strike;
+				deltaK = next ? (scp3->strike - scp2->strike) / 2.0 :
+					scp->strike - scp2->strike;
 				QK = (scp->cbid + scp->cask) / 2.0;
 				sum += deltaK * exp(r * T) * QK / (scp->strike * scp->strike);
 			}
-			if (!flag) {
-				sigma1 = 2 * sum / T - (F / K0 - 1) * (F / K0 - 1) / T;
+			if (flag == 1) {
 				T1     = T;
+				sigma1 = 2 * sum / T - (F / K0 - 1) * (F / K0 - 1) / T;
 			} else {
-				sigma2 = 2 * sum / T - (F / K0 - 1) * (F / K0 - 1) / T;
 				T2     = T;
+				sigma2 = 2 * sum / T - (F / K0 - 1) * (F / K0 - 1) / T;
 			}
 			if (!isnan(sigma1) && !isnan(sigma2) && !isnan(T1) && !isnan(T2)) {
 				time_t t = (time_t)quote->thyquote.m_nTime;
@@ -378,7 +380,7 @@ static int vxfc_exec(void *data, void *data2) {
 			}
 		}
 
-free:
+err:
 		table_unlock(spots);
 		dstr_free(type);
 		dstr_free(strike);

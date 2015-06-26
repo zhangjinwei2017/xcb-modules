@@ -21,6 +21,7 @@ AC_CHECK_HEADERS([stdlib.h string.h strings.h sys/time.h])
 AC_C_INLINE
 
 # Checks for library functions.
+AC_FUNC_MKTIME
 AC_CHECK_FUNCS([gettimeofday localtime_r pow sqrt strcasecmp strchr  \
 strncasecmp strrchr])
 

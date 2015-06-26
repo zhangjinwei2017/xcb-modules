@@ -1,6 +1,7 @@
 lib_LTLIBRARIES = app_impv.la app_impvbaw.la app_impv2.la app_impv3.la         \
 app_greeks.la app_greeksbaw.la app_greeks2.la app_greeks3.la app_vxo.la        \
-app_vsml.la app_otv.la app_otvbaw.la app_sse50etf.la app_vxfc.la app_quote.la
+app_vsml.la app_otv.la app_otvbaw.la app_csi300.la app_sse50.la                \
+app_sse50etf.la app_vxfc.la app_quote.la
 app_impv_la_SOURCES = norms.c brent.c bs.c app_impv.c
 app_impv_la_CPPFLAGS = -I$(top_srcdir)/include
 app_impv_la_CFLAGS = -fPIC -Wall
@@ -49,6 +50,14 @@ app_otvbaw_la_SOURCES = norms.c bs.c baw.c app_otvbaw.c
 app_otvbaw_la_CPPFLAGS = -I$(top_srcdir)/include
 app_otvbaw_la_CFLAGS = -fPIC -Wall
 app_otvbaw_la_LDFLAGS = -module -avoid-version -ltcmalloc
+app_csi300_la_SOURCES = app_csi300.c
+app_csi300_la_CPPFLAGS = -I$(top_srcdir)/include
+app_csi300_la_CFLAGS = -fPIC -Wall -pthread
+app_csi300_la_LDFLAGS = -module -avoid-version -ltcmalloc
+app_sse50_la_SOURCES = app_sse50.c
+app_sse50_la_CPPFLAGS = -I$(top_srcdir)/include
+app_sse50_la_CFLAGS = -fPIC -Wall -pthread
+app_sse50_la_LDFLAGS = -module -avoid-version -ltcmalloc
 app_sse50etf_la_SOURCES = app_sse50etf.c
 app_sse50etf_la_CPPFLAGS = -I$(top_srcdir)/include
 app_sse50etf_la_CFLAGS = -fPIC -Wall

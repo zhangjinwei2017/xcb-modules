@@ -53,6 +53,7 @@ static struct config *cfg;
 static double r = 0.033;
 static const char *contract1, *contract2;
 static double T1 = NAN, sigma1 = NAN, T2 = NAN, sigma2 = NAN;
+static double prevxfc = NAN;
 
 static void scpfree(void *value) {
 	FREE(value);
@@ -363,20 +364,24 @@ static int vxfc_exec(void *data, void *data2) {
 				sigma2 = 2 * sum / T - (F / K0 - 1) * (F / K0 - 1) / T;
 			}
 			if (!isnan(T1) && !isnan(sigma1) && !isnan(T2) && !isnan(sigma2)) {
-				time_t t = (time_t)quote->thyquote.m_nTime;
-				struct tm lt;
-				char datestr[64], res[512];
 				double vxfc;
 
 				vxfc = 100 * sqrt(T1 * sigma1 * ((T2 * 525600 - 43200) /
 					(T2 * 525600 - T1 * 525600)) + T2 * sigma2 * ((43200 - T1 * 525600) /
 					(T2 * 525600 - T1 * 525600)) * 525600 / 43200);
-				strftime(datestr, sizeof datestr, "%F %T", localtime_r(&t, &lt));
-				snprintf(res, sizeof res, "VXFC,%s.%03d|%f",
-					datestr,
-					quote->m_nMSec,
-					vxfc);
-				out2rmp(res);
+				if (isnan(prevxfc) || fabs(prevxfc - vxfc) > 0.000001) {
+					time_t t = (time_t)quote->thyquote.m_nTime;
+					struct tm lt;
+					char datestr[64], res[512];
+
+					prevxfc = vxfc;
+					strftime(datestr, sizeof datestr, "%F %T", localtime_r(&t, &lt));
+					snprintf(res, sizeof res, "VXFC,%s.%03d|%f",
+						datestr,
+						quote->m_nMSec,
+						vxfc);
+					out2rmp(res);
+				}
 			}
 		}
 

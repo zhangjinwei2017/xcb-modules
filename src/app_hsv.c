@@ -53,7 +53,7 @@ static char *fmt = "HSV,timestamp,contract,hsv,spotprice";
 static table_t spots;
 static struct msgs *hsv_msgs;
 static struct config *cfg;
-static double r = 0.0325;
+static double r = 0.033;
 
 static void vfree(void *value) {
 	dstr_free((dstr)value);

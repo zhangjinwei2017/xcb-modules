@@ -362,7 +362,7 @@ static int vxfc_exec(void *data, void *data2) {
 				T2     = T;
 				sigma2 = 2 * sum / T - (F / K0 - 1) * (F / K0 - 1) / T;
 			}
-			if (!isnan(sigma1) && !isnan(sigma2) && !isnan(T1) && !isnan(T2)) {
+			if (!isnan(T1) && !isnan(sigma1) && !isnan(T2) && !isnan(sigma2)) {
 				time_t t = (time_t)quote->thyquote.m_nTime;
 				struct tm lt;
 				char datestr[64], res[512];

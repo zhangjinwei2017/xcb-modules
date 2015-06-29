@@ -1,7 +1,7 @@
 lib_LTLIBRARIES = app_impv.la app_impvbaw.la app_impv2.la app_impv3.la         \
-app_greeks.la app_greeksbaw.la app_greeks2.la app_greeks3.la app_vxo.la        \
-app_vsml.la app_otv.la app_otvbaw.la app_csi300.la app_sse50.la                \
-app_sse50etf.la app_vxfc.la app_quote.la
+app_hsv.la app_greeks.la app_greeksbaw.la app_greeks2.la app_greeks3.la        \
+app_greekshs.la app_vxo.la app_vsml.la app_otv.la app_otvbaw.la app_otvhs.la   \
+app_csi300.la app_sse50.la app_sse50etf.la app_vxfc.la app_quote.la
 app_impv_la_SOURCES = norms.c brent.c bs.c app_impv.c
 app_impv_la_CPPFLAGS = -I$(top_srcdir)/include
 app_impv_la_CFLAGS = -fPIC -Wall
@@ -18,6 +18,10 @@ app_impv3_la_SOURCES = trinomial.c app_impv3.c
 app_impv3_la_CPPFLAGS = -I$(top_srcdir)/include
 app_impv3_la_CFLAGS = -fPIC -Wall
 app_impv3_la_LDFLAGS = -module -avoid-version -ltcmalloc
+app_hsv_la_SOURCES = app_hsv.c
+app_hsv_la_CPPFLAGS = -I$(top_srcdir)/include
+app_hsv_la_CFLAGS = -fPIC -Wall
+app_hsv_la_LDFLAGS = -module -avoid-version -ltcmalloc
 app_greeks_la_SOURCES = norms.c bs.c app_greeks.c
 app_greeks_la_CPPFLAGS = -I$(top_srcdir)/include
 app_greeks_la_CFLAGS = -fPIC -Wall
@@ -34,6 +38,10 @@ app_greeks3_la_SOURCES = trinomial.c app_greeks3.c
 app_greeks3_la_CPPFLAGS = -I$(top_srcdir)/include
 app_greeks3_la_CFLAGS = -fPIC -Wall
 app_greeks3_la_LDFLAGS = -module -avoid-version -ltcmalloc
+app_greekshs_la_SOURCES = norms.c bs.c baw.c app_greekshs.c
+app_greekshs_la_CPPFLAGS = -I$(top_srcdir)/include
+app_greekshs_la_CFLAGS = -fPIC -Wall
+app_greekshs_la_LDFLAGS = -module -avoid-version -ltcmalloc
 app_vxo_la_SOURCES = app_vxo.c
 app_vxo_la_CPPFLAGS = -I$(top_srcdir)/include
 app_vxo_la_CFLAGS = -fPIC -Wall
@@ -50,6 +58,10 @@ app_otvbaw_la_SOURCES = norms.c bs.c baw.c app_otvbaw.c
 app_otvbaw_la_CPPFLAGS = -I$(top_srcdir)/include
 app_otvbaw_la_CFLAGS = -fPIC -Wall
 app_otvbaw_la_LDFLAGS = -module -avoid-version -ltcmalloc
+app_otvhs_la_SOURCES = norms.c bs.c baw.c app_otvhs.c
+app_otvhs_la_CPPFLAGS = -I$(top_srcdir)/include
+app_otvhs_la_CFLAGS = -fPIC -Wall
+app_otvhs_la_LDFLAGS = -module -avoid-version -ltcmalloc
 app_csi300_la_SOURCES = app_csi300.c
 app_csi300_la_CPPFLAGS = -I$(top_srcdir)/include
 app_csi300_la_CFLAGS = -fPIC -Wall -pthread

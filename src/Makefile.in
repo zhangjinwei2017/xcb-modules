@@ -187,7 +187,8 @@ app_sse50etf_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_sse50etf_la_CFLAGS) \
 	$(CFLAGS) $(app_sse50etf_la_LDFLAGS) $(LDFLAGS) -o $@
 app_vsml_la_LIBADD =
-am_app_vsml_la_OBJECTS = app_vsml_la-app_vsml.lo
+am_app_vsml_la_OBJECTS = app_vsml_la-lagrange.lo \
+	app_vsml_la-app_vsml.lo
 app_vsml_la_OBJECTS = $(am_app_vsml_la_OBJECTS)
 app_vsml_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_vsml_la_CFLAGS) \
@@ -399,7 +400,7 @@ app_vxo_la_SOURCES = app_vxo.c
 app_vxo_la_CPPFLAGS = -I$(top_srcdir)/include
 app_vxo_la_CFLAGS = -fPIC -Wall
 app_vxo_la_LDFLAGS = -module -avoid-version -ltcmalloc
-app_vsml_la_SOURCES = app_vsml.c
+app_vsml_la_SOURCES = lagrange.c app_vsml.c
 app_vsml_la_CPPFLAGS = -I$(top_srcdir)/include
 app_vsml_la_CFLAGS = -fPIC -Wall
 app_vsml_la_LDFLAGS = -module -avoid-version -ltcmalloc
@@ -592,6 +593,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_sse50_la-app_sse50.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_sse50etf_la-app_sse50etf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_vsml_la-app_vsml.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_vsml_la-lagrange.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_vxfc_la-app_vxfc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_vxo_la-app_vxo.Plo@am__quote@
 
@@ -923,6 +925,13 @@ app_sse50etf_la-app_sse50etf.lo: app_sse50etf.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='app_sse50etf.c' object='app_sse50etf_la-app_sse50etf.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_sse50etf_la_CPPFLAGS) $(CPPFLAGS) $(app_sse50etf_la_CFLAGS) $(CFLAGS) -c -o app_sse50etf_la-app_sse50etf.lo `test -f 'app_sse50etf.c' || echo '$(srcdir)/'`app_sse50etf.c
+
+app_vsml_la-lagrange.lo: lagrange.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_vsml_la_CPPFLAGS) $(CPPFLAGS) $(app_vsml_la_CFLAGS) $(CFLAGS) -MT app_vsml_la-lagrange.lo -MD -MP -MF $(DEPDIR)/app_vsml_la-lagrange.Tpo -c -o app_vsml_la-lagrange.lo `test -f 'lagrange.c' || echo '$(srcdir)/'`lagrange.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_vsml_la-lagrange.Tpo $(DEPDIR)/app_vsml_la-lagrange.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lagrange.c' object='app_vsml_la-lagrange.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_vsml_la_CPPFLAGS) $(CPPFLAGS) $(app_vsml_la_CFLAGS) $(CFLAGS) -c -o app_vsml_la-lagrange.lo `test -f 'lagrange.c' || echo '$(srcdir)/'`lagrange.c
 
 app_vsml_la-app_vsml.lo: app_vsml.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_vsml_la_CPPFLAGS) $(CPPFLAGS) $(app_vsml_la_CFLAGS) $(CFLAGS) -MT app_vsml_la-app_vsml.lo -MD -MP -MF $(DEPDIR)/app_vsml_la-app_vsml.Tpo -c -o app_vsml_la-app_vsml.lo `test -f 'app_vsml.c' || echo '$(srcdir)/'`app_vsml.c

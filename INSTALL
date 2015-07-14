@@ -2,7 +2,5 @@
 CentOS 6.x 64bit
 GCC 4.8.2 (http://people.centos.org/tru/devtools-2/)
 
-./configure; make; make install
-OR
-rpmbuild -bb --target=x86_64 xcb-modules.spec
+rpm -ivh xcb-modules-0.0.1-x.el6.centos.x86_64.rpm
 

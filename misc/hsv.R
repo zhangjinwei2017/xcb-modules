@@ -1,7 +1,7 @@
 #
 # Copyright (c) 2013-2015, Dalian Futures Information Technology Co., Ltd.
 #
-# Bo Wang     <futurewb at dce dot com dot cn>
+# Bo Wang
 # Xiaoye Meng <mengxiaoye at dce dot com dot cn>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -21,9 +21,9 @@
 # for file in $(ls *.txt); do tail -n 22 $file | Rscript hsv.R; done
 #
 
-library(fGarch)
+require(fGarch)
 
 da = read.csv(file("stdin"), header = F)
-m1 = garchFit(~garch(1, 1), data = diff(log(da$V3)), trace = F)
+m1 = garchFit(~ garch(1, 1), data = diff(log(da$V3)), trace = F)
 cat(as.character(da[1, 2]), "=", predict(m1, 1)$standardDeviation * sqrt(252), "\n", sep = "")
 

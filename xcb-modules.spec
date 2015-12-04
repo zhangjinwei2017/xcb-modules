@@ -1,6 +1,6 @@
 Name:		xcb-modules
-Version:	0.0.1
-Release:	3%{?dist}
+Version:	0.0.2
+Release:	1%{?dist}
 Summary:	Modules for XCUBE
 Group:		Applications/Internet
 License:	GPLv2
@@ -19,7 +19,7 @@ Modules for XCUBE.
 %setup -q
 
 %build
-%configure --disable-static CFLAGS="-march=corei7 -g -O2 -pipe -funroll-loops"
+%configure --disable-static CFLAGS="-march=corei7 -g -O3 -pipe -funroll-loops"
 make %{?_smp_mflags}
 
 %install

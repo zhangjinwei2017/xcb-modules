@@ -118,7 +118,8 @@ static int impvbaw_exec(void *data, void *data2) {
 	}
 	/* FIXME */
 	if (!strncasecmp(contract, "IO", 2) || !strncasecmp(contract, "HO", 2) ||
-		!strncasecmp(contract, "00", 2) || !strncasecmp(contract, "60", 2))
+		!strncasecmp(contract, "00", 2) || !strncasecmp(contract, "60", 2) ||
+		!strncasecmp(contract, "51", 2))
 		goto end;
 	last = quote->thyquote.m_dZXJ;
 	if ((p = strrchr(contract, 'C')) == NULL)

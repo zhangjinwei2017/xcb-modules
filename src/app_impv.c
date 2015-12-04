@@ -19,6 +19,7 @@
  */
 
 #include <xcb/fmacros.h>
+#include <ctype.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -55,8 +56,8 @@ static table_t expiries;
 static struct msgs *impv_msgs;
 static struct config *cfg;
 static double r = 0.033;
-static const char *uio = "SH000300";
-static const char *uho = "SH000016";
+static const char *uio = "000300";
+static const char *uho = "000016";
 static char *app2 = "mm_impv";
 static char *desc2 = "Min & Max of Implied Volatility (BS)";
 static char *fmt2 = "MM_IMPV,timestamp,contract,min,max";
@@ -108,7 +109,7 @@ static int impv_exec(void *data, void *data2) {
 	struct msgs *out = (struct msgs *)data2;
 	dstr contract;
 	float last;
-	char *p;
+	char *p, *q;
 	table_node_t node;
 
 	contract = dstr_new(quote->thyquote.m_cHYDM);
@@ -126,7 +127,7 @@ static int impv_exec(void *data, void *data2) {
 	}
 	/* FIXME */
 	if (strncasecmp(contract, "IO", 2) && strncasecmp(contract, "HO", 2) &&
-		strcmp(contract, uio) && strcmp(contract, uho))
+		strcmp(contract, uio) && strcmp(contract, uho) && strncmp(contract, "510050", 6))
 		goto end;
 	last = quote->thyquote.m_dZXJ;
 	if ((p = strrchr(contract, 'C')) == NULL)
@@ -134,27 +135,30 @@ static int impv_exec(void *data, void *data2) {
 	/* FIXME: option quote */
 	if (p && p != contract && p != contract + dstr_length(contract) - 1 &&
 		((*(p - 1) == '-' && *(p + 1) == '-') || (isdigit(*(p - 1)) && isdigit(*(p + 1))))) {
-		dstr spotname, type, strike;
-		float spot;
+		dstr spotname, type;
+		float strike, spot;
 		struct prices *prices;
 		double expiry, vol, vol2, vol3;
 		struct tm lt;
 		char *res;
 
+		q = contract + dstr_length(contract) - 1;
+		while (isdigit(*q))
+			--q;
 		spotname = *(p - 1) == '-' ? dstr_new_len(contract, p - contract - 1) :
 			dstr_new_len(contract, p - contract);
 		type     = dstr_new_len(p, 1);
-		strike   = *(p + 1) == '-' ? dstr_new_len(p + 2, contract + dstr_length(contract) - p - 2) :
-			dstr_new_len(p + 1, contract + dstr_length(contract) - p - 1);
+		strike   = strncmp(contract, "510050", 6) ? atof(q + 1) : atof(q + 1) / 1000;
 		/* FIXME */
 		table_rwlock_rdlock(spots);
 		if (!strncasecmp(contract, "IO", 2))
 			node = table_find(spots, uio);
-		else
+		else if (!strncasecmp(contract, "HO", 2))
 			node = table_find(spots, uho);
+		else
+			node = table_find(spots, spotname);
 		if (node == NULL) {
 			table_rwlock_unlock(spots);
-			dstr_free(strike);
 			dstr_free(type);
 			dstr_free(spotname);
 			goto end;
@@ -163,7 +167,6 @@ static int impv_exec(void *data, void *data2) {
 		table_rwlock_unlock(spots);
 		if (fabs(spot) <= 0.000001) {
 			xcb_log(XCB_LOG_WARNING, "The price of spot '%s' be zero", spotname);
-			dstr_free(strike);
 			dstr_free(type);
 			dstr_free(spotname);
 			goto end;
@@ -186,7 +189,6 @@ static int impv_exec(void *data, void *data2) {
 				fabs(prices->preask1 - quote->thyquote.m_dMCJG1) <= 0.000001 &&
 				fabs(prices->prespot - spot) <= 0.000001) {
 				table_unlock(optns);
-				dstr_free(strike);
 				dstr_free(type);
 				dstr_free(spotname);
 				goto end;
@@ -218,7 +220,7 @@ static int impv_exec(void *data, void *data2) {
 		if (fabs(last) <= 0.000001)
 			vol = NAN;
 		else
-			vol = impv_bs(spot, atof(strike), r, 0, expiry, last,
+			vol = impv_bs(spot, strike, r, 0, expiry, last,
 				!strcasecmp(type, "C") ? EURO_CALL : EURO_PUT);
 		/* FIXME: bid price 1 */
 		if (fabs(quote->thyquote.m_dMRJG1) <= 0.000001)
@@ -226,7 +228,7 @@ static int impv_exec(void *data, void *data2) {
 		else if (fabs(quote->thyquote.m_dMRJG1 - last) <= 0.000001)
 			vol2 = vol;
 		else
-			vol2 = impv_bs(spot, atof(strike), r, 0, expiry, quote->thyquote.m_dMRJG1,
+			vol2 = impv_bs(spot, strike, r, 0, expiry, quote->thyquote.m_dMRJG1,
 				!strcasecmp(type, "C") ? EURO_CALL : EURO_PUT);
 		/* FIXME: ask price 1 */
 		if (fabs(quote->thyquote.m_dMCJG1) <= 0.000001)
@@ -234,7 +236,7 @@ static int impv_exec(void *data, void *data2) {
 		else if (fabs(quote->thyquote.m_dMCJG1 - last) <= 0.000001)
 			vol3 = vol;
 		else
-			vol3 = impv_bs(spot, atof(strike), r, 0, expiry, quote->thyquote.m_dMCJG1,
+			vol3 = impv_bs(spot, strike, r, 0, expiry, quote->thyquote.m_dMCJG1,
 				!strcasecmp(type, "C") ? EURO_CALL : EURO_PUT);
 		if ((res = ALLOC(512))) {
 			time_t t = (time_t)quote->thyquote.m_nTime;
@@ -253,7 +255,7 @@ static int impv_exec(void *data, void *data2) {
 				vol3,
 				spot);
 			out2rmp(res);
-			snprintf(res, 512, "IMPV,%d,%d,%s,%.2f,%f,%.2f,%f,%.2f,%f,%.2f,%s,%s,%s,%f,%f,%d,0,0",
+			snprintf(res, 512, "IMPV,%d,%d,%s,%.2f,%f,%.2f,%f,%.2f,%f,%.2f,%s,%s,%f,%f,%f,%d,0,0",
 				quote->thyquote.m_nTime,
 				quote->m_nMSec,
 				contract,
@@ -274,7 +276,6 @@ static int impv_exec(void *data, void *data2) {
 				FREE(res);
 		} else
 			xcb_log(XCB_LOG_WARNING, "Error allocating memory for result");
-		dstr_free(strike);
 		dstr_free(type);
 		dstr_free(spotname);
 	/* future quote */

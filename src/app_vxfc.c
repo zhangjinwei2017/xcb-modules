@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2015, Dalian Futures Information Technology Co., Ltd.
+ * Copyright (c) 2013-2016, Dalian Futures Information Technology Co., Ltd.
  *
  * Bo Wang
  * Xiaoye Meng <mengxiaoye at dce dot com dot cn>
@@ -50,7 +50,7 @@ static char *desc = "Volatility Index FC";
 static char *fmt = "VXFC,timestamp,vxfc";
 static table_t spots;
 static struct config *cfg;
-static double r = 0.033;
+static double r = 0.1;
 static const char *contract1, *contract2;
 static double T1 = NAN, sigma1 = NAN, T2 = NAN, sigma2 = NAN;
 static double prevxfc = NAN;

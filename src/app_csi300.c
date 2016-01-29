@@ -1,7 +1,8 @@
 /*
- * Copyright (c) 2013-2015, Dalian Futures Information Technology Co., Ltd.
+ * Copyright (c) 2013-2016, Dalian Futures Information Technology Co., Ltd.
  *
  * Bo Wang
+ * Xiaoye Meng <mengxiaoye at dce dot com dot cn>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

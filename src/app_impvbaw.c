@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2015, Dalian Futures Information Technology Co., Ltd.
+ * Copyright (c) 2013-2016, Dalian Futures Information Technology Co., Ltd.
  *
  * Xiaoye Meng <mengxiaoye at dce dot com dot cn>
  *
@@ -54,7 +54,7 @@ static table_t optns;
 static table_t expiries;
 static struct msgs *impvbaw_msgs;
 static struct config *cfg;
-static double r = 0.033;
+static double r = 0.1;
 static char *app2 = "mm_impvbaw";
 static char *desc2 = "Min & Max of Implied Volatility (BAW)";
 static char *fmt2 = "MM_IMPVBAW,timestamp,contract,min,max";
@@ -118,8 +118,7 @@ static int impvbaw_exec(void *data, void *data2) {
 	}
 	/* FIXME */
 	if (!strncasecmp(contract, "IO", 2) || !strncasecmp(contract, "HO", 2) ||
-		!strncasecmp(contract, "00", 2) || !strncasecmp(contract, "60", 2) ||
-		!strncasecmp(contract, "51", 2))
+		!strncasecmp(contract, "SH", 2) || !strncasecmp(contract, "SZ", 2))
 		goto end;
 	last = quote->thyquote.m_dZXJ;
 	if ((p = strrchr(contract, 'C')) == NULL)

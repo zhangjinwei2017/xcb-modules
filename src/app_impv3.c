@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2015, Dalian Futures Information Technology Co., Ltd.
+ * Copyright (c) 2013-2016, Dalian Futures Information Technology Co., Ltd.
  *
  * Xiaoye Meng <mengxiaoye at dce dot com dot cn>
  *
@@ -51,7 +51,7 @@ static table_t optns;
 static table_t expiries;
 static struct msgs *impv3_msgs;
 static struct config *cfg;
-static double r = 0.033;
+static double r = 0.1;
 static int steps = 4096;
 
 static inline void load_config(void) {
@@ -115,7 +115,7 @@ static int impv3_exec(void *data, void *data2) {
 	}
 	/* FIXME */
 	if (!strncasecmp(contract, "IO", 2) || !strncasecmp(contract, "HO", 2) ||
-		!strncasecmp(contract, "00", 2) || !strncasecmp(contract, "60", 2))
+		!strncasecmp(contract, "SH", 2) || !strncasecmp(contract, "SZ", 2))
 		goto end;
 	last = quote->thyquote.m_dZXJ;
 	if ((p = strrchr(contract, 'C')) == NULL)

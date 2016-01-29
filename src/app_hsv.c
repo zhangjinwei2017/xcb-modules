@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2015, Dalian Futures Information Technology Co., Ltd.
+ * Copyright (c) 2013-2016, Dalian Futures Information Technology Co., Ltd.
  *
  * Bo Wang
  * Xiaoye Meng <mengxiaoye at dce dot com dot cn>
@@ -53,7 +53,7 @@ static char *fmt = "HSV,timestamp,contract,hsv,spotprice";
 static table_t spots;
 static struct msgs *hsv_msgs;
 static struct config *cfg;
-static double r = 0.033;
+static double r = 0.1;
 
 static void vfree(void *value) {
 	dstr_free((dstr)value);

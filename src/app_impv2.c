@@ -52,7 +52,7 @@ static table_t expiries;
 static struct msgs *impv2_msgs;
 static struct config *cfg;
 static double r = 0.1;
-static int steps = 4096;
+static int steps = 1024;
 
 static inline void load_config(void) {
 	/* FIXME */

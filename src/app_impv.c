@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2015, Dalian Futures Information Technology Co., Ltd.
+ * Copyright (c) 2013-2016, Dalian Futures Information Technology Co., Ltd.
  *
  * Xiaoye Meng <mengxiaoye at dce dot com dot cn>
  *
@@ -55,9 +55,9 @@ static table_t optns;
 static table_t expiries;
 static struct msgs *impv_msgs;
 static struct config *cfg;
-static double r = 0.033;
-static const char *uio = "000300";
-static const char *uho = "000016";
+static double r = 0.1;
+static const char *uio = "SH000300";
+static const char *uho = "SH000016";
 static char *app2 = "mm_impv";
 static char *desc2 = "Min & Max of Implied Volatility (BS)";
 static char *fmt2 = "MM_IMPV,timestamp,contract,min,max";
@@ -108,6 +108,7 @@ static int impv_exec(void *data, void *data2) {
 	Quote *quote = (Quote *)msg->data;
 	struct msgs *out = (struct msgs *)data2;
 	dstr contract;
+	int flag = 0;
 	float last;
 	char *p, *q;
 	table_node_t node;
@@ -126,8 +127,12 @@ static int impv_exec(void *data, void *data2) {
 		goto end;
 	}
 	/* FIXME */
-	if (strncasecmp(contract, "IO", 2) && strncasecmp(contract, "HO", 2) &&
-		strcmp(contract, uio) && strcmp(contract, uho) && strncmp(contract, "510050", 6))
+	if (!strncasecmp(contract, "IO", 2) || !strncasecmp(contract, "HO", 2) ||
+		!strcmp(contract, uio) || !strcmp(contract, uho))
+		flag = 1;
+	else if (!strncasecmp(contract, "SH", 2) || !strncasecmp(contract, "SZ", 2))
+		flag = 2;
+	if (!flag)
 		goto end;
 	last = quote->thyquote.m_dZXJ;
 	if ((p = strrchr(contract, 'C')) == NULL)
@@ -148,7 +153,7 @@ static int impv_exec(void *data, void *data2) {
 		spotname = *(p - 1) == '-' ? dstr_new_len(contract, p - contract - 1) :
 			dstr_new_len(contract, p - contract);
 		type     = dstr_new_len(p, 1);
-		strike   = strncmp(contract, "510050", 6) ? atof(q + 1) : atof(q + 1) / 1000;
+		strike   = flag == 2 ? atof(q + 1) / 1000 : atof(q + 1);
 		/* FIXME */
 		table_rwlock_rdlock(spots);
 		if (!strncasecmp(contract, "IO", 2))
@@ -208,7 +213,7 @@ static int impv_exec(void *data, void *data2) {
 			int diff;
 
 			xcb_log(XCB_LOG_WARNING, "No exact expiry date for '%s'", contract);
-			month = spotname + dstr_length(spotname) - 2;
+			month = flag == 2 ? q - 2 : p - 2;
 			gettimeofday(&tv, NULL);
 			if ((diff = atoi(month) - localtime_r(&tv.tv_sec, &lt)->tm_mon - 1) < 0)
 				diff += 12;

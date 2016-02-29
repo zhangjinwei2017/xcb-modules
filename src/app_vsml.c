@@ -41,6 +41,7 @@
 struct scp {
 	double	strike, cvol, pvol, cvol2, pvol2, cvol3, pvol3;
 	int	flag;
+	dstr	suffix;
 };
 struct sd {
 	char	*sep;
@@ -57,7 +58,10 @@ static struct config *cfg;
 static const char *inmsg = "impv_msgs";
 
 static void scpfree(void *value) {
-	FREE(value);
+	struct scp *scp = (struct scp *)value;
+
+	dstr_free(scp->suffix);
+	FREE(scp);
 }
 
 static inline void load_config(void) {
@@ -82,30 +86,36 @@ static inline void load_config(void) {
 			} else if (!strcasecmp(cat, "expiries")) {
 				var = variable_browse(cfg, cat);
 				while (var) {
-					char *p;
+					const char *p, *q;
 
 					if ((p = strrchr(var->name, 'C')) == NULL)
 						p = strrchr(var->name, 'P');
 					if (p && p != var->name && p != var->name + strlen(var->name) - 1 &&
 						((*(p - 1) == '-' && *(p + 1) == '-') ||
 						(isdigit(*(p - 1)) && isdigit(*(p + 1))))) {
-						dstr spotname, strike;
+						dstr spotname;
+						double strike;
 						struct sd *sd;
 						struct scp *scp;
 
+						q = var->name + strlen(var->name) - 1;
+						while (isdigit(*q))
+							--q;
 						spotname = *(p - 1) == '-'
 							? dstr_new_len(var->name, p - var->name - 1)
 							: dstr_new_len(var->name, p - var->name);
-						strike   = *(p + 1) == '-'
-							? dstr_new_len(p + 2, var->name + strlen(var->name) - p - 2)
-							: dstr_new_len(p + 1, var->name + strlen(var->name) - p - 1);
+						strike   = !strncasecmp(var->name, "SH", 2) ||
+							!strncasecmp(var->name, "SZ", 2)
+							? atof(q + 1) / 1000 : atof(q + 1);
 						if ((sd = table_get_value(spots, spotname)) == NULL) {
 							if (NEW(scp)) {
-								scp->strike = atof(strike);
+								scp->strike = strike;
 								scp->cvol   = scp->pvol  = NAN;
 								scp->cvol2  = scp->pvol2 = NAN;
 								scp->cvol3  = scp->pvol3 = NAN;
 								scp->flag   = 0;
+								scp->suffix = *(p - 1) == '-'
+									? dstr_new(p + 2) : dstr_new(p + 1);
 								if (NEW(sd)) {
 									sd->sep   = *(p - 1) == '-' ? "-" : "";
 									sd->dlist = dlist_new(NULL, scpfree);
@@ -121,18 +131,20 @@ static inline void load_config(void) {
 
 							while ((node = dlist_next(iter))) {
 								scp = (struct scp *)dlist_node_value(node);
-								if (scp->strike > atof(strike) ||
-									fabs(scp->strike - atof(strike)) <= 0.000001)
+								if (scp->strike > strike ||
+									fabs(scp->strike - strike) <= 0.000001)
 									break;
 							}
 							dlist_iter_free(&iter);
-							if (node == NULL || scp->strike > atof(strike)) {
+							if (node == NULL || scp->strike > strike) {
 								if (NEW(scp)) {
-									scp->strike = atof(strike);
+									scp->strike = strike;
 									scp->cvol   = scp->pvol  = NAN;
 									scp->cvol2  = scp->pvol2 = NAN;
 									scp->cvol3  = scp->pvol3 = NAN;
 									scp->flag   = 0;
+									scp->suffix = *(p - 1) == '-'
+										? dstr_new(p + 2) : dstr_new(p + 1);
 								}
 								if (node == NULL)
 									dlist_insert_tail(sd->dlist, scp);
@@ -141,7 +153,6 @@ static inline void load_config(void) {
 							}
 							dstr_free(spotname);
 						}
-						dstr_free(strike);
 					}
 					var = var->next;
 				}
@@ -185,7 +196,7 @@ static int vsml_exec(void *data, void *data2) {
 	table_lock(spots);
 	if ((sd = table_get_value(spots, spotname)) == NULL) {
 		/* can't happen */
-		if (NEW(scp) == NULL) {
+		if (NEW0(scp) == NULL) {
 			xcb_log(XCB_LOG_WARNING, "Error allocating memory for scp");
 			table_unlock(spots);
 			goto end;
@@ -263,7 +274,7 @@ static int vsml_exec(void *data, void *data2) {
 			}
 		} else {
 			/* can't happen */
-			if (NEW(scp) == NULL) {
+			if (NEW0(scp) == NULL) {
 				xcb_log(XCB_LOG_WARNING, "Error allocating memory for scp");
 				table_unlock(spots);
 				goto end;
@@ -368,8 +379,8 @@ static int vsml_exec(void *data, void *data2) {
 				char *res;
 
 				if ((res = ALLOC(4096))) {
-					char tmp[4096];
-					int off = 0;
+					char tmp[4096], tmp2[4096];
+					int off = 0, off2 = 0;
 					time_t t = (time_t)sec;
 					struct tm lt;
 					char datestr[64];
@@ -397,8 +408,11 @@ static int vsml_exec(void *data, void *data2) {
 							else if (!isnan(scp->pvol))
 								vol = scp->pvol;
 						}
-						off += snprintf(tmp + off, 4096 - off, "%.f,%f,",
+						off  += snprintf(tmp + off,   4096 - off, "%.f,%f,",
 							scp->strike,
+							vol);
+						off2 += snprintf(tmp2 + off2, 4096 - off2, "%s,%f,",
+							scp->suffix,
 							vol);
 						if (flag2) {
 							vol2 = cubic(scp->strike, scp0->strike, scp1->strike,
@@ -419,7 +433,8 @@ static int vsml_exec(void *data, void *data2) {
 							else if (!isnan(scp->pvol2))
 								vol2 = scp->pvol2;
 						}
-						off += snprintf(tmp + off, 4096 - off, "%f,", vol2);
+						off  += snprintf(tmp + off,   4096 - off,  "%f,", vol2);
+						off2 += snprintf(tmp2 + off2, 4096 - off2, "%f,", vol2);
 						if (flag3) {
 							vol3 = cubic(scp->strike, scp0->strike, scp1->strike,
 								scp32->strike, scp33->strike,
@@ -439,7 +454,8 @@ static int vsml_exec(void *data, void *data2) {
 							else if (!isnan(scp->pvol3))
 								vol3 = scp->pvol3;
 						}
-						off += snprintf(tmp + off, 4096 - off, "%f,", vol3);
+						off  += snprintf(tmp + off,   4096 - off,  "%f,", vol3);
+						off2 += snprintf(tmp2 + off2, 4096 - off2, "%f,", vol3);
 					}
 					dlist_iter_free(&iter);
 					tmp[strlen(tmp) - 1] = '\0';
@@ -454,7 +470,7 @@ static int vsml_exec(void *data, void *data2) {
 						sec,
 						msec,
 						spotname,
-						tmp,
+						tmp2,
 						spot,
 						r,
 						expiry,

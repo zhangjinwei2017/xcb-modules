@@ -136,8 +136,7 @@ static int impvbaw_exec(void *data, void *data2) {
 		spotname = *(p - 1) == '-' ? dstr_new_len(contract, p - contract - 1) :
 			dstr_new_len(contract, p - contract);
 		type     = dstr_new_len(p, 1);
-		strike   = *(p + 1) == '-' ? dstr_new_len(p + 2, contract + dstr_length(contract) - p - 2) :
-			dstr_new_len(p + 1, contract + dstr_length(contract) - p - 1);
+		strike   = *(p + 1) == '-' ? dstr_new(p + 2) : dstr_new(p + 1);
 		table_rwlock_rdlock(spots);
 		if ((node = table_find(spots, spotname)) == NULL) {
 			table_rwlock_unlock(spots);

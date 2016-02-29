@@ -90,8 +90,17 @@ static int otv_exec(void *data, void *data2) {
 	for (i = 4; i < nfield - 4; i += 4) {
 		struct tm lt;
 		char datestr[64], res[512];
+		char *q;
+		double strike;
 
 		strftime(datestr, sizeof datestr, "%F %T", localtime_r(&t, &lt));
+		q = fields[i] + dstr_length(fields[i]) - 1;
+		while (isdigit(*q) && q != fields[i])
+			--q;
+		if (q == fields[i])
+			--q;
+		strike = !strncasecmp(spotname, "SH", 2) || !strncasecmp(spotname, "SZ", 2)
+			? atof(q + 1) / 1000 : atof(q + 1);
 		snprintf(res, sizeof res, "OTV,%s.%03d,%s%sC%s%s|%f,%f,%f",
 			datestr,
 			msec,
@@ -102,13 +111,13 @@ static int otv_exec(void *data, void *data2) {
 			/* FIXME */
 			!strcasecmp(fields[i + 1], "nan") || atof(fields[i + 1]) < 0.0
 				? NAN
-				: bs_call(spot, atof(fields[i]), r, 0, atof(fields[i + 1]), expiry),
+				: bs_call(spot, strike, r, 0, atof(fields[i + 1]), expiry),
 			!strcasecmp(fields[i + 2], "nan") || atof(fields[i + 2]) < 0.0
 				? NAN
-				: bs_call(spot, atof(fields[i]), r, 0, atof(fields[i + 2]), expiry),
+				: bs_call(spot, strike, r, 0, atof(fields[i + 2]), expiry),
 			!strcasecmp(fields[i + 3], "nan") || atof(fields[i + 3]) < 0.0
 				? NAN
-				: bs_call(spot, atof(fields[i]), r, 0, atof(fields[i + 3]), expiry));
+				: bs_call(spot, strike, r, 0, atof(fields[i + 3]), expiry));
 		out2rmp(res);
 		snprintf(res, sizeof res, "OTV,%s.%03d,%s%sP%s%s|%f,%f,%f",
 			datestr,
@@ -120,13 +129,13 @@ static int otv_exec(void *data, void *data2) {
 			/* FIXME */
 			!strcasecmp(fields[i + 1], "nan") || atof(fields[i + 1]) < 0.0
 				? NAN
-				: bs_put (spot, atof(fields[i]), r, 0, atof(fields[i + 1]), expiry),
+				: bs_put (spot, strike, r, 0, atof(fields[i + 1]), expiry),
 			!strcasecmp(fields[i + 2], "nan") || atof(fields[i + 2]) < 0.0
 				? NAN
-				: bs_put (spot, atof(fields[i]), r, 0, atof(fields[i + 2]), expiry),
+				: bs_put (spot, strike, r, 0, atof(fields[i + 2]), expiry),
 			!strcasecmp(fields[i + 3], "nan") || atof(fields[i + 3]) < 0.0
 				? NAN
-				: bs_put (spot, atof(fields[i]), r, 0, atof(fields[i + 3]), expiry));
+				: bs_put (spot, strike, r, 0, atof(fields[i + 3]), expiry));
 		out2rmp(res);
 	}
 	dstr_free(sep);

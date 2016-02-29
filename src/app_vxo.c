@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2015, Dalian Futures Information Technology Co., Ltd.
+ * Copyright (c) 2013-2016, Dalian Futures Information Technology Co., Ltd.
  *
  * Guodong Zhang
  * Xiaoye Meng   <mengxiaoye at dce dot com dot cn>
@@ -40,6 +40,7 @@
 /* FIXME */
 struct scp {
 	double	strike, cvol, pvol, cvol2, pvol2, cvol3, pvol3;
+	dstr	suffix;
 };
 struct pd {
 	double	prevxo, prevxo2, prevxo3;
@@ -57,7 +58,10 @@ static struct config *cfg;
 static const char *inmsg = "impv_msgs";
 
 static void scpfree(void *value) {
-	FREE(value);
+	struct scp *scp = (struct scp *)value;
+
+	dstr_free(scp->suffix);
+	FREE(scp);
 }
 
 static inline void load_config(void) {
@@ -82,29 +86,35 @@ static inline void load_config(void) {
 			} else if (!strcasecmp(cat, "expiries")) {
 				var = variable_browse(cfg, cat);
 				while (var) {
-					char *p;
+					const char *p, *q;
 
 					if ((p = strrchr(var->name, 'C')) == NULL)
 						p = strrchr(var->name, 'P');
 					if (p && p != var->name && p != var->name + strlen(var->name) - 1 &&
 						((*(p - 1) == '-' && *(p + 1) == '-') ||
 						(isdigit(*(p - 1)) && isdigit(*(p + 1))))) {
-						dstr spotname, strike;
+						dstr spotname;
+						double strike;
 						struct pd *pd;
 						struct scp *scp;
 
+						q = var->name + strlen(var->name) - 1;
+						while (isdigit(*q))
+							--q;
 						spotname = *(p - 1) == '-'
 							? dstr_new_len(var->name, p - var->name - 1)
 							: dstr_new_len(var->name, p - var->name);
-						strike   = *(p + 1) == '-'
-							? dstr_new_len(p + 2, var->name + strlen(var->name) - p - 2)
-							: dstr_new_len(p + 1, var->name + strlen(var->name) - p - 1);
+						strike   = !strncasecmp(var->name, "SH", 2) ||
+							!strncasecmp(var->name, "SZ", 2)
+							? atof(q + 1) / 1000 : atof(q + 1);
 						if ((pd = table_get_value(spots, spotname)) == NULL) {
 							if (NEW(scp)) {
-								scp->strike = atof(strike);
+								scp->strike = strike;
 								scp->cvol   = scp->pvol  = NAN;
 								scp->cvol2  = scp->pvol2 = NAN;
 								scp->cvol3  = scp->pvol3 = NAN;
+								scp->suffix = *(p - 1) == '-'
+									? dstr_new(p + 2) : dstr_new(p + 1);
 								if (NEW(pd)) {
 									pd->prevxo = pd->prevxo2 = pd->prevxo3 = NAN;
 									pd->sep    = *(p - 1) == '-' ? "-" : "";
@@ -121,17 +131,19 @@ static inline void load_config(void) {
 
 							while ((node = dlist_next(iter))) {
 								scp = (struct scp *)dlist_node_value(node);
-								if (scp->strike > atof(strike) ||
-									fabs(scp->strike - atof(strike)) <= 0.000001)
+								if (scp->strike > strike ||
+									fabs(scp->strike - strike) <= 0.000001)
 									break;
 							}
 							dlist_iter_free(&iter);
-							if (node == NULL || scp->strike > atof(strike)) {
+							if (node == NULL || scp->strike > strike) {
 								if (NEW(scp)) {
-									scp->strike = atof(strike);
+									scp->strike = strike;
 									scp->cvol   = scp->pvol  = NAN;
 									scp->cvol2  = scp->pvol2 = NAN;
 									scp->cvol3  = scp->pvol3 = NAN;
+									scp->suffix = *(p - 1) == '-'
+										? dstr_new(p + 2) : dstr_new(p + 1);
 								}
 								if (node == NULL)
 									dlist_insert_tail(pd->dlist, scp);
@@ -140,7 +152,6 @@ static inline void load_config(void) {
 							}
 							dstr_free(spotname);
 						}
-						dstr_free(strike);
 					}
 					var = var->next;
 				}
@@ -184,7 +195,7 @@ static int vxo_exec(void *data, void *data2) {
 	table_lock(spots);
 	if ((pd = table_get_value(spots, spotname)) == NULL) {
 		/* can't happen */
-		if (NEW(scp) == NULL) {
+		if (NEW0(scp) == NULL) {
 			xcb_log(XCB_LOG_WARNING, "Error allocating memory for scp");
 			table_unlock(spots);
 			goto end;
@@ -237,7 +248,7 @@ static int vxo_exec(void *data, void *data2) {
 			}
 		} else {
 			/* can't happen */
-			if (NEW(scp) == NULL) {
+			if (NEW0(scp) == NULL) {
 				xcb_log(XCB_LOG_WARNING, "Error allocating memory for scp");
 				table_unlock(spots);
 				goto end;
@@ -325,8 +336,8 @@ static int vxo_exec(void *data, void *data2) {
 					iter = dlist_iter_new(pd->dlist, DLIST_START_HEAD);
 					while ((node = dlist_next(iter))) {
 						scp = (struct scp *)dlist_node_value(node);
-						off += snprintf(res + off, 4096 - off, "%.f,%f,%f,%f,",
-							scp->strike,
+						off += snprintf(res + off, 4096 - off, "%s,%f,%f,%f,",
+							scp->suffix,
 							vxo,
 							vxo2,
 							vxo3);

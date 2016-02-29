@@ -90,8 +90,10 @@ static int otvbaw_exec(void *data, void *data2) {
 	for (i = 4; i < nfield - 4; i += 4) {
 		struct tm lt;
 		char datestr[64], res[512];
+		double strike;
 
 		strftime(datestr, sizeof datestr, "%F %T", localtime_r(&t, &lt));
+		strike = atof(fields[i]);
 		snprintf(res, sizeof res, "OTVBAW,%s.%03d,%s%sC%s%s|%f,%f,%f",
 			datestr,
 			msec,
@@ -102,13 +104,13 @@ static int otvbaw_exec(void *data, void *data2) {
 			/* FIXME */
 			!strcasecmp(fields[i + 1], "nan") || atof(fields[i + 1]) < 0.0
 				? NAN
-				: baw_call(spot, atof(fields[i]), r, r, atof(fields[i + 1]), expiry),
+				: baw_call(spot, strike, r, r, atof(fields[i + 1]), expiry),
 			!strcasecmp(fields[i + 2], "nan") || atof(fields[i + 2]) < 0.0
 				? NAN
-				: baw_call(spot, atof(fields[i]), r, r, atof(fields[i + 2]), expiry),
+				: baw_call(spot, strike, r, r, atof(fields[i + 2]), expiry),
 			!strcasecmp(fields[i + 3], "nan") || atof(fields[i + 3]) < 0.0
 				? NAN
-				: baw_call(spot, atof(fields[i]), r, r, atof(fields[i + 3]), expiry));
+				: baw_call(spot, strike, r, r, atof(fields[i + 3]), expiry));
 		out2rmp(res);
 		snprintf(res, sizeof res, "OTVBAW,%s.%03d,%s%sP%s%s|%f,%f,%f",
 			datestr,
@@ -120,13 +122,13 @@ static int otvbaw_exec(void *data, void *data2) {
 			/* FIXME */
 			!strcasecmp(fields[i + 1], "nan") || atof(fields[i + 1]) < 0.0
 				? NAN
-				: baw_put (spot, atof(fields[i]), r, r, atof(fields[i + 1]), expiry),
+				: baw_put (spot, strike, r, r, atof(fields[i + 1]), expiry),
 			!strcasecmp(fields[i + 2], "nan") || atof(fields[i + 2]) < 0.0
 				? NAN
-				: baw_put (spot, atof(fields[i]), r, r, atof(fields[i + 2]), expiry),
+				: baw_put (spot, strike, r, r, atof(fields[i + 2]), expiry),
 			!strcasecmp(fields[i + 3], "nan") || atof(fields[i + 3]) < 0.0
 				? NAN
-				: baw_put (spot, atof(fields[i]), r, r, atof(fields[i + 3]), expiry));
+				: baw_put (spot, strike, r, r, atof(fields[i + 3]), expiry));
 		out2rmp(res);
 	}
 	dstr_free(sep);

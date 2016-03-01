@@ -108,7 +108,7 @@ static int impv_exec(void *data, void *data2) {
 	Quote *quote = (Quote *)msg->data;
 	struct msgs *out = (struct msgs *)data2;
 	dstr contract;
-	int flag = 0;
+	int flag;
 	float last;
 	char *p, *q;
 	table_node_t node;
@@ -132,7 +132,7 @@ static int impv_exec(void *data, void *data2) {
 		flag = 1;
 	else if (!strncasecmp(contract, "SH", 2) || !strncasecmp(contract, "SZ", 2))
 		flag = 2;
-	if (!flag)
+	else
 		goto end;
 	last = quote->thyquote.m_dZXJ;
 	if ((p = strrchr(contract, 'C')) == NULL)
@@ -155,7 +155,7 @@ static int impv_exec(void *data, void *data2) {
 		type     = dstr_new_len(p, 1);
 		strike   = flag == 2 ? atof(q + 1) / 1000 : atof(q + 1);
 		/* FIXME */
-		table_rwlock_rdlock(spots);
+		table_lock(spots);
 		if (!strncasecmp(contract, "IO", 2))
 			node = table_find(spots, uio);
 		else if (!strncasecmp(contract, "HO", 2))
@@ -163,13 +163,13 @@ static int impv_exec(void *data, void *data2) {
 		else
 			node = table_find(spots, spotname);
 		if (node == NULL) {
-			table_rwlock_unlock(spots);
+			table_unlock(spots);
 			dstr_free(type);
 			dstr_free(spotname);
 			goto end;
 		}
 		spot = table_node_float(node);
-		table_rwlock_unlock(spots);
+		table_unlock(spots);
 		if (fabs(spot) <= 0.000001) {
 			xcb_log(XCB_LOG_WARNING, "The price of spot '%s' be zero", spotname);
 			dstr_free(type);
@@ -285,7 +285,7 @@ static int impv_exec(void *data, void *data2) {
 		dstr_free(spotname);
 	/* future quote */
 	} else {
-		table_rwlock_wrlock(spots);
+		table_lock(spots);
 		if ((node = table_find(spots, contract)) == NULL) {
 			if ((node = table_insert_raw(spots, contract)))
 				table_set_float(node, last);
@@ -293,7 +293,7 @@ static int impv_exec(void *data, void *data2) {
 			table_set_float(node, last);
 			dstr_free(contract);
 		}
-		table_rwlock_unlock(spots);
+		table_unlock(spots);
 		return 0;
 	}
 

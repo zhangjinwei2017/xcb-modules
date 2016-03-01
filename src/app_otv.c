@@ -70,7 +70,7 @@ static int otv_exec(void *data, void *data2) {
 	int nfield = 0;
 	time_t t;
 	int msec, i;
-	dstr spotname, sep;
+	char *spotname, *sep;
 	double spot, r, expiry;
 	NOT_USED(data2);
 
@@ -82,11 +82,11 @@ static int otv_exec(void *data, void *data2) {
 	}
 	t        = (time_t)atoi(fields[1]);
 	msec     = atoi(fields[2]);
-	spotname = dstr_new(fields[3]);
+	spotname = fields[3];
 	spot     = atof(fields[nfield - 4]);
 	r        = atof(fields[nfield - 3]);
 	expiry   = atof(fields[nfield - 2]);
-	sep      = dstr_new(fields[nfield - 1]);
+	sep      = fields[nfield - 1];
 	for (i = 4; i < nfield - 4; i += 4) {
 		struct tm lt;
 		char datestr[64], res[512];
@@ -138,8 +138,6 @@ static int otv_exec(void *data, void *data2) {
 				: bs_put (spot, strike, r, 0, atof(fields[i + 3]), expiry));
 		out2rmp(res);
 	}
-	dstr_free(sep);
-	dstr_free(spotname);
 
 end:
 	dstr_free_tokens(fields, nfield);

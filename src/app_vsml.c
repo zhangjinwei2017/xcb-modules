@@ -459,6 +459,7 @@ static int vsml_exec(void *data, void *data2) {
 					}
 					dlist_iter_free(&iter);
 					tmp[strlen(tmp) - 1] = '\0';
+					tmp2[strlen(tmp2) - 1] = '\0';
 					strftime(datestr, sizeof datestr, "%F %T", localtime_r(&t, &lt));
 					snprintf(res, 4096, "VSML,%s.%03d,%s|%s",
 						datestr,

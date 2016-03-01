@@ -126,8 +126,8 @@ static int impvbaw_exec(void *data, void *data2) {
 	/* FIXME: option quote */
 	if (p && p != contract && p != contract + dstr_length(contract) - 1 &&
 		((*(p - 1) == '-' && *(p + 1) == '-') || (isdigit(*(p - 1)) && isdigit(*(p + 1))))) {
-		dstr spotname, type, strike;
-		float spot;
+		dstr spotname, type;
+		float strike, spot;
 		struct prices *prices;
 		double expiry, vol, vol2, vol3;
 		struct tm lt;
@@ -136,20 +136,18 @@ static int impvbaw_exec(void *data, void *data2) {
 		spotname = *(p - 1) == '-' ? dstr_new_len(contract, p - contract - 1) :
 			dstr_new_len(contract, p - contract);
 		type     = dstr_new_len(p, 1);
-		strike   = *(p + 1) == '-' ? dstr_new(p + 2) : dstr_new(p + 1);
-		table_rwlock_rdlock(spots);
+		strike   = *(p + 1) == '-' ? atof(p + 2) : atof(p + 1);
+		table_lock(spots);
 		if ((node = table_find(spots, spotname)) == NULL) {
-			table_rwlock_unlock(spots);
-			dstr_free(strike);
+			table_unlock(spots);
 			dstr_free(type);
 			dstr_free(spotname);
 			goto end;
 		}
 		spot = table_node_float(node);
-		table_rwlock_unlock(spots);
+		table_unlock(spots);
 		if (fabs(spot) <= 0.000001) {
 			xcb_log(XCB_LOG_WARNING, "The price of spot '%s' be zero", spotname);
-			dstr_free(strike);
 			dstr_free(type);
 			dstr_free(spotname);
 			goto end;
@@ -172,7 +170,6 @@ static int impvbaw_exec(void *data, void *data2) {
 				fabs(prices->preask1 - quote->thyquote.m_dMCJG1) <= 0.000001 &&
 				fabs(prices->prespot - spot) <= 0.000001) {
 				table_unlock(optns);
-				dstr_free(strike);
 				dstr_free(type);
 				dstr_free(spotname);
 				goto end;
@@ -204,7 +201,7 @@ static int impvbaw_exec(void *data, void *data2) {
 		if (fabs(last) <= 0.000001)
 			vol = NAN;
 		else
-			vol = impv_baw(spot, atof(strike), r, r, expiry, last,
+			vol = impv_baw(spot, strike, r, r, expiry, last,
 				!strcasecmp(type, "C") ? AMER_CALL : AMER_PUT);
 		/* FIXME: bid price 1 */
 		if (fabs(quote->thyquote.m_dMRJG1) <= 0.000001)
@@ -212,7 +209,7 @@ static int impvbaw_exec(void *data, void *data2) {
 		else if (fabs(quote->thyquote.m_dMRJG1 - last) <= 0.000001)
 			vol2 = vol;
 		else
-			vol2 = impv_baw(spot, atof(strike), r, r, expiry, quote->thyquote.m_dMRJG1,
+			vol2 = impv_baw(spot, strike, r, r, expiry, quote->thyquote.m_dMRJG1,
 				!strcasecmp(type, "C") ? AMER_CALL : AMER_PUT);
 		/* FIXME: ask price 1 */
 		if (fabs(quote->thyquote.m_dMCJG1) <= 0.000001)
@@ -220,7 +217,7 @@ static int impvbaw_exec(void *data, void *data2) {
 		else if (fabs(quote->thyquote.m_dMCJG1 - last) <= 0.000001)
 			vol3 = vol;
 		else
-			vol3 = impv_baw(spot, atof(strike), r, r, expiry, quote->thyquote.m_dMCJG1,
+			vol3 = impv_baw(spot, strike, r, r, expiry, quote->thyquote.m_dMCJG1,
 				!strcasecmp(type, "C") ? AMER_CALL : AMER_PUT);
 		if ((res = ALLOC(512))) {
 			time_t t = (time_t)quote->thyquote.m_nTime;
@@ -239,7 +236,7 @@ static int impvbaw_exec(void *data, void *data2) {
 				vol3,
 				spot);
 			out2rmp(res);
-			snprintf(res, 512, "IMPVBAW,%d,%d,%s,%.2f,%f,%.2f,%f,%.2f,%f,%.2f,%s,%s,%s,%f,%f,%d,0,0",
+			snprintf(res, 512, "IMPVBAW,%d,%d,%s,%.2f,%f,%.2f,%f,%.2f,%f,%.2f,%s,%s,%f,%f,%f,%d,0,0",
 				quote->thyquote.m_nTime,
 				quote->m_nMSec,
 				contract,
@@ -260,12 +257,11 @@ static int impvbaw_exec(void *data, void *data2) {
 				FREE(res);
 		} else
 			xcb_log(XCB_LOG_WARNING, "Error allocating memory for result");
-		dstr_free(strike);
 		dstr_free(type);
 		dstr_free(spotname);
 	/* future quote */
 	} else {
-		table_rwlock_wrlock(spots);
+		table_lock(spots);
 		if ((node = table_find(spots, contract)) == NULL) {
 			if ((node = table_insert_raw(spots, contract)))
 				table_set_float(node, last);
@@ -273,7 +269,7 @@ static int impvbaw_exec(void *data, void *data2) {
 			table_set_float(node, last);
 			dstr_free(contract);
 		}
-		table_rwlock_unlock(spots);
+		table_unlock(spots);
 		return 0;
 	}
 

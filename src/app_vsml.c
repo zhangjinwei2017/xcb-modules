@@ -122,7 +122,7 @@ static inline void load_config(void) {
 									dlist_insert_tail(sd->dlist, scp);
 									table_insert(spots, spotname, sd);
 								} else
-									FREE(scp);
+									scpfree(scp);
 							} else
 								dstr_free(spotname);
 						} else {
@@ -170,7 +170,7 @@ static int vsml_exec(void *data, void *data2) {
 	double vol, vol2, vol3, spot, strike, r, expiry;
 	int sec, msec;
 	dstr spotname;
-	char *type;
+	char *type, *p;
 	struct sd *sd;
 	struct scp *scp;
 
@@ -193,10 +193,12 @@ static int vsml_exec(void *data, void *data2) {
 	strike   = atof(fields[13]);
 	r        = atof(fields[14]);
 	expiry   = atof(fields[15]);
+	if ((p = strrchr(fields[3], 'C')) == NULL)
+		p = strrchr(fields[3], 'P');
 	table_lock(spots);
 	if ((sd = table_get_value(spots, spotname)) == NULL) {
 		/* can't happen */
-		if (NEW0(scp) == NULL) {
+		if (NEW(scp) == NULL) {
 			xcb_log(XCB_LOG_WARNING, "Error allocating memory for scp");
 			table_unlock(spots);
 			goto end;
@@ -217,11 +219,12 @@ static int vsml_exec(void *data, void *data2) {
 			scp->cvol3 = NAN;
 			scp->pvol3 = vol3;
 		}
+		scp->suffix = *(p - 1) == '-' ? dstr_new(p + 2) : dstr_new(p + 1);
 		if (!isnan(vol) || !isnan(vol2) || !isnan(vol3))
 			scp->flag = 1;
 		if (NEW(sd) == NULL) {
 			xcb_log(XCB_LOG_WARNING, "Error allocating memory for sd");
-			FREE(scp);
+			scpfree(scp);
 			table_unlock(spots);
 			goto end;
 		}
@@ -274,7 +277,7 @@ static int vsml_exec(void *data, void *data2) {
 			}
 		} else {
 			/* can't happen */
-			if (NEW0(scp) == NULL) {
+			if (NEW(scp) == NULL) {
 				xcb_log(XCB_LOG_WARNING, "Error allocating memory for scp");
 				table_unlock(spots);
 				goto end;
@@ -295,6 +298,7 @@ static int vsml_exec(void *data, void *data2) {
 				scp->cvol3 = NAN;
 				scp->pvol3 = vol3;
 			}
+			scp->suffix = *(p - 1) == '-' ? dstr_new(p + 2) : dstr_new(p + 1);
 			if (!isnan(vol) || !isnan(vol2) || !isnan(vol3))
 				scp->flag = 1;
 			if (node == NULL)
@@ -467,7 +471,7 @@ static int vsml_exec(void *data, void *data2) {
 						spotname,
 						tmp);
 					out2rmp(res);
-					snprintf(res, 4096, "VSML,%d,%d,%s,%s,%.2f,%f,%f,%s",
+					snprintf(res, 4096, "VSML,%d,%d,%s,%s,%.2f,%f,%f,%s,%s,%s",
 						sec,
 						msec,
 						spotname,
@@ -475,7 +479,9 @@ static int vsml_exec(void *data, void *data2) {
 						spot,
 						r,
 						expiry,
-						sd->sep);
+						sd->sep,
+						fields[17],
+						fields[18]);
 					if (out2msgs(res, out) == -1)
 						FREE(res);
 					scp0->flag = scp1->flag = scp12->flag = scp13->flag =

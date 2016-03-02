@@ -154,6 +154,20 @@ app_otv_la_OBJECTS = $(am_app_otv_la_OBJECTS)
 app_otv_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_otv_la_CFLAGS) \
 	$(CFLAGS) $(app_otv_la_LDFLAGS) $(LDFLAGS) -o $@
+app_otv2_la_LIBADD =
+am_app_otv2_la_OBJECTS = app_otv2_la-binomial.lo \
+	app_otv2_la-app_otv2.lo
+app_otv2_la_OBJECTS = $(am_app_otv2_la_OBJECTS)
+app_otv2_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_otv2_la_CFLAGS) \
+	$(CFLAGS) $(app_otv2_la_LDFLAGS) $(LDFLAGS) -o $@
+app_otv3_la_LIBADD =
+am_app_otv3_la_OBJECTS = app_otv3_la-trinomial.lo \
+	app_otv3_la-app_otv3.lo
+app_otv3_la_OBJECTS = $(am_app_otv3_la_OBJECTS)
+app_otv3_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_otv3_la_CFLAGS) \
+	$(CFLAGS) $(app_otv3_la_LDFLAGS) $(LDFLAGS) -o $@
 app_otvbaw_la_LIBADD =
 am_app_otvbaw_la_OBJECTS = app_otvbaw_la-norms.lo app_otvbaw_la-bs.lo \
 	app_otvbaw_la-baw.lo app_otvbaw_la-app_otvbaw.lo
@@ -224,6 +238,7 @@ SOURCES = $(app_csi300_la_SOURCES) $(app_greeks_la_SOURCES) \
 	$(app_hsv_la_SOURCES) $(app_impv_la_SOURCES) \
 	$(app_impv2_la_SOURCES) $(app_impv3_la_SOURCES) \
 	$(app_impvbaw_la_SOURCES) $(app_otv_la_SOURCES) \
+	$(app_otv2_la_SOURCES) $(app_otv3_la_SOURCES) \
 	$(app_otvbaw_la_SOURCES) $(app_otvhs_la_SOURCES) \
 	$(app_quote_la_SOURCES) $(app_sse50_la_SOURCES) \
 	$(app_sse50etf_la_SOURCES) $(app_vsml_la_SOURCES) \
@@ -234,6 +249,7 @@ DIST_SOURCES = $(app_csi300_la_SOURCES) $(app_greeks_la_SOURCES) \
 	$(app_hsv_la_SOURCES) $(app_impv_la_SOURCES) \
 	$(app_impv2_la_SOURCES) $(app_impv3_la_SOURCES) \
 	$(app_impvbaw_la_SOURCES) $(app_otv_la_SOURCES) \
+	$(app_otv2_la_SOURCES) $(app_otv3_la_SOURCES) \
 	$(app_otvbaw_la_SOURCES) $(app_otvhs_la_SOURCES) \
 	$(app_quote_la_SOURCES) $(app_sse50_la_SOURCES) \
 	$(app_sse50etf_la_SOURCES) $(app_vsml_la_SOURCES) \
@@ -353,8 +369,9 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = app_impv.la app_impvbaw.la app_impv2.la app_impv3.la         \
 app_hsv.la app_greeks.la app_greeksbaw.la app_greeks2.la app_greeks3.la        \
-app_greekshs.la app_vxo.la app_vsml.la app_otv.la app_otvbaw.la app_otvhs.la   \
-app_csi300.la app_sse50.la app_sse50etf.la app_vxfc.la app_quote.la
+app_greekshs.la app_vxo.la app_vsml.la app_otv.la app_otvbaw.la app_otv2.la    \
+app_otv3.la app_otvhs.la app_csi300.la app_sse50.la app_sse50etf.la app_vxfc.la\
+app_quote.la
 
 app_impv_la_SOURCES = norms.c brent.c bs.c app_impv.c
 app_impv_la_CPPFLAGS = -I$(top_srcdir)/include
@@ -412,6 +429,14 @@ app_otvbaw_la_SOURCES = norms.c bs.c baw.c app_otvbaw.c
 app_otvbaw_la_CPPFLAGS = -I$(top_srcdir)/include
 app_otvbaw_la_CFLAGS = -fPIC -Wall
 app_otvbaw_la_LDFLAGS = -module -avoid-version -ltcmalloc
+app_otv2_la_SOURCES = binomial.c app_otv2.c
+app_otv2_la_CPPFLAGS = -I$(top_srcdir)/include
+app_otv2_la_CFLAGS = -fPIC -Wall
+app_otv2_la_LDFLAGS = -module -avoid-version -ltcmalloc
+app_otv3_la_SOURCES = trinomial.c app_otv3.c
+app_otv3_la_CPPFLAGS = -I$(top_srcdir)/include
+app_otv3_la_CFLAGS = -fPIC -Wall
+app_otv3_la_LDFLAGS = -module -avoid-version -ltcmalloc
 app_otvhs_la_SOURCES = norms.c bs.c baw.c app_otvhs.c
 app_otvhs_la_CPPFLAGS = -I$(top_srcdir)/include
 app_otvhs_la_CFLAGS = -fPIC -Wall
@@ -525,6 +550,10 @@ app_impvbaw.la: $(app_impvbaw_la_OBJECTS) $(app_impvbaw_la_DEPENDENCIES)
 	$(app_impvbaw_la_LINK) -rpath $(libdir) $(app_impvbaw_la_OBJECTS) $(app_impvbaw_la_LIBADD) $(LIBS)
 app_otv.la: $(app_otv_la_OBJECTS) $(app_otv_la_DEPENDENCIES) 
 	$(app_otv_la_LINK) -rpath $(libdir) $(app_otv_la_OBJECTS) $(app_otv_la_LIBADD) $(LIBS)
+app_otv2.la: $(app_otv2_la_OBJECTS) $(app_otv2_la_DEPENDENCIES) 
+	$(app_otv2_la_LINK) -rpath $(libdir) $(app_otv2_la_OBJECTS) $(app_otv2_la_LIBADD) $(LIBS)
+app_otv3.la: $(app_otv3_la_OBJECTS) $(app_otv3_la_DEPENDENCIES) 
+	$(app_otv3_la_LINK) -rpath $(libdir) $(app_otv3_la_OBJECTS) $(app_otv3_la_LIBADD) $(LIBS)
 app_otvbaw.la: $(app_otvbaw_la_OBJECTS) $(app_otvbaw_la_DEPENDENCIES) 
 	$(app_otvbaw_la_LINK) -rpath $(libdir) $(app_otvbaw_la_OBJECTS) $(app_otvbaw_la_LIBADD) $(LIBS)
 app_otvhs.la: $(app_otvhs_la_OBJECTS) $(app_otvhs_la_DEPENDENCIES) 
@@ -578,6 +607,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvbaw_la-brent.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvbaw_la-bs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvbaw_la-norms.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_otv2_la-app_otv2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_otv2_la-binomial.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_otv3_la-app_otv3.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_otv3_la-trinomial.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_otv_la-app_otv.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_otv_la-bs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_otv_la-norms.Plo@am__quote@
@@ -848,6 +881,34 @@ app_otv_la-app_otv.lo: app_otv.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='app_otv.c' object='app_otv_la-app_otv.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_otv_la_CPPFLAGS) $(CPPFLAGS) $(app_otv_la_CFLAGS) $(CFLAGS) -c -o app_otv_la-app_otv.lo `test -f 'app_otv.c' || echo '$(srcdir)/'`app_otv.c
+
+app_otv2_la-binomial.lo: binomial.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_otv2_la_CPPFLAGS) $(CPPFLAGS) $(app_otv2_la_CFLAGS) $(CFLAGS) -MT app_otv2_la-binomial.lo -MD -MP -MF $(DEPDIR)/app_otv2_la-binomial.Tpo -c -o app_otv2_la-binomial.lo `test -f 'binomial.c' || echo '$(srcdir)/'`binomial.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_otv2_la-binomial.Tpo $(DEPDIR)/app_otv2_la-binomial.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='binomial.c' object='app_otv2_la-binomial.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_otv2_la_CPPFLAGS) $(CPPFLAGS) $(app_otv2_la_CFLAGS) $(CFLAGS) -c -o app_otv2_la-binomial.lo `test -f 'binomial.c' || echo '$(srcdir)/'`binomial.c
+
+app_otv2_la-app_otv2.lo: app_otv2.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_otv2_la_CPPFLAGS) $(CPPFLAGS) $(app_otv2_la_CFLAGS) $(CFLAGS) -MT app_otv2_la-app_otv2.lo -MD -MP -MF $(DEPDIR)/app_otv2_la-app_otv2.Tpo -c -o app_otv2_la-app_otv2.lo `test -f 'app_otv2.c' || echo '$(srcdir)/'`app_otv2.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_otv2_la-app_otv2.Tpo $(DEPDIR)/app_otv2_la-app_otv2.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='app_otv2.c' object='app_otv2_la-app_otv2.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_otv2_la_CPPFLAGS) $(CPPFLAGS) $(app_otv2_la_CFLAGS) $(CFLAGS) -c -o app_otv2_la-app_otv2.lo `test -f 'app_otv2.c' || echo '$(srcdir)/'`app_otv2.c
+
+app_otv3_la-trinomial.lo: trinomial.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_otv3_la_CPPFLAGS) $(CPPFLAGS) $(app_otv3_la_CFLAGS) $(CFLAGS) -MT app_otv3_la-trinomial.lo -MD -MP -MF $(DEPDIR)/app_otv3_la-trinomial.Tpo -c -o app_otv3_la-trinomial.lo `test -f 'trinomial.c' || echo '$(srcdir)/'`trinomial.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_otv3_la-trinomial.Tpo $(DEPDIR)/app_otv3_la-trinomial.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='trinomial.c' object='app_otv3_la-trinomial.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_otv3_la_CPPFLAGS) $(CPPFLAGS) $(app_otv3_la_CFLAGS) $(CFLAGS) -c -o app_otv3_la-trinomial.lo `test -f 'trinomial.c' || echo '$(srcdir)/'`trinomial.c
+
+app_otv3_la-app_otv3.lo: app_otv3.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_otv3_la_CPPFLAGS) $(CPPFLAGS) $(app_otv3_la_CFLAGS) $(CFLAGS) -MT app_otv3_la-app_otv3.lo -MD -MP -MF $(DEPDIR)/app_otv3_la-app_otv3.Tpo -c -o app_otv3_la-app_otv3.lo `test -f 'app_otv3.c' || echo '$(srcdir)/'`app_otv3.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_otv3_la-app_otv3.Tpo $(DEPDIR)/app_otv3_la-app_otv3.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='app_otv3.c' object='app_otv3_la-app_otv3.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_otv3_la_CPPFLAGS) $(CPPFLAGS) $(app_otv3_la_CFLAGS) $(CFLAGS) -c -o app_otv3_la-app_otv3.lo `test -f 'app_otv3.c' || echo '$(srcdir)/'`app_otv3.c
 
 app_otvbaw_la-norms.lo: norms.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_otvbaw_la_CPPFLAGS) $(CPPFLAGS) $(app_otvbaw_la_CFLAGS) $(CFLAGS) -MT app_otvbaw_la-norms.lo -MD -MP -MF $(DEPDIR)/app_otvbaw_la-norms.Tpo -c -o app_otvbaw_la-norms.lo `test -f 'norms.c' || echo '$(srcdir)/'`norms.c

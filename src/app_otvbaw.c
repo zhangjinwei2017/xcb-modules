@@ -38,7 +38,7 @@ static char *app = "otvbaw";
 static char *desc = "Option Theoretical Value (BAW)";
 static char *fmt = "OTVBAW,timestamp,contract,otv,otv2,otv3";
 static struct config *cfg;
-static const char *inmsg = "vxo_msgs";
+static const char *inmsg = "vsml_msgs";
 
 static inline void load_config(void) {
 	/* FIXME */
@@ -76,18 +76,18 @@ static int otvbaw_exec(void *data, void *data2) {
 
 	fields = dstr_split_len(msg->data, strlen(msg->data), ",", 1, &nfield);
 	/* FIXME */
-	if (nfield < 12) {
+	if (nfield < 14) {
 		xcb_log(XCB_LOG_WARNING, "Message '%s' garbled", msg->data);
 		goto end;
 	}
 	t        = (time_t)atoi(fields[1]);
 	msec     = atoi(fields[2]);
 	spotname = fields[3];
-	spot     = atof(fields[nfield - 4]);
-	r        = atof(fields[nfield - 3]);
-	expiry   = atof(fields[nfield - 2]);
-	sep      = fields[nfield - 1];
-	for (i = 4; i < nfield - 4; i += 4) {
+	spot     = atof(fields[nfield - 6]);
+	r        = atof(fields[nfield - 5]);
+	expiry   = atof(fields[nfield - 4]);
+	sep      = fields[nfield - 3];
+	for (i = 4; i < nfield - 6; i += 4) {
 		struct tm lt;
 		char datestr[64], res[512];
 		double strike;

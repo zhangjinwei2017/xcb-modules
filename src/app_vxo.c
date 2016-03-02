@@ -122,7 +122,7 @@ static inline void load_config(void) {
 									dlist_insert_tail(pd->dlist, scp);
 									table_insert(spots, spotname, pd);
 								} else
-									FREE(scp);
+									scpfree(scp);
 							} else
 								dstr_free(spotname);
 						} else {
@@ -169,7 +169,7 @@ static int vxo_exec(void *data, void *data2) {
 	double vol, vol2, vol3, spot, strike, r, expiry;
 	int sec, msec;
 	dstr spotname;
-	char *type;
+	char *type, *p;
 	struct pd *pd;
 	struct scp *scp;
 
@@ -192,10 +192,12 @@ static int vxo_exec(void *data, void *data2) {
 	strike   = atof(fields[13]);
 	r        = atof(fields[14]);
 	expiry   = atof(fields[15]);
+	if ((p = strrchr(fields[3], 'C')) == NULL)
+		p = strrchr(fields[3], 'P');
 	table_lock(spots);
 	if ((pd = table_get_value(spots, spotname)) == NULL) {
 		/* can't happen */
-		if (NEW0(scp) == NULL) {
+		if (NEW(scp) == NULL) {
 			xcb_log(XCB_LOG_WARNING, "Error allocating memory for scp");
 			table_unlock(spots);
 			goto end;
@@ -216,9 +218,10 @@ static int vxo_exec(void *data, void *data2) {
 			scp->cvol3 = NAN;
 			scp->pvol3 = vol3;
 		}
+		scp->suffix = *(p - 1) == '-' ? dstr_new(p + 2) : dstr_new(p + 1);
 		if (NEW(pd) == NULL) {
 			xcb_log(XCB_LOG_WARNING, "Error allocating memory for pd");
-			FREE(scp);
+			scpfree(scp);
 			table_unlock(spots);
 			goto end;
 		}
@@ -248,7 +251,7 @@ static int vxo_exec(void *data, void *data2) {
 			}
 		} else {
 			/* can't happen */
-			if (NEW0(scp) == NULL) {
+			if (NEW(scp) == NULL) {
 				xcb_log(XCB_LOG_WARNING, "Error allocating memory for scp");
 				table_unlock(spots);
 				goto end;
@@ -269,6 +272,7 @@ static int vxo_exec(void *data, void *data2) {
 				scp->cvol3 = NAN;
 				scp->pvol3 = vol3;
 			}
+			scp->suffix = *(p - 1) == '-' ? dstr_new(p + 2) : dstr_new(p + 1);
 			if (node == NULL)
 				dlist_insert_tail(pd->dlist, scp);
 			else
@@ -343,11 +347,13 @@ static int vxo_exec(void *data, void *data2) {
 							vxo3);
 					}
 					dlist_iter_free(&iter);
-					snprintf(res + off, 4096 - off, "%.2f,%f,%f,%s",
+					snprintf(res + off, 4096 - off, "%.2f,%f,%f,%s,%s,%s",
 						spot,
 						r,
 						expiry,
-						pd->sep);
+						pd->sep,
+						fields[17],
+						fields[18]);
 					if (out2msgs(res, out) == -1)
 						FREE(res);
 				}

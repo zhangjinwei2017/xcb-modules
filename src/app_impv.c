@@ -205,6 +205,7 @@ static int impv_exec(void *data, void *data2) {
 			}
 		}
 		table_unlock(optns);
+		table_lock(expiries);
 		if ((node = table_find(expiries, contract)))
 			expiry = table_node_double(node);
 		else {
@@ -221,6 +222,7 @@ static int impv_exec(void *data, void *data2) {
 				diff = 1;
 			expiry = diff / 12.0;
 		}
+		table_unlock(expiries);
 		/* FIXME: last price */
 		if (fabs(last) <= 0.000001)
 			vol = NAN;

@@ -22,6 +22,8 @@
 #ifndef FD_INCLUDED
 #define FD_INCLUDED
 
+#include "impv.h"
+
 /* FIXME: exported functions */
 extern double fd_euro_call(double spot, double strike, double r, double d, double vol,
 		double expiry, int ssteps, int tsteps);
@@ -31,6 +33,8 @@ extern double fd_amer_call(double spot, double strike, double r, double d, doubl
 		double expiry, int ssteps, int tsteps);
 extern double fd_amer_put (double spot, double strike, double r, double d, double vol,
 		double expiry, int ssteps, int tsteps);
+extern double impv_fd(double spot, double strike, double r, double d, double expiry, int ssteps, int tsteps,
+		double price, int type);
 
 #endif /* FD_INCLUDED */
 

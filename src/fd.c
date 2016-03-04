@@ -21,6 +21,7 @@
 
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_vector.h>
+#include <math.h>
 #include <xcb/macros.h>
 #include <xcb/mem.h>
 #include "fd.h"
@@ -149,5 +150,37 @@ double fd_amer_put(double spot, double strike, double r, double d, double vol,
 	FREE(x);
 	FREE(prices);
 	return res;
+}
+
+double impv_fd(double spot, double strike, double r, double d, double expiry, int ssteps, int tsteps,
+	double price, int type) {
+	double low = 0.000001, high = 0.3, ce;
+	int niters = 0;
+
+	/* FIXME */
+	if (type != AMER_CALL && type != AMER_PUT)
+		return NAN;
+	ce = type == AMER_CALL ? fd_amer_call(spot, strike, r, d, high, expiry, ssteps, tsteps) :
+		fd_amer_put(spot, strike, r, d, high, expiry, ssteps, tsteps);
+	while (ce < price) {
+		high *= 2.0;
+		if (high > 1e10)
+			return NAN;
+		ce = type == AMER_CALL ? fd_amer_call(spot, strike, r, d, high, expiry, ssteps, tsteps) :
+			fd_amer_put(spot, strike, r, d, high, expiry, ssteps, tsteps);
+	}
+	while (++niters < 500) {
+		double vol = 0.5 * (low + high);
+
+		ce = type == AMER_CALL ? fd_amer_call(spot, strike, r, d, vol, expiry, ssteps, tsteps) :
+			fd_amer_put(spot, strike, r, d, vol, expiry, ssteps, tsteps);
+		if (fabs(ce - price) <= 0.000001)
+			return vol;
+		if (ce < price)
+			low  = vol;
+		else
+			high = vol;
+	}
+	return NAN;
 }
 

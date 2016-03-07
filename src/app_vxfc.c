@@ -34,7 +34,6 @@
 #include <xcb/logger.h>
 #include <xcb/config.h>
 #include <xcb/module.h>
-#include <xcb/module.h>
 #include <xcb/utilities.h>
 #include <xcb/basics.h>
 
@@ -87,29 +86,34 @@ static inline void load_config(void) {
 			} else if (!strcasecmp(cat, "expiries")) {
 				var = variable_browse(cfg, cat);
 				while (var) {
-					char *p;
+					const char *p, *q;
 
-					if (memcmp(contract1, var->name, strlen(contract1)) &&
-						memcmp(contract2, var->name, strlen(contract2)))
+					if (contract1 == NULL || contract2 == NULL ||
+						(memcmp(contract1, var->name, strlen(contract1)) &&
+						memcmp(contract2, var->name, strlen(contract2))))
 						goto end;
 					if ((p = strrchr(var->name, 'C')) == NULL)
 						p = strrchr(var->name, 'P');
 					if (p && p != var->name && p != var->name + strlen(var->name) - 1 &&
 						((*(p - 1) == '-' && *(p + 1) == '-') ||
 						(isdigit(*(p - 1)) && isdigit(*(p + 1))))) {
-						dstr spotname, strike;
+						dstr spotname;
+						double strike;
 						dlist_t dlist;
 						struct scp *scp;
 
+						q = var->name + strlen(var->name) - 1;
+						while (isdigit(*q))
+							--q;
 						spotname = *(p - 1) == '-'
 							? dstr_new_len(var->name, p - var->name - 1)
 							: dstr_new_len(var->name, p - var->name);
-						strike   = *(p + 1) == '-'
-							? dstr_new_len(p + 2, var->name + strlen(var->name) - p - 2)
-							: dstr_new_len(p + 1, var->name + strlen(var->name) - p - 1);
+						strike   = !strncasecmp(var->name, "SH", 2) ||
+							!strncasecmp(var->name, "SZ", 2)
+							? atof(q + 1) / 1000 : atof(q + 1);
 						if ((dlist = table_get_value(spots, spotname)) == NULL) {
 							if (NEW(scp)) {
-								scp->strike = atof(strike);
+								scp->strike = strike;
 								scp->cbid   = scp->cask = NAN;
 								scp->pbid   = scp->pask = NAN;
 								scp->expiry = atoi(var->value);
@@ -124,14 +128,14 @@ static inline void load_config(void) {
 
 							while ((node = dlist_next(iter))) {
 								scp = (struct scp *)dlist_node_value(node);
-								if (scp->strike > atof(strike) ||
-									fabs(scp->strike - atof(strike)) <= 0.000001)
+								if (scp->strike > strike ||
+									fabs(scp->strike - strike) <= 0.000001)
 									break;
 							}
 							dlist_iter_free(&iter);
-							if (node == NULL || scp->strike > atof(strike)) {
+							if (node == NULL || scp->strike > strike) {
 								if (NEW(scp)) {
-									scp->strike = atof(strike);
+									scp->strike = strike;
 									scp->cbid   = scp->cask = NAN;
 									scp->pbid   = scp->pask = NAN;
 									scp->expiry = atoi(var->value);
@@ -143,7 +147,6 @@ static inline void load_config(void) {
 							}
 							dstr_free(spotname);
 						}
-						dstr_free(strike);
 					}
 
 end:
@@ -171,11 +174,13 @@ static double compute_T(int expiry) {
 static int vxfc_exec(void *data, void *data2) {
 	RAII_VAR(struct msg *, msg, (struct msg *)data, msg_decr);
 	Quote *quote = (Quote *)msg->data;
-	dstr contract;
+	dstr contract = NULL;
 	int flag;
-	char *p;
+	char *p, *q;
 	NOT_USED(data2);
 
+	if (contract1 == NULL || contract2 == NULL)
+		goto end;
 	contract = dstr_new(quote->thyquote.m_cHYDM);
 	if (!memcmp(contract1, contract, strlen(contract1)))
 		flag = 1;
@@ -188,24 +193,28 @@ static int vxfc_exec(void *data, void *data2) {
 	/* FIXME: option quote */
 	if (p && p != contract && p != contract + dstr_length(contract) - 1 &&
 		((*(p - 1) == '-' && *(p + 1) == '-') || (isdigit(*(p - 1)) && isdigit(*(p + 1))))) {
-		dstr spotname, type, strike;
+		dstr spotname, type;
+		double strike;
 		dlist_t dlist;
 		struct scp *scp;
 
+		q = contract + dstr_length(contract) - 1;
+		while (isdigit(*q))
+			--q;
 		spotname = *(p - 1) == '-' ? dstr_new_len(contract, p - contract - 1) :
 			dstr_new_len(contract, p - contract);
 		type     = dstr_new_len(p, 1);
-		strike   = *(p + 1) == '-' ? dstr_new_len(p + 2, contract + dstr_length(contract) - p - 2) :
-			dstr_new_len(p + 1, contract + dstr_length(contract) - p - 1);
+		strike   = !strncasecmp(contract, "SH", 2) || !strncasecmp(contract, "SZ", 2)
+			? atof(q + 1) / 1000 : atof(q + 1);
 		table_lock(spots);
 		if ((dlist = table_get_value(spots, spotname)) == NULL) {
 			/* can't happen */
-			if (NEW(scp) == NULL) {
+			if (NEW0(scp) == NULL) {
 				xcb_log(XCB_LOG_WARNING, "Error allocating memory for scp");
 				dstr_free(spotname);
 				goto err;
 			}
-			scp->strike = atof(strike);
+			scp->strike = strike;
 			if (!strcasecmp(type, "C")) {
 				scp->cbid = quote->thyquote.m_dMRJG1;
 				scp->cask = quote->thyquote.m_dMCJG1;
@@ -229,10 +238,10 @@ static int vxfc_exec(void *data, void *data2) {
 			dstr_free(spotname);
 			while ((node = dlist_next(iter))) {
 				scp = (struct scp *)dlist_node_value(node);
-				if (scp->strike > atof(strike) || fabs(scp->strike - atof(strike)) <= 0.000001)
+				if (scp->strike > strike || fabs(scp->strike - strike) <= 0.000001)
 					break;
 			}
-			if (node && fabs(scp->strike - atof(strike)) <= 0.000001) {
+			if (node && fabs(scp->strike - strike) <= 0.000001) {
 				if (!strcasecmp(type, "C")) {
 					scp->cbid = quote->thyquote.m_dMRJG1;
 					scp->cask = quote->thyquote.m_dMCJG1;
@@ -242,11 +251,11 @@ static int vxfc_exec(void *data, void *data2) {
 				}
 			} else {
 				/* can't happen */
-				if (NEW(scp) == NULL) {
+				if (NEW0(scp) == NULL) {
 					xcb_log(XCB_LOG_WARNING, "Error allocating memory for scp");
 					goto err;
 				}
-				scp->strike = atof(strike);
+				scp->strike = strike;
 				if (!strcasecmp(type, "C")) {
 					scp->cbid = quote->thyquote.m_dMRJG1;
 					scp->cask = quote->thyquote.m_dMCJG1;
@@ -388,7 +397,6 @@ static int vxfc_exec(void *data, void *data2) {
 err:
 		table_unlock(spots);
 		dstr_free(type);
-		dstr_free(strike);
 	}
 
 end:

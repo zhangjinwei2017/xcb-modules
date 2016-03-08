@@ -27,6 +27,7 @@ strncasecmp strrchr])
 
 AC_CONFIG_FILES([Makefile
                  conf/Makefile
+                 misc/Makefile
                  src/Makefile])
 AC_OUTPUT
 

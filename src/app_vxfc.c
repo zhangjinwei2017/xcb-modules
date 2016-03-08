@@ -50,7 +50,7 @@ static char *fmt = "VXFC,timestamp,vxfc";
 static table_t spots;
 static struct config *cfg;
 static double r = 0.1;
-static const char *contract1, *contract2;
+static dstr contract1, contract2, contract3, contract4;
 static double T1 = NAN, sigma1 = NAN, T2 = NAN, sigma2 = NAN;
 static double prevxfc = NAN;
 
@@ -69,15 +69,29 @@ static inline void load_config(void) {
 				struct variable *var = variable_browse(cfg, cat);
 
 				while (var) {
+					char *p;
+
 					if (!strcasecmp(var->name, "rate")) {
 						if (strcmp(var->value, ""))
 							r = atof(var->value);
 					} else if (!strcasecmp(var->name, "contract1")) {
-						if (strcmp(var->value, ""))
-							contract1 = var->value;
+						if (strcmp(var->value, "")) {
+							contract1 = dstr_new(var->value);
+							contract3 = dstr_new(var->value);
+							if ((p = strrchr(contract3, 'C')))
+								*p = 'P';
+							else if ((p = strrchr(contract3, 'P')))
+								*p = 'C';
+						}
 					} else if (!strcasecmp(var->name, "contract2")) {
-						if (strcmp(var->value, ""))
-							contract2 = var->value;
+						if (strcmp(var->value, "")) {
+							contract2 = dstr_new(var->value);
+							contract4 = dstr_new(var->value);
+							if ((p = strrchr(contract4, 'C')))
+								*p = 'P';
+							else if ((p = strrchr(contract4, 'P')))
+								*p = 'C';
+						}
 					} else
 						xcb_log(XCB_LOG_WARNING, "Unknown variable '%s' in "
 							"category '%s' of vxfc.conf", var->name, cat);
@@ -86,18 +100,22 @@ static inline void load_config(void) {
 			} else if (!strcasecmp(cat, "expiries")) {
 				var = variable_browse(cfg, cat);
 				while (var) {
+					int flag;
 					const char *p, *q;
 
-					if (contract1 == NULL || contract2 == NULL ||
-						(memcmp(contract1, var->name, strlen(contract1)) &&
-						memcmp(contract2, var->name, strlen(contract2))))
+					if (contract1 &&
+						!memcmp(contract1, var->name, dstr_length(contract1)))
+						flag = 1;
+					else if (contract2 &&
+						!memcmp(contract2, var->name, dstr_length(contract2)))
+						flag = 2;
+					else
 						goto end;
 					if ((p = strrchr(var->name, 'C')) == NULL)
 						p = strrchr(var->name, 'P');
 					if (p && p != var->name && p != var->name + strlen(var->name) - 1 &&
 						((*(p - 1) == '-' && *(p + 1) == '-') ||
 						(isdigit(*(p - 1)) && isdigit(*(p + 1))))) {
-						dstr spotname;
 						double strike;
 						dlist_t dlist;
 						struct scp *scp;
@@ -105,13 +123,11 @@ static inline void load_config(void) {
 						q = var->name + strlen(var->name) - 1;
 						while (isdigit(*q))
 							--q;
-						spotname = *(p - 1) == '-'
-							? dstr_new_len(var->name, p - var->name - 1)
-							: dstr_new_len(var->name, p - var->name);
-						strike   = !strncasecmp(var->name, "SH", 2) ||
+						strike = !strncasecmp(var->name, "SH", 2) ||
 							!strncasecmp(var->name, "SZ", 2)
 							? atof(q + 1) / 1000 : atof(q + 1);
-						if ((dlist = table_get_value(spots, spotname)) == NULL) {
+						if ((dlist = table_get_value(spots,
+							flag == 1 ? contract1 : contract2)) == NULL) {
 							if (NEW(scp)) {
 								scp->strike = strike;
 								scp->cbid   = scp->cask = NAN;
@@ -119,9 +135,9 @@ static inline void load_config(void) {
 								scp->expiry = atoi(var->value);
 								dlist = dlist_new(NULL, scpfree);
 								dlist_insert_tail(dlist, scp);
-								table_insert(spots, spotname, dlist);
-							} else
-								dstr_free(spotname);
+								table_insert(spots,
+									flag == 1 ? contract1 : contract2, dlist);
+							}
 						} else {
 							dlist_iter_t iter = dlist_iter_new(dlist, DLIST_START_HEAD);
 							dlist_node_t node;
@@ -145,7 +161,6 @@ static inline void load_config(void) {
 								else
 									dlist_insert(dlist, node, scp, 0);
 							}
-							dstr_free(spotname);
 						}
 					}
 
@@ -182,9 +197,11 @@ static int vxfc_exec(void *data, void *data2) {
 	if (contract1 == NULL || contract2 == NULL)
 		goto end;
 	contract = dstr_new(quote->thyquote.m_cHYDM);
-	if (!memcmp(contract1, contract, strlen(contract1)))
+	if (!memcmp(contract1, contract, strlen(contract1)) ||
+		!memcmp(contract3, contract, dstr_length(contract3)))
 		flag = 1;
-	else if (!memcmp(contract2, contract, strlen(contract2)))
+	else if (!memcmp(contract2, contract, strlen(contract2)) ||
+		!memcmp(contract4, contract, dstr_length(contract4)))
 		flag = 2;
 	else
 		goto end;
@@ -193,7 +210,7 @@ static int vxfc_exec(void *data, void *data2) {
 	/* FIXME: option quote */
 	if (p && p != contract && p != contract + dstr_length(contract) - 1 &&
 		((*(p - 1) == '-' && *(p + 1) == '-') || (isdigit(*(p - 1)) && isdigit(*(p + 1))))) {
-		dstr spotname, type;
+		dstr type;
 		double strike;
 		dlist_t dlist;
 		struct scp *scp;
@@ -201,17 +218,14 @@ static int vxfc_exec(void *data, void *data2) {
 		q = contract + dstr_length(contract) - 1;
 		while (isdigit(*q))
 			--q;
-		spotname = *(p - 1) == '-' ? dstr_new_len(contract, p - contract - 1) :
-			dstr_new_len(contract, p - contract);
-		type     = dstr_new_len(p, 1);
-		strike   = !strncasecmp(contract, "SH", 2) || !strncasecmp(contract, "SZ", 2)
+		type   = dstr_new_len(p, 1);
+		strike = !strncasecmp(contract, "SH", 2) || !strncasecmp(contract, "SZ", 2)
 			? atof(q + 1) / 1000 : atof(q + 1);
 		table_lock(spots);
-		if ((dlist = table_get_value(spots, spotname)) == NULL) {
+		if ((dlist = table_get_value(spots, flag == 1 ? contract1 : contract2)) == NULL) {
 			/* can't happen */
 			if (NEW0(scp) == NULL) {
 				xcb_log(XCB_LOG_WARNING, "Error allocating memory for scp");
-				dstr_free(spotname);
 				goto err;
 			}
 			scp->strike = strike;
@@ -228,14 +242,13 @@ static int vxfc_exec(void *data, void *data2) {
 			}
 			dlist = dlist_new(NULL, scpfree);
 			dlist_insert_tail(dlist, scp);
-			table_insert(spots, spotname, dlist);
+			table_insert(spots, flag == 1 ? contract1 : contract2, dlist);
 		} else {
 			dlist_iter_t iter = dlist_iter_new(dlist, DLIST_START_HEAD);
 			dlist_node_t node, node0 = NULL, prev, next;
 			double mindiff = NAN, K0 = NAN, T, F, deltaK, QK, sum;
 			struct scp *scp2, *scp3;
 
-			dstr_free(spotname);
 			while ((node = dlist_next(iter))) {
 				scp = (struct scp *)dlist_node_value(node);
 				if (scp->strike > strike || fabs(scp->strike - strike) <= 0.000001)
@@ -425,6 +438,10 @@ static int load_module(void) {
 static int unload_module(void) {
 	msgs_unhook(&default_msgs, vxfc_exec);
 	config_destroy(cfg);
+	dstr_free(contract1);
+	dstr_free(contract2);
+	dstr_free(contract3);
+	dstr_free(contract4);
 	table_free(&spots);
 	return unregister_application(app);
 }
@@ -432,6 +449,10 @@ static int unload_module(void) {
 static int reload_module(void) {
 	msgs_unhook(&default_msgs, vxfc_exec);
 	config_destroy(cfg);
+	dstr_free(contract1);
+	dstr_free(contract2);
+	dstr_free(contract3);
+	dstr_free(contract4);
 	table_clear(spots);
 	load_config();
 	if (msgs_hook(&default_msgs, vxfc_exec, NULL) == -1)

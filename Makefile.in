@@ -214,7 +214,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 ACLOCAL_AMFLAGS = -I m4
-SUBDIRS = conf src
+SUBDIRS = conf misc src
 all: all-recursive
 
 .SUFFIXES:

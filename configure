@@ -12005,7 +12005,7 @@ fi
 done
 
 
-ac_config_files="$ac_config_files Makefile conf/Makefile src/Makefile"
+ac_config_files="$ac_config_files Makefile conf/Makefile misc/Makefile src/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -12908,6 +12908,7 @@ do
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "conf/Makefile") CONFIG_FILES="$CONFIG_FILES conf/Makefile" ;;
+    "misc/Makefile") CONFIG_FILES="$CONFIG_FILES misc/Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
 
   *) { { $as_echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5

@@ -1,6 +1,6 @@
 Name:		xcb-modules
 Version:	0.0.2
-Release:	3%{?dist}
+Release:	4%{?dist}
 Summary:	Modules for XCUBE
 Group:		Applications/Internet
 License:	GPLv2
@@ -36,6 +36,7 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %doc AUTHORS ChangeLog COPYING INSTALL NEWS README TODO
 %config(noreplace) %{_sysconfdir}/xcb/*
+%{_datadir}/%{name}/*
 %{_sharedstatedir}/xcb/*
 
 %changelog

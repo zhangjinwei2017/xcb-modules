@@ -438,8 +438,6 @@ static int load_module(void) {
 static int unload_module(void) {
 	msgs_unhook(&default_msgs, vxfc_exec);
 	config_destroy(cfg);
-	dstr_free(contract1);
-	dstr_free(contract2);
 	dstr_free(contract3);
 	dstr_free(contract4);
 	table_free(&spots);
@@ -449,8 +447,6 @@ static int unload_module(void) {
 static int reload_module(void) {
 	msgs_unhook(&default_msgs, vxfc_exec);
 	config_destroy(cfg);
-	dstr_free(contract1);
-	dstr_free(contract2);
 	dstr_free(contract3);
 	dstr_free(contract4);
 	table_clear(spots);

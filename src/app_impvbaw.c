@@ -33,7 +33,7 @@
 #include <xcb/logger.h>
 #include <xcb/config.h>
 #include <xcb/module.h>
-#include <xcb/utilities.h>
+#include <xcb/utils.h>
 #include <xcb/basics.h>
 #include "baw.h"
 
@@ -238,7 +238,8 @@ static int impvbaw_exec(void *data, void *data2) {
 				vol3,
 				spot);
 			out2rmp(res);
-			snprintf(res, 512, "IMPVBAW,%d,%d,%s,%.2f,%f,%.2f,%f,%.2f,%f,%.2f,%s,%s,%f,%f,%f,%d,0,0",
+			snprintf(res, 512, "IMPVBAW,%d,%d,%s,%.2f,%f,%.2f,%f,%.2f,%f,%.2f,%s,%s,%f,%f,%f,%d,"
+				"0,0",
 				quote->thyquote.m_nTime,
 				quote->m_nMSec,
 				contract,

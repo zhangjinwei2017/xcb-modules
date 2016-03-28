@@ -34,7 +34,7 @@
 #include <xcb/logger.h>
 #include <xcb/config.h>
 #include <xcb/module.h>
-#include <xcb/utilities.h>
+#include <xcb/utils.h>
 #include <xcb/basics.h>
 
 /* FIXME */
@@ -88,8 +88,7 @@ static inline void load_config(void) {
 				while (var) {
 					const char *p, *q;
 
-					if ((p = strrchr(var->name, 'C')) == NULL)
-						p = strrchr(var->name, 'P');
+					p = strrchr(var->name, 'C');
 					if (p && p != var->name && p != var->name + strlen(var->name) - 1 &&
 						((*(p - 1) == '-' && *(p + 1) == '-') ||
 						(isdigit(*(p - 1)) && isdigit(*(p + 1))))) {
@@ -101,12 +100,16 @@ static inline void load_config(void) {
 						q = var->name + strlen(var->name) - 1;
 						while (isdigit(*q))
 							--q;
-						spotname = *(p - 1) == '-'
-							? dstr_new_len(var->name, p - var->name - 1)
-							: dstr_new_len(var->name, p - var->name);
-						strike   = !strncasecmp(var->name, "SH", 2) ||
-							!strncasecmp(var->name, "SZ", 2)
-							? atof(q + 1) / 1000 : atof(q + 1);
+						if (!strncasecmp(var->name, "SH", 2) ||
+							!strncasecmp(var->name, "SZ", 2)) {
+							spotname = dstr_new_len(var->name, q - var->name);
+							strike   = atof(q + 1) / 1000;
+						} else {
+							spotname = *(p - 1) == '-'
+								? dstr_new_len(var->name, p - var->name - 1)
+								: dstr_new_len(var->name, p - var->name);
+							strike   = atof(q + 1);
+						}
 						if ((pd = table_get_value(spots, spotname)) == NULL) {
 							if (NEW(scp)) {
 								scp->strike = strike;
@@ -116,8 +119,10 @@ static inline void load_config(void) {
 								scp->suffix = *(p - 1) == '-'
 									? dstr_new(p + 2) : dstr_new(p + 1);
 								if (NEW(pd)) {
-									pd->prevxo = pd->prevxo2 = pd->prevxo3 = NAN;
-									pd->sep    = *(p - 1) == '-' ? "-" : "";
+									pd->prevxo = pd->prevxo2 = pd->prevxo3
+										= NAN;
+									pd->sep    = *(p - 1) == '-'
+										? "-" : "";
 									pd->dlist  = dlist_new(NULL, scpfree);
 									dlist_insert_tail(pd->dlist, scp);
 									table_insert(spots, spotname, pd);
@@ -126,7 +131,8 @@ static inline void load_config(void) {
 							} else
 								dstr_free(spotname);
 						} else {
-							dlist_iter_t iter = dlist_iter_new(pd->dlist, DLIST_START_HEAD);
+							dlist_iter_t iter = dlist_iter_new(pd->dlist,
+										DLIST_START_HEAD);
 							dlist_node_t node;
 
 							while ((node = dlist_next(iter))) {
@@ -143,7 +149,8 @@ static inline void load_config(void) {
 									scp->cvol2  = scp->pvol2 = NAN;
 									scp->cvol3  = scp->pvol3 = NAN;
 									scp->suffix = *(p - 1) == '-'
-										? dstr_new(p + 2) : dstr_new(p + 1);
+										? dstr_new(p + 2)
+										: dstr_new(p + 1);
 								}
 								if (node == NULL)
 									dlist_insert_tail(pd->dlist, scp);
@@ -291,29 +298,38 @@ static int vxo_exec(void *data, void *data2) {
 			double vxo = NAN, vxo2 = NAN, vxo3 = NAN;
 			int flag1, flag2, flag3;
 
-			if (!isnan(scp1->cvol) && !isnan(scp1->pvol) && !isnan(scp2->cvol) && !isnan(scp2->pvol))
+			if (!isnan(scp1->cvol) && !isnan(scp1->pvol) &&
+				!isnan(scp2->cvol) && !isnan(scp2->pvol))
 				vxo  = ((scp1->cvol + scp1->pvol) / 2) *
 					(spot - scp2->strike) / (scp1->strike - scp2->strike) +
 					((scp2->cvol + scp2->pvol) / 2) *
 					(scp1->strike - spot) / (scp1->strike - scp2->strike);
-			if (!isnan(scp1->cvol2) && !isnan(scp1->pvol2) && !isnan(scp2->cvol2) && !isnan(scp2->pvol2))
+			if (!isnan(scp1->cvol2) && !isnan(scp1->pvol2) &&
+				!isnan(scp2->cvol2) && !isnan(scp2->pvol2))
 				vxo2 = ((scp1->cvol2 + scp1->pvol2) / 2) *
 					(spot - scp2->strike) / (scp1->strike - scp2->strike) +
 					((scp2->cvol2 + scp2->pvol2) / 2) *
 					(scp1->strike - spot) / (scp1->strike - scp2->strike);
-			if (!isnan(scp1->cvol3) && !isnan(scp1->pvol3) && !isnan(scp2->cvol3) && !isnan(scp2->pvol3))
+			if (!isnan(scp1->cvol3) && !isnan(scp1->pvol3) &&
+				!isnan(scp2->cvol3) && !isnan(scp2->pvol3))
 				vxo3 = ((scp1->cvol3 + scp1->pvol3) / 2) *
 					(spot - scp2->strike) / (scp1->strike - scp2->strike) +
 					((scp2->cvol3 + scp2->pvol3) / 2) *
 					(scp1->strike - spot) / (scp1->strike - scp2->strike);
-			if ((flag1 = (isnan(pd->prevxo) && !isnan(vxo)) || (!isnan(pd->prevxo) && isnan(vxo)) ||
-				(!isnan(pd->prevxo) && !isnan(vxo) && fabs(pd->prevxo - vxo) > 0.000001) ? 1 : 0))
+			if ((flag1 = (isnan(pd->prevxo) && !isnan(vxo)) ||
+					(!isnan(pd->prevxo) && isnan(vxo)) ||
+					(!isnan(pd->prevxo) && !isnan(vxo) &&
+					fabs(pd->prevxo - vxo) > 0.000001) ? 1 : 0))
 				pd->prevxo  = vxo;
-			if ((flag2 = (isnan(pd->prevxo2) && !isnan(vxo2)) || (!isnan(pd->prevxo2) && isnan(vxo2)) ||
-				(!isnan(pd->prevxo2) && !isnan(vxo2) && fabs(pd->prevxo2 - vxo2) > 0.000001) ? 1 : 0))
+			if ((flag2 = (isnan(pd->prevxo2) && !isnan(vxo2)) ||
+					(!isnan(pd->prevxo2) && isnan(vxo2)) ||
+					(!isnan(pd->prevxo2) && !isnan(vxo2) &&
+					fabs(pd->prevxo2 - vxo2) > 0.000001) ? 1 : 0))
 				pd->prevxo2 = vxo2;
-			if ((flag3 = (isnan(pd->prevxo3) && !isnan(vxo3)) || (!isnan(pd->prevxo3) && isnan(vxo3)) ||
-				(!isnan(pd->prevxo3) && !isnan(vxo3) && fabs(pd->prevxo3 - vxo3) > 0.000001) ? 1 : 0))
+			if ((flag3 = (isnan(pd->prevxo3) && !isnan(vxo3)) ||
+					(!isnan(pd->prevxo3) && isnan(vxo3)) ||
+					(!isnan(pd->prevxo3) && !isnan(vxo3) &&
+					fabs(pd->prevxo3 - vxo3) > 0.000001) ? 1 : 0))
 				pd->prevxo3 = vxo3;
 			if (flag1 || flag2 || flag3) {
 				char *res;
@@ -333,6 +349,11 @@ static int vxo_exec(void *data, void *data2) {
 						vxo2,
 						vxo3);
 					out2rmp(res);
+					/* FIXME */
+					dstr_free(spotname);
+					spotname = *(p - 1) == '-'
+						? dstr_new_len(fields[3], p - fields[3] - 1)
+						: dstr_new_len(fields[3], p - fields[3]);
 					off = snprintf(res, 4096, "VXO,%d,%d,%s,",
 						sec,
 						msec,

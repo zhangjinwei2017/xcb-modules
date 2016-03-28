@@ -34,7 +34,7 @@
 #include <xcb/logger.h>
 #include <xcb/config.h>
 #include <xcb/module.h>
-#include <xcb/utilities.h>
+#include <xcb/utils.h>
 #include <xcb/basics.h>
 
 /* FIXME */
@@ -136,10 +136,12 @@ static inline void load_config(void) {
 								dlist = dlist_new(NULL, scpfree);
 								dlist_insert_tail(dlist, scp);
 								table_insert(spots,
-									flag == 1 ? contract1 : contract2, dlist);
+									flag == 1 ? contract1 : contract2,
+									dlist);
 							}
 						} else {
-							dlist_iter_t iter = dlist_iter_new(dlist, DLIST_START_HEAD);
+							dlist_iter_t iter = dlist_iter_new(dlist,
+										DLIST_START_HEAD);
 							dlist_node_t node;
 
 							while ((node = dlist_next(iter))) {

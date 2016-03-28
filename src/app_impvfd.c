@@ -33,7 +33,7 @@
 #include <xcb/logger.h>
 #include <xcb/config.h>
 #include <xcb/module.h>
-#include <xcb/utilities.h>
+#include <xcb/utils.h>
 #include <xcb/basics.h>
 #include "fd.h"
 
@@ -240,7 +240,8 @@ static int impvfd_exec(void *data, void *data2) {
 				vol3,
 				spot);
 			out2rmp(res);
-			snprintf(res, 512, "IMPVFD,%d,%d,%s,%.2f,%f,%.2f,%f,%.2f,%f,%.2f,%s,%s,%s,%f,%f,%d,%d,%d",
+			snprintf(res, 512, "IMPVFD,%d,%d,%s,%.2f,%f,%.2f,%f,%.2f,%f,%.2f,%s,%s,%s,%f,%f,%d,"
+				"%d,%d",
 				quote->thyquote.m_nTime,
 				quote->m_nMSec,
 				contract,

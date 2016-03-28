@@ -33,7 +33,7 @@
 #include <xcb/logger.h>
 #include <xcb/config.h>
 #include <xcb/module.h>
-#include <xcb/utilities.h>
+#include <xcb/utils.h>
 #include <xcb/basics.h>
 #include "lagrange.h"
 
@@ -51,7 +51,8 @@ struct sd {
 /* FIXME */
 static char *app = "vsml";
 static char *desc = "Volatility Smile";
-static char *fmt = "VSML,timestamp,contract,strike1,vol,vol2,vol3,strike2,vol,vol2,vol3,...,striken,vol,vol2,vol3";
+static char *fmt = "VSML,timestamp,contract,strike1,vol,vol2,vol3,strike2,vol,vol2,vol3,...,"
+	"striken,vol,vol2,vol3";
 static table_t spots;
 static struct msgs *vsml_msgs;
 static struct config *cfg;
@@ -88,8 +89,7 @@ static inline void load_config(void) {
 				while (var) {
 					const char *p, *q;
 
-					if ((p = strrchr(var->name, 'C')) == NULL)
-						p = strrchr(var->name, 'P');
+					p = strrchr(var->name, 'C');
 					if (p && p != var->name && p != var->name + strlen(var->name) - 1 &&
 						((*(p - 1) == '-' && *(p + 1) == '-') ||
 						(isdigit(*(p - 1)) && isdigit(*(p + 1))))) {
@@ -101,12 +101,16 @@ static inline void load_config(void) {
 						q = var->name + strlen(var->name) - 1;
 						while (isdigit(*q))
 							--q;
-						spotname = *(p - 1) == '-'
-							? dstr_new_len(var->name, p - var->name - 1)
-							: dstr_new_len(var->name, p - var->name);
-						strike   = !strncasecmp(var->name, "SH", 2) ||
-							!strncasecmp(var->name, "SZ", 2)
-							? atof(q + 1) / 1000 : atof(q + 1);
+						if (!strncasecmp(var->name, "SH", 2) ||
+							!strncasecmp(var->name, "SZ", 2)) {
+							spotname = dstr_new_len(var->name, q - var->name);
+							strike   = atof(q + 1) / 1000;
+						} else {
+							spotname = *(p - 1) == '-'
+								? dstr_new_len(var->name, p - var->name - 1)
+								: dstr_new_len(var->name, p - var->name);
+							strike   = atof(q + 1);
+						}
 						if ((sd = table_get_value(spots, spotname)) == NULL) {
 							if (NEW(scp)) {
 								scp->strike = strike;
@@ -117,7 +121,8 @@ static inline void load_config(void) {
 								scp->suffix = *(p - 1) == '-'
 									? dstr_new(p + 2) : dstr_new(p + 1);
 								if (NEW(sd)) {
-									sd->sep   = *(p - 1) == '-' ? "-" : "";
+									sd->sep   = *(p - 1) == '-'
+										? "-" : "";
 									sd->dlist = dlist_new(NULL, scpfree);
 									dlist_insert_tail(sd->dlist, scp);
 									table_insert(spots, spotname, sd);
@@ -126,7 +131,8 @@ static inline void load_config(void) {
 							} else
 								dstr_free(spotname);
 						} else {
-							dlist_iter_t iter = dlist_iter_new(sd->dlist, DLIST_START_HEAD);
+							dlist_iter_t iter = dlist_iter_new(sd->dlist,
+										DLIST_START_HEAD);
 							dlist_node_t node;
 
 							while ((node = dlist_next(iter))) {
@@ -144,7 +150,8 @@ static inline void load_config(void) {
 									scp->cvol3  = scp->pvol3 = NAN;
 									scp->flag   = 0;
 									scp->suffix = *(p - 1) == '-'
-										? dstr_new(p + 2) : dstr_new(p + 1);
+										? dstr_new(p + 2)
+										: dstr_new(p + 1);
 								}
 								if (node == NULL)
 									dlist_insert_tail(sd->dlist, scp);
@@ -244,33 +251,39 @@ static int vsml_exec(void *data, void *data2) {
 		if (node && fabs(scp->strike - strike) <= 0.000001) {
 			if (!strcasecmp(type, "C")) {
 				if ((isnan(scp->cvol) && !isnan(vol)) ||
-					(!isnan(scp->cvol) && !isnan(vol) && fabs(scp->cvol - vol) > 0.000001)) {
+					(!isnan(scp->cvol) && !isnan(vol) &&
+					fabs(scp->cvol - vol) > 0.000001)) {
 					scp->cvol  = vol;
 					scp->flag  = 1;
 				}
 				if ((isnan(scp->cvol2) && !isnan(vol2)) ||
-					(!isnan(scp->cvol2) && !isnan(vol2) && fabs(scp->cvol2 - vol2) > 0.000001)) {
+					(!isnan(scp->cvol2) && !isnan(vol2) &&
+					fabs(scp->cvol2 - vol2) > 0.000001)) {
 					scp->cvol2 = vol2;
 					scp->flag  = 1;
 				}
 				if ((isnan(scp->cvol3) && !isnan(vol3)) ||
-					(!isnan(scp->cvol3) && !isnan(vol3) && fabs(scp->cvol3 - vol3) > 0.000001)) {
+					(!isnan(scp->cvol3) && !isnan(vol3) &&
+					fabs(scp->cvol3 - vol3) > 0.000001)) {
 					scp->cvol3 = vol3;
 					scp->flag  = 1;
 				}
 			} else {
 				if ((isnan(scp->pvol) && !isnan(vol)) ||
-					(!isnan(scp->pvol) && !isnan(vol) && fabs(scp->pvol - vol) > 0.000001)) {
+					(!isnan(scp->pvol) && !isnan(vol) &&
+					fabs(scp->pvol - vol) > 0.000001)) {
 					scp->pvol  = vol;
 					scp->flag  = 1;
 				}
 				if ((isnan(scp->pvol2) && !isnan(vol2)) ||
-					(!isnan(scp->pvol2) && !isnan(vol2) && fabs(scp->pvol2 - vol2) > 0.000001)) {
+					(!isnan(scp->pvol2) && !isnan(vol2) &&
+					fabs(scp->pvol2 - vol2) > 0.000001)) {
 					scp->pvol2 = vol2;
 					scp->flag  = 1;
 				}
 				if ((isnan(scp->pvol3) && !isnan(vol3)) ||
-					(!isnan(scp->pvol3) && !isnan(vol3) && fabs(scp->pvol3 - vol3) > 0.000001)) {
+					(!isnan(scp->pvol3) && !isnan(vol3) &&
+					fabs(scp->pvol3 - vol3) > 0.000001)) {
 					scp->pvol3 = vol3;
 					scp->flag  = 1;
 				}
@@ -313,7 +326,8 @@ static int vsml_exec(void *data, void *data2) {
 				break;
 		}
 		dlist_iter_free(&iter);
-		if (node && dlist_node_prev(node) && dlist_node_prev(dlist_node_prev(node)) && dlist_node_next(node)) {
+		if (node && dlist_node_prev(node) &&
+			dlist_node_prev(dlist_node_prev(node)) && dlist_node_next(node)) {
 			dlist_node_t node1 = dlist_head(sd->dlist);
 			dlist_node_t node2 = dlist_tail(sd->dlist);
 			struct scp *scp0  = (struct scp *)dlist_node_value(node);
@@ -471,6 +485,11 @@ static int vsml_exec(void *data, void *data2) {
 						spotname,
 						tmp);
 					out2rmp(res);
+					/* FIXME */
+					dstr_free(spotname);
+					spotname = *(p - 1) == '-'
+						? dstr_new_len(fields[3], p - fields[3] - 1)
+						: dstr_new_len(fields[3], p - fields[3]);
 					snprintf(res, 4096, "VSML,%d,%d,%s,%s,%.2f,%f,%f,%s,%s,%s",
 						sec,
 						msec,

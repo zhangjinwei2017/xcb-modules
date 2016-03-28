@@ -33,7 +33,7 @@
 #include <xcb/logger.h>
 #include <xcb/config.h>
 #include <xcb/module.h>
-#include <xcb/utilities.h>
+#include <xcb/utils.h>
 #include <xcb/basics.h>
 #include "trinomial.h"
 
@@ -235,7 +235,8 @@ static int impv3_exec(void *data, void *data2) {
 				vol3,
 				spot);
 			out2rmp(res);
-			snprintf(res, 512, "IMPV3,%d,%d,%s,%.2f,%f,%.2f,%f,%.2f,%f,%.2f,%s,%s,%f,%f,%f,%d,0,%d",
+			snprintf(res, 512, "IMPV3,%d,%d,%s,%.2f,%f,%.2f,%f,%.2f,%f,%.2f,%s,%s,%f,%f,%f,%d,"
+				"0,%d",
 				quote->thyquote.m_nTime,
 				quote->m_nMSec,
 				contract,

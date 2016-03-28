@@ -34,7 +34,7 @@
 #include <xcb/logger.h>
 #include <xcb/config.h>
 #include <xcb/module.h>
-#include <xcb/utilities.h>
+#include <xcb/utils.h>
 #include <xcb/basics.h>
 #include "bs.h"
 
@@ -262,6 +262,13 @@ static int impv_exec(void *data, void *data2) {
 				vol3,
 				spot);
 			out2rmp(res);
+			/* FIXME */
+			if (flag == 2) {
+				dstr_free(spotname);
+				spotname = dstr_new_len(contract, q - contract);
+				if ((p = strrchr(spotname, 'P')))
+					*p = 'C';
+			}
 			snprintf(res, 512, "IMPV,%d,%d,%s,%.2f,%f,%.2f,%f,%.2f,%f,%.2f,%s,%s,%f,%f,%f,%d,0,0",
 				quote->thyquote.m_nTime,
 				quote->m_nMSec,

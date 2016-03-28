@@ -135,7 +135,8 @@ static int greeksbaw_exec(void *data, void *data2) {
 			}
 		}
 		strftime(datestr, sizeof datestr, "%F %T", localtime_r(&t, &lt));
-		snprintf(res, sizeof res, "GREEKSBAW,%s.%03d,%s|%.2f,%f,%f,%f,%f,%f,%.2f,%f,%f,%f,%f,%f,%.2f,%f,%f,%f,%f,%f",
+		snprintf(res, sizeof res, "GREEKSBAW,%s.%03d,%s|%.2f,%f,%f,%f,%f,%f,%.2f,%f,%f,%f,%f,%f,"
+			"%.2f,%f,%f,%f,%f,%f",
 			datestr,
 			atoi(fields[2]),
 			contract,

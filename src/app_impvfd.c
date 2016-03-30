@@ -171,7 +171,6 @@ static int impvfd_exec(void *data, void *data2) {
 				fabs(prices->preask1 - quote->thyquote.m_dMCJG1) <= 0.000001 &&
 				fabs(prices->prespot - spot) <= 0.000001) {
 				table_unlock(optns);
-				dstr_free(strike);
 				dstr_free(type);
 				dstr_free(spotname);
 				goto end;
@@ -240,7 +239,7 @@ static int impvfd_exec(void *data, void *data2) {
 				vol3,
 				spot);
 			out2rmp(res);
-			snprintf(res, 512, "IMPVFD,%d,%d,%s,%.2f,%f,%.2f,%f,%.2f,%f,%.2f,%s,%s,%s,%f,%f,%d,"
+			snprintf(res, 512, "IMPVFD,%d,%d,%s,%.2f,%f,%.2f,%f,%.2f,%f,%.2f,%s,%s,%f,%f,%f,%d,"
 				"%d,%d",
 				quote->thyquote.m_nTime,
 				quote->m_nMSec,

@@ -8,8 +8,10 @@ Source0:	%{name}-%{version}.tar.gz
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 BuildRequires:	gcc
 BuildRequires:	gperftools-devel
+BuildRequires:	gsl-devel
 BuildRequires:	xcb-devel
 Requires:	gperftools-libs
+Requires:	gsl
 Requires:	xcb
 
 %description

@@ -49,7 +49,7 @@ double bs_put_delta(double spot, double strike, double r, double d, double vol, 
 	double stddev = vol * sqrt(expiry);
 	double d1 = (moneyness + (r - d) * expiry + 0.5 * stddev * stddev) / stddev;
 
-	return exp(-d * expiry) *(cum_norm(d1) - 1);
+	return exp(-d * expiry) * (cum_norm(d1) - 1);
 }
 
 double bs_call_gamma(double spot, double strike, double r, double d, double vol, double expiry) {

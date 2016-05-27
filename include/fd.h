@@ -33,6 +33,10 @@ extern double fd_amer_call(double spot, double strike, double r, double d, doubl
 		double expiry, int ssteps, int tsteps);
 extern double fd_amer_put (double spot, double strike, double r, double d, double vol,
 		double expiry, int ssteps, int tsteps);
+extern void   fd_amer_call_greeks(double spot, double strike, double r, double d, double vol, double expiry,
+		int ssteps, int tsteps, double *delta, double *gamma, double *theta, double *vega, double *rho);
+extern void   fd_amer_put_greeks (double spot, double strike, double r, double d, double vol, double expiry,
+		int ssteps, int tsteps, double *delta, double *gamma, double *theta, double *vega, double *rho);
 extern double impv_fd(double spot, double strike, double r, double d, double expiry, int ssteps, int tsteps,
 		double price, int type);
 

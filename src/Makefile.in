@@ -104,6 +104,13 @@ app_greeksbaw_la_OBJECTS = $(am_app_greeksbaw_la_OBJECTS)
 app_greeksbaw_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_greeksbaw_la_CFLAGS) \
 	$(CFLAGS) $(app_greeksbaw_la_LDFLAGS) $(LDFLAGS) -o $@
+app_greeksfd_la_LIBADD =
+am_app_greeksfd_la_OBJECTS = app_greeksfd_la-fd.lo \
+	app_greeksfd_la-app_greeksfd.lo
+app_greeksfd_la_OBJECTS = $(am_app_greeksfd_la_OBJECTS)
+app_greeksfd_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_greeksfd_la_CFLAGS) \
+	$(CFLAGS) $(app_greeksfd_la_LDFLAGS) $(LDFLAGS) -o $@
 app_greekshs_la_LIBADD =
 am_app_greekshs_la_OBJECTS = app_greekshs_la-norms.lo \
 	app_greekshs_la-bs.lo app_greekshs_la-baw.lo \
@@ -241,28 +248,28 @@ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(app_csi300_la_SOURCES) $(app_greeks_la_SOURCES) \
 	$(app_greeks2_la_SOURCES) $(app_greeks3_la_SOURCES) \
-	$(app_greeksbaw_la_SOURCES) $(app_greekshs_la_SOURCES) \
-	$(app_hsv_la_SOURCES) $(app_impv_la_SOURCES) \
-	$(app_impv2_la_SOURCES) $(app_impv3_la_SOURCES) \
-	$(app_impvbaw_la_SOURCES) $(app_impvfd_la_SOURCES) \
-	$(app_otv_la_SOURCES) $(app_otv2_la_SOURCES) \
-	$(app_otv3_la_SOURCES) $(app_otvbaw_la_SOURCES) \
-	$(app_otvhs_la_SOURCES) $(app_quote_la_SOURCES) \
-	$(app_sse50_la_SOURCES) $(app_sse50etf_la_SOURCES) \
-	$(app_vsml_la_SOURCES) $(app_vxfc_la_SOURCES) \
-	$(app_vxo_la_SOURCES)
+	$(app_greeksbaw_la_SOURCES) $(app_greeksfd_la_SOURCES) \
+	$(app_greekshs_la_SOURCES) $(app_hsv_la_SOURCES) \
+	$(app_impv_la_SOURCES) $(app_impv2_la_SOURCES) \
+	$(app_impv3_la_SOURCES) $(app_impvbaw_la_SOURCES) \
+	$(app_impvfd_la_SOURCES) $(app_otv_la_SOURCES) \
+	$(app_otv2_la_SOURCES) $(app_otv3_la_SOURCES) \
+	$(app_otvbaw_la_SOURCES) $(app_otvhs_la_SOURCES) \
+	$(app_quote_la_SOURCES) $(app_sse50_la_SOURCES) \
+	$(app_sse50etf_la_SOURCES) $(app_vsml_la_SOURCES) \
+	$(app_vxfc_la_SOURCES) $(app_vxo_la_SOURCES)
 DIST_SOURCES = $(app_csi300_la_SOURCES) $(app_greeks_la_SOURCES) \
 	$(app_greeks2_la_SOURCES) $(app_greeks3_la_SOURCES) \
-	$(app_greeksbaw_la_SOURCES) $(app_greekshs_la_SOURCES) \
-	$(app_hsv_la_SOURCES) $(app_impv_la_SOURCES) \
-	$(app_impv2_la_SOURCES) $(app_impv3_la_SOURCES) \
-	$(app_impvbaw_la_SOURCES) $(app_impvfd_la_SOURCES) \
-	$(app_otv_la_SOURCES) $(app_otv2_la_SOURCES) \
-	$(app_otv3_la_SOURCES) $(app_otvbaw_la_SOURCES) \
-	$(app_otvhs_la_SOURCES) $(app_quote_la_SOURCES) \
-	$(app_sse50_la_SOURCES) $(app_sse50etf_la_SOURCES) \
-	$(app_vsml_la_SOURCES) $(app_vxfc_la_SOURCES) \
-	$(app_vxo_la_SOURCES)
+	$(app_greeksbaw_la_SOURCES) $(app_greeksfd_la_SOURCES) \
+	$(app_greekshs_la_SOURCES) $(app_hsv_la_SOURCES) \
+	$(app_impv_la_SOURCES) $(app_impv2_la_SOURCES) \
+	$(app_impv3_la_SOURCES) $(app_impvbaw_la_SOURCES) \
+	$(app_impvfd_la_SOURCES) $(app_otv_la_SOURCES) \
+	$(app_otv2_la_SOURCES) $(app_otv3_la_SOURCES) \
+	$(app_otvbaw_la_SOURCES) $(app_otvhs_la_SOURCES) \
+	$(app_quote_la_SOURCES) $(app_sse50_la_SOURCES) \
+	$(app_sse50etf_la_SOURCES) $(app_vsml_la_SOURCES) \
+	$(app_vxfc_la_SOURCES) $(app_vxo_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -378,9 +385,9 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = app_impv.la app_impvbaw.la app_impv2.la app_impv3.la         \
 app_impvfd.la app_hsv.la app_greeks.la app_greeksbaw.la app_greeks2.la         \
-app_greeks3.la app_greekshs.la app_vxo.la app_vsml.la app_otv.la app_otvbaw.la \
-app_otv2.la app_otv3.la app_otvhs.la app_csi300.la app_sse50.la app_sse50etf.la\
-app_vxfc.la app_quote.la
+app_greeks3.la app_greeksfd.la app_greekshs.la app_vxo.la app_vsml.la          \
+app_otv.la app_otvbaw.la app_otv2.la app_otv3.la app_otvhs.la app_csi300.la    \
+app_sse50.la app_sse50etf.la app_vxfc.la app_quote.la
 
 app_impv_la_SOURCES = norms.c brent.c bs.c app_impv.c
 app_impv_la_CPPFLAGS = -I$(top_srcdir)/include
@@ -422,6 +429,10 @@ app_greeks3_la_SOURCES = trinomial.c app_greeks3.c
 app_greeks3_la_CPPFLAGS = -I$(top_srcdir)/include
 app_greeks3_la_CFLAGS = -fPIC -Wall
 app_greeks3_la_LDFLAGS = -module -avoid-version -ltcmalloc
+app_greeksfd_la_SOURCES = fd.c app_greeksfd.c
+app_greeksfd_la_CPPFLAGS = -I$(top_srcdir)/include
+app_greeksfd_la_CFLAGS = -fPIC -Wall
+app_greeksfd_la_LDFLAGS = -module -avoid-version -ltcmalloc
 app_greekshs_la_SOURCES = norms.c bs.c baw.c app_greekshs.c
 app_greekshs_la_CPPFLAGS = -I$(top_srcdir)/include
 app_greekshs_la_CFLAGS = -fPIC -Wall
@@ -549,6 +560,8 @@ app_greeks3.la: $(app_greeks3_la_OBJECTS) $(app_greeks3_la_DEPENDENCIES)
 	$(app_greeks3_la_LINK) -rpath $(libdir) $(app_greeks3_la_OBJECTS) $(app_greeks3_la_LIBADD) $(LIBS)
 app_greeksbaw.la: $(app_greeksbaw_la_OBJECTS) $(app_greeksbaw_la_DEPENDENCIES) 
 	$(app_greeksbaw_la_LINK) -rpath $(libdir) $(app_greeksbaw_la_OBJECTS) $(app_greeksbaw_la_LIBADD) $(LIBS)
+app_greeksfd.la: $(app_greeksfd_la_OBJECTS) $(app_greeksfd_la_DEPENDENCIES) 
+	$(app_greeksfd_la_LINK) -rpath $(libdir) $(app_greeksfd_la_OBJECTS) $(app_greeksfd_la_LIBADD) $(LIBS)
 app_greekshs.la: $(app_greekshs_la_OBJECTS) $(app_greekshs_la_DEPENDENCIES) 
 	$(app_greekshs_la_LINK) -rpath $(libdir) $(app_greekshs_la_OBJECTS) $(app_greekshs_la_LIBADD) $(LIBS)
 app_hsv.la: $(app_hsv_la_OBJECTS) $(app_hsv_la_DEPENDENCIES) 
@@ -604,6 +617,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_greeksbaw_la-baw.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_greeksbaw_la-bs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_greeksbaw_la-norms.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_greeksfd_la-app_greeksfd.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_greeksfd_la-fd.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_greekshs_la-app_greekshs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_greekshs_la-baw.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_greekshs_la-bs.Plo@am__quote@
@@ -751,6 +766,20 @@ app_greeksbaw_la-app_greeksbaw.lo: app_greeksbaw.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='app_greeksbaw.c' object='app_greeksbaw_la-app_greeksbaw.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_greeksbaw_la_CPPFLAGS) $(CPPFLAGS) $(app_greeksbaw_la_CFLAGS) $(CFLAGS) -c -o app_greeksbaw_la-app_greeksbaw.lo `test -f 'app_greeksbaw.c' || echo '$(srcdir)/'`app_greeksbaw.c
+
+app_greeksfd_la-fd.lo: fd.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_greeksfd_la_CPPFLAGS) $(CPPFLAGS) $(app_greeksfd_la_CFLAGS) $(CFLAGS) -MT app_greeksfd_la-fd.lo -MD -MP -MF $(DEPDIR)/app_greeksfd_la-fd.Tpo -c -o app_greeksfd_la-fd.lo `test -f 'fd.c' || echo '$(srcdir)/'`fd.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_greeksfd_la-fd.Tpo $(DEPDIR)/app_greeksfd_la-fd.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='fd.c' object='app_greeksfd_la-fd.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_greeksfd_la_CPPFLAGS) $(CPPFLAGS) $(app_greeksfd_la_CFLAGS) $(CFLAGS) -c -o app_greeksfd_la-fd.lo `test -f 'fd.c' || echo '$(srcdir)/'`fd.c
+
+app_greeksfd_la-app_greeksfd.lo: app_greeksfd.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_greeksfd_la_CPPFLAGS) $(CPPFLAGS) $(app_greeksfd_la_CFLAGS) $(CFLAGS) -MT app_greeksfd_la-app_greeksfd.lo -MD -MP -MF $(DEPDIR)/app_greeksfd_la-app_greeksfd.Tpo -c -o app_greeksfd_la-app_greeksfd.lo `test -f 'app_greeksfd.c' || echo '$(srcdir)/'`app_greeksfd.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_greeksfd_la-app_greeksfd.Tpo $(DEPDIR)/app_greeksfd_la-app_greeksfd.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='app_greeksfd.c' object='app_greeksfd_la-app_greeksfd.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_greeksfd_la_CPPFLAGS) $(CPPFLAGS) $(app_greeksfd_la_CFLAGS) $(CFLAGS) -c -o app_greeksfd_la-app_greeksfd.lo `test -f 'app_greeksfd.c' || echo '$(srcdir)/'`app_greeksfd.c
 
 app_greekshs_la-norms.lo: norms.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_greekshs_la_CPPFLAGS) $(CPPFLAGS) $(app_greekshs_la_CFLAGS) $(CFLAGS) -MT app_greekshs_la-norms.lo -MD -MP -MF $(DEPDIR)/app_greekshs_la-norms.Tpo -c -o app_greekshs_la-norms.lo `test -f 'norms.c' || echo '$(srcdir)/'`norms.c

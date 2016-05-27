@@ -1,8 +1,8 @@
 lib_LTLIBRARIES = app_impv.la app_impvbaw.la app_impv2.la app_impv3.la         \
 app_impvfd.la app_hsv.la app_greeks.la app_greeksbaw.la app_greeks2.la         \
-app_greeks3.la app_greekshs.la app_vxo.la app_vsml.la app_otv.la app_otvbaw.la \
-app_otv2.la app_otv3.la app_otvhs.la app_csi300.la app_sse50.la app_sse50etf.la\
-app_vxfc.la app_quote.la
+app_greeks3.la app_greeksfd.la app_greekshs.la app_vxo.la app_vsml.la          \
+app_otv.la app_otvbaw.la app_otv2.la app_otv3.la app_otvfd.la app_otvhs.la     \
+app_csi300.la app_sse50.la app_sse50etf.la app_vxfc.la app_quote.la
 app_impv_la_SOURCES = norms.c brent.c bs.c app_impv.c
 app_impv_la_CPPFLAGS = -I$(top_srcdir)/include
 app_impv_la_CFLAGS = -fPIC -Wall
@@ -43,6 +43,10 @@ app_greeks3_la_SOURCES = trinomial.c app_greeks3.c
 app_greeks3_la_CPPFLAGS = -I$(top_srcdir)/include
 app_greeks3_la_CFLAGS = -fPIC -Wall
 app_greeks3_la_LDFLAGS = -module -avoid-version -ltcmalloc
+app_greeksfd_la_SOURCES = fd.c app_greeksfd.c
+app_greeksfd_la_CPPFLAGS = -I$(top_srcdir)/include
+app_greeksfd_la_CFLAGS = -fPIC -Wall
+app_greeksfd_la_LDFLAGS = -module -avoid-version -ltcmalloc
 app_greekshs_la_SOURCES = norms.c bs.c baw.c app_greekshs.c
 app_greekshs_la_CPPFLAGS = -I$(top_srcdir)/include
 app_greekshs_la_CFLAGS = -fPIC -Wall
@@ -71,6 +75,10 @@ app_otv3_la_SOURCES = trinomial.c app_otv3.c
 app_otv3_la_CPPFLAGS = -I$(top_srcdir)/include
 app_otv3_la_CFLAGS = -fPIC -Wall
 app_otv3_la_LDFLAGS = -module -avoid-version -ltcmalloc
+app_otvfd_la_SOURCES = fd.c app_otvfd.c
+app_otvfd_la_CPPFLAGS = -I$(top_srcdir)/include
+app_otvfd_la_CFLAGS = -fPIC -Wall
+app_otvfd_la_LDFLAGS = -module -avoid-version -ltcmalloc
 app_otvhs_la_SOURCES = norms.c bs.c baw.c app_otvhs.c
 app_otvhs_la_CPPFLAGS = -I$(top_srcdir)/include
 app_otvhs_la_CFLAGS = -fPIC -Wall

@@ -35,7 +35,7 @@
 
 /* FIXME */
 static char *app = "greeksfd";
-static char *desc = "Delta, Gamma, Theta, Vega, and Rho (Finite Differences)";
+static char *desc = "Delta, Gamma, Theta, Vega, and Rho (Finite Difference)";
 static char *fmt = "GREEKSFD,timestamp,contract,lastprice,delta,gamma,theta,vega,rho,"
 	"bidprice1,delta2,gamma2,theta2,vega2,rho2,askprice1,delta3,gamma3,theta3,vega3,rho3";
 
@@ -169,5 +169,5 @@ static int reload_module(void) {
 	return MODULE_LOAD_SUCCESS;
 }
 
-MODULE_INFO(load_module, unload_module, reload_module, "Greeks (Finite Differences) Application");
+MODULE_INFO(load_module, unload_module, reload_module, "Greeks (Finite Difference) Application");
 

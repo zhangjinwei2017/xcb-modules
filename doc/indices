@@ -1,0 +1,27 @@
+
+Xiaoye Meng <mengxiaoye at dce dot com dot cn>
+
+Black-Scholes-Merton
+    IMPV, GREEKS, OTV
+
+Barone-Adesi-Whaley
+    IMPVBAW, GREEKSBAW, OTVBAW
+
+Binomial
+    IMPV2, GREEKS2, OTV2
+
+Trinomial
+    IMPV3, GREEKS3, OTV3
+
+Finite Difference
+    IMPVFD, GREEKSFD, OTVFD
+
+Least-Squares Monte Carlo
+    IMPVLSM, GREEKSLSM, OTVLSM
+
+Historical
+    IMPVHS, GREEKSHS, OTVHS
+
+MISC
+    CSI300, SSE50, SSE50ETF, VXFC, QUOTE
+

@@ -44,7 +44,7 @@ struct prices {
 
 /* FIXME */
 static char *app = "impvfd";
-static char *desc = "Implied Volatility (Finite Differences)";
+static char *desc = "Implied Volatility (Finite Difference)";
 static char *fmt = "IMPVFD,timestamp,contract,lastprice,vol,bidprice1,vol2,askprice1,vol3,spotprice";
 static table_t spots;
 static table_t optns;
@@ -331,5 +331,5 @@ static int reload_module(void) {
 	return MODULE_LOAD_SUCCESS;
 }
 
-MODULE_INFO(load_module, unload_module, reload_module, "Implied Volatility (Finite Differences) Application");
+MODULE_INFO(load_module, unload_module, reload_module, "Implied Volatility (Finite Difference) Application");
 

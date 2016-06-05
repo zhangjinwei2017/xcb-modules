@@ -35,7 +35,7 @@
 
 /* FIXME */
 static char *app = "otvfd";
-static char *desc = "Option Theoretical Value (Finite Difference)";
+static char *desc = "Option Theoretical Value (FD)";
 static char *fmt = "OTVFD,timestamp,contract,otv,otv2,otv3";
 static struct config *cfg;
 static const char *inmsg = "vsml_msgs";
@@ -169,5 +169,5 @@ static int reload_module(void) {
 	return MODULE_LOAD_SUCCESS;
 }
 
-MODULE_INFO(load_module, unload_module, reload_module, "Option Theoretical Value (Finite Difference) Application");
+MODULE_INFO(load_module, unload_module, reload_module, "Option Theoretical Value (FD) Application");
 

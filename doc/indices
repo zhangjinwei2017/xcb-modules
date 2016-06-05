@@ -1,26 +1,40 @@
 
 Xiaoye Meng <mengxiaoye at dce dot com dot cn>
 
-Black-Scholes-Merton
-    IMPV, GREEKS, OTV
+Black-Scholes-Merton (Euro)
+    IMPV ---> GREEKS
+         \
+          --> VXO/VSML ---> OTV
 
-Barone-Adesi-Whaley
-    IMPVBAW, GREEKSBAW, OTVBAW
+Barone-Adesi-Whaley (Amer)
+    IMPVBAW ---> GREEKSBAW
+            \
+             --> VXO/VSML ---> OTVBAW
 
-Binomial
-    IMPV2, GREEKS2, OTV2
+Binomial (Amer)
+    IMPV2 ---> GREEKS2
+          \
+           --> VXO/VSML ---> OTV2
 
-Trinomial
-    IMPV3, GREEKS3, OTV3
+Trinomial (Amer)
+    IMPV3 ---> GREEKS3
+          \
+           --> VXO/VSML ---> OTV3
 
-Finite Difference
-    IMPVFD, GREEKSFD, OTVFD
+Finite Difference (Amer)
+    IMPVFD ---> GREEKSFD
+           \
+            --> VXO/VSML ---> OTVFD
 
-Least-Squares Monte Carlo
-    IMPVLSM, GREEKSLSM, OTVLSM
+Least-Squares Monte Carlo (Amer)
+    IMPVLSM ---> GREEKSLSM
+            \
+             --> VXO/VSML ---> OTVLSM
 
 Historical
-    IMPVHS, GREEKSHS, OTVHS
+    IMPVHS ---> GREEKSHS
+           \
+            --> OTVHS
 
 MISC
     CSI300, SSE50, SSE50ETF, VXFC, QUOTE

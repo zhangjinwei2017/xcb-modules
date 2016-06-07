@@ -14,6 +14,7 @@
  */
 
 #include <math.h>
+#include <stddef.h>
 #include "norms.h"
 #include "brent.h"
 #include "bs.h"
@@ -136,7 +137,7 @@ double impv_bs(double spot, double strike, double r, double d, double expiry, do
 		ce = type == EURO_CALL ? bs_call(spot, strike, r, d, high, expiry) :
 			bs_put(spot, strike, r, d, high, expiry);
 	}
-	return type == EURO_CALL ? brent(low, high, price, bs_call, spot, strike, r, d, expiry) :
-		brent(low, high, price, bs_put, spot, strike, r, d, expiry);
+	return type == EURO_CALL ? brent(low, high, price, bs_call, NULL, spot, strike, r, d, expiry, 0) :
+		brent(low, high, price, bs_put, NULL, spot, strike, r, d, expiry, 0);
 }
 

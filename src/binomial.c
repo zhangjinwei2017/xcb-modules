@@ -22,6 +22,7 @@
 #include <math.h>
 #include <xcb/macros.h>
 #include <xcb/mem.h>
+#include "brent.h"
 #include "binomial.h"
 
 /* FIXME */
@@ -250,7 +251,6 @@ void bi_amer_put_greeks(double spot, double strike, double r, double d, double v
 double impv_binomial(double spot, double strike, double r, double d, double expiry, int steps,
 	double price, int type) {
 	double low = 0.000001, high = 0.3, ce;
-	int niters = 0;
 
 	/* FIXME */
 	if (type != AMER_CALL && type != AMER_PUT)
@@ -264,18 +264,7 @@ double impv_binomial(double spot, double strike, double r, double d, double expi
 		ce = type == AMER_CALL ? bi_amer_call(spot, strike, r, d, high, expiry, steps) :
 			bi_amer_put(spot, strike, r, d, high, expiry, steps);
 	}
-	while (++niters < 500) {
-		double vol = 0.5 * (low + high);
-
-		ce = type == AMER_CALL ? bi_amer_call(spot, strike, r, d, vol, expiry, steps) :
-			bi_amer_put(spot, strike, r, d, vol, expiry, steps);
-		if (fabs(ce - price) <= 0.000001)
-			return vol;
-		if (ce < price)
-			low  = vol;
-		else
-			high = vol;
-	}
-	return NAN;
+	return type == AMER_CALL ? brent(low, high, price, NULL, bi_amer_call, spot, strike, r, d, expiry, steps) :
+		brent(low, high, price, NULL, bi_amer_put, spot, strike, r, d, expiry, steps);
 }
 

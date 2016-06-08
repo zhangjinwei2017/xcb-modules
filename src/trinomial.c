@@ -252,7 +252,8 @@ double impv_trinomial(double spot, double strike, double r, double d, double exp
 		ce = type == AMER_CALL ? tri_amer_call(spot, strike, r, d, high, expiry, steps) :
 			tri_amer_put(spot, strike, r, d, high, expiry, steps);
 	}
-	return type == AMER_CALL ? brent(low, high, price, NULL, tri_amer_call, spot, strike, r, d, expiry, steps) :
-		brent(low, high, price, NULL, tri_amer_put, spot, strike, r, d, expiry, steps);
+	return type == AMER_CALL
+		? brent(low, high, price, NULL, tri_amer_call, NULL, spot, strike, r, d, expiry, 0, steps)
+		: brent(low, high, price, NULL, tri_amer_put,  NULL, spot, strike, r, d, expiry, 0, steps);
 }
 

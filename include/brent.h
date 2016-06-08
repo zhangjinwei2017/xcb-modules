@@ -25,8 +25,11 @@
 /* FIXME: exported functions */
 extern double brent(double a, double b, double price,
 		double func (double spot, double strike, double r, double d, double vol, double expiry),
-		double func2(double spot, double strike, double r, double d, double vol, double expiry, int steps),
-		double spot, double strike, double r, double d, double expiry, int steps);
+		double func2(double spot, double strike, double r, double d, double vol, double expiry,
+			int steps),
+		double func3(double spot, double strike, double r, double d, double vol, double expiry,
+			int ssteps, int tsteps),
+		double spot, double strike, double r, double d, double expiry, int ssteps, int tsteps);
 
 #endif /* BRENT_INCLUDED */
 

@@ -137,7 +137,8 @@ double impv_bs(double spot, double strike, double r, double d, double expiry, do
 		ce = type == EURO_CALL ? bs_call(spot, strike, r, d, high, expiry) :
 			bs_put(spot, strike, r, d, high, expiry);
 	}
-	return type == EURO_CALL ? brent(low, high, price, bs_call, NULL, spot, strike, r, d, expiry, 0) :
-		brent(low, high, price, bs_put, NULL, spot, strike, r, d, expiry, 0);
+	return type == EURO_CALL
+		? brent(low, high, price, bs_call, NULL, NULL, spot, strike, r, d, expiry, 0, 0)
+		: brent(low, high, price, bs_put,  NULL, NULL, spot, strike, r, d, expiry, 0, 0);
 }
 

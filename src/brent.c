@@ -24,13 +24,20 @@
 
 double brent(double a, double b, double price,
 	double func (double spot, double strike, double r, double d, double vol, double expiry),
-	double func2(double spot, double strike, double r, double d, double vol, double expiry, int steps),
-	double spot, double strike, double r, double d, double expiry, int steps) {
+	double func2(double spot, double strike, double r, double d, double vol, double expiry,
+		int steps),
+	double func3(double spot, double strike, double r, double d, double vol, double expiry,
+		int ssteps, int tsteps),
+	double spot, double strike, double r, double d, double expiry, int ssteps, int tsteps) {
 	double fa, fb, c, fc, s, fs, dd;
 	int mflag, niters = 0;
 
-	fa = func ? func(spot, strike, r, d, a, expiry) : func2(spot, strike, r, d, a, expiry, steps);
-	fb = func ? func(spot, strike, r, d, b, expiry) : func2(spot, strike, r, d, b, expiry, steps);
+	fa = func ? func(spot, strike, r, d, a, expiry) :
+		(func2 ? func2(spot, strike, r, d, a, expiry, tsteps) :
+			func3(spot, strike, r, d, a, expiry, ssteps, tsteps));
+	fb = func ? func(spot, strike, r, d, b, expiry) :
+		(func2 ? func2(spot, strike, r, d, b, expiry, ssteps) :
+			func3(spot, strike, r, d, b, expiry, ssteps, tsteps));
 	/* root is not bracketed */
 	if ((fa - price) * (fb - price) >= 0.0)
 		return NAN;
@@ -67,7 +74,9 @@ double brent(double a, double b, double price,
 			mflag = 1;
 		} else
 			mflag = 0;
-		fs = func ? func(spot, strike, r, d, s, expiry) : func2(spot, strike, r, d, s, expiry, steps);
+		fs = func ? func(spot, strike, r, d, s, expiry) :
+			(func2 ? func2(spot, strike, r, d, s, expiry, tsteps) :
+				func3(spot, strike, r, d, s, expiry, ssteps, tsteps));
 		dd = c;
 		c = b, fc = fb;
 		if ((fa - price) * (fs - price) < 0.0) {

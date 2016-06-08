@@ -24,6 +24,7 @@
 #include <math.h>
 #include <xcb/macros.h>
 #include <xcb/mem.h>
+#include "brent.h"
 #include "fd.h"
 
 /* FIXME */
@@ -294,7 +295,6 @@ void fd_amer_put_greeks(double spot, double strike, double r, double d, double v
 double impv_fd(double spot, double strike, double r, double d, double expiry, int ssteps, int tsteps,
 	double price, int type) {
 	double low = 0.000001, high = 0.3, ce;
-	int niters = 0;
 
 	/* FIXME */
 	if (type != AMER_CALL && type != AMER_PUT)
@@ -308,18 +308,8 @@ double impv_fd(double spot, double strike, double r, double d, double expiry, in
 		ce = type == AMER_CALL ? fd_amer_call(spot, strike, r, d, high, expiry, ssteps, tsteps) :
 			fd_amer_put(spot, strike, r, d, high, expiry, ssteps, tsteps);
 	}
-	while (++niters < 500) {
-		double vol = 0.5 * (low + high);
-
-		ce = type == AMER_CALL ? fd_amer_call(spot, strike, r, d, vol, expiry, ssteps, tsteps) :
-			fd_amer_put(spot, strike, r, d, vol, expiry, ssteps, tsteps);
-		if (fabs(ce - price) <= 0.000001)
-			return vol;
-		if (ce < price)
-			low  = vol;
-		else
-			high = vol;
-	}
-	return NAN;
+	return type == AMER_CALL
+		? brent(low, high, price, NULL, NULL, fd_amer_call, spot, strike, r, d, expiry, ssteps, tsteps)
+		: brent(low, high, price, NULL, NULL, fd_amer_put,  spot, strike, r, d, expiry, ssteps, tsteps);
 }
 

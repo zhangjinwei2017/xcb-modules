@@ -264,7 +264,8 @@ double impv_binomial(double spot, double strike, double r, double d, double expi
 		ce = type == AMER_CALL ? bi_amer_call(spot, strike, r, d, high, expiry, steps) :
 			bi_amer_put(spot, strike, r, d, high, expiry, steps);
 	}
-	return type == AMER_CALL ? brent(low, high, price, NULL, bi_amer_call, spot, strike, r, d, expiry, steps) :
-		brent(low, high, price, NULL, bi_amer_put, spot, strike, r, d, expiry, steps);
+	return type == AMER_CALL
+		? brent(low, high, price, NULL, bi_amer_call, NULL, spot, strike, r, d, expiry, 0, steps)
+		: brent(low, high, price, NULL, bi_amer_put,  NULL, spot, strike, r, d, expiry, 0, steps);
 }
 

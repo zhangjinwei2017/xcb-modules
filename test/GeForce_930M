@@ -1,0 +1,64 @@
+Detected 1 CUDA Capable device(s)
+
+Device 0: "GeForce 930M"
+CUDA Driver Version / Runtime Version                                               7.5 / 7.5
+CUDA Major / Minor compute capability:                                              5.0
+Device has ECC support enabled:                                                     0
+Number of asynchronous engines:                                                     1
+Device can map host memory with cudaHostAlloc/cudaHostGetDevicePointer:             1
+Clock frequency in kilohertz:                                                       941000
+Compute mode:                                                                       0
+Device can possibly execute multiple kernels concurrently:                          1
+Device supports caching globals in L1:                                              0
+Device is integrated as opposed to discrete:                                        0
+Device is on a multi-GPU board:                                                     0
+Specified whether there is a run time limit on kernels:                             0
+Size of L2 cache in bytes:                                                          1048576
+Device supports caching locals in L1:                                               0
+Device supports allocating managed memory on this system:                           1
+Maximum size of each dimension of a grid:                                           (2147483647, 65535, 65535)
+Maximum 1D surface size:                                                            65536
+Maximum 1D layered surface dimensions:                                              (65536, 2048)
+Maximum 2D surface dimensions:                                                      (65536, 32768)
+Maximum 2D layered surface dimensions:                                              (65536, 32768, 2048)
+Maximum 3D surface dimensions:                                                      (65536, 32768, 2048)
+Maximum Cubemap surface dimensions:                                                 32768
+Maximum Cubemap layered surface dimensions:                                         (32768, 2046)
+Maximum 1D texture size:                                                            65536
+Maximum 1D layered texture dimensions:                                              (16384, 2048)
+Maximum size for 1D textures bound to linear memory:                                134217728
+Maximum 1D mipmapped texture size:                                                  16384
+Maximum 2D texture dimensions:                                                      (65536, 65536)
+Maximum 2D texture dimensions if texture gather operations have to be performed:    (16384, 16384)
+Maximum 2D layered texture dimensions:                                              (16384, 16384, 2048)
+Maximum dimensions (width, height, pitch) for 2D textures bound to pitched memory:  (65000, 65000, 1048544)
+Maximum 2D mipmapped texture dimensions:                                            (16384, 16384)
+Maximum 3D texture dimensions:                                                      (4096, 4096, 4096)
+Maximum alternate 3D texture dimensions:                                            (2048, 2048, 16384)
+Maximum Cubemap texture dimesions:                                                  16384
+Maximum Cubemap layered texture dimensions:                                         (16384, 2046)
+Maximum size of each dimension of a block:                                          (1024, 1024, 64)
+Maximum number of threads per block:                                                1024
+Maximum resident threads per multiprocessor:                                        2048
+Maximum pitch in bytes allowed by memory copies:                                    2147483647
+Global memory bus width in bits:                                                    64
+Peak memory clock frequency in kilohertz:                                           900000
+Unique identifier for a group of devices on the same multi-GPU board:               0
+Number of multiprocessors on device:                                                3
+PCI bus ID of the device:                                                           1
+PCI device ID of the device:                                                        0
+PCI domain ID of the device:                                                        0
+32-bit registers available per block:                                               65536
+32-bit registers available per multiprocessor:                                      65536
+Shared memory available per block in bytes:                                         49152
+Shared memory available per multiprocessor in bytes:                                65536
+Device supports stream priorities:                                                  1
+Alignment requirements for surfaces:                                                512
+1 if device is a Tesla device using TCC driver, 0 othrewise:                        0
+Alignment requirement for textures:                                                 512
+Pitch alignment requirement for texture references bound to pitched memory:         32
+Constant memory available on device in bytes:                                       65536
+Global memory available on device in bytes:                                         4294836224
+Device shares a unified address space with the host:                                1
+Warp size in threads:                                                               32
+

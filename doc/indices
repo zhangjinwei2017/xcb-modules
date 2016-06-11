@@ -32,9 +32,9 @@ Least-Squares Monte Carlo (Amer)
              --> VXO/VSML ---> OTVLSM
 
 Historical
-    IMPVHS ---> GREEKSHS
-           \
-            --> OTVHS
+    HSV ---> GREEKSHS
+        \
+         --> OTVHS
 
 MISC
     CSI300, SSE50, SSE50ETF, VXFC, QUOTE

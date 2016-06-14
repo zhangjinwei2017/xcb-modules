@@ -19,6 +19,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <cuda_runtime.h>
+
 /* FIXME */
 #define MAX_STEPS   4096
 #define CACHE_SIZE  256
@@ -29,10 +31,11 @@
 /* FIXME */
 static __device__ double d_pricebuf[MAX_STEPS + 16];
 static __device__ double  d_callbuf[MAX_STEPS + 16];
-static __device__ double d_callval;
+static __device__ double   d_putbuf[MAX_STEPS + 16];
 
 /* FIXME */
-static __global__ void bi_amer_call(double spot, double strike, double vdt, double pu, double pd, int steps) {
+static __global__ void bi_amer_call(double spot, double strike, double vdt, double pu, double pd,
+	int steps, double *d_callval) {
 	__shared__ double pricea[CACHE_SIZE + 1];
 	__shared__ double priceb[CACHE_SIZE + 1];
 	__shared__ double  calla[CACHE_SIZE + 1];
@@ -78,9 +81,60 @@ static __global__ void bi_amer_call(double spot, double strike, double vdt, doub
 				d_callbuf[base + tid]  = calla[tid];
 			}
 		}
-	if (threadIdx.x == 0) {
-		d_callval = calla[0];
+	if (threadIdx.x == 0)
+		*d_callval = calla[0];
+}
+
+/* FIXME */
+static __global__ void bi_amer_put(double spot, double strike, double vdt, double pu, double pd,
+	int steps, double *d_putval) {
+	__shared__ double pricea[CACHE_SIZE + 1];
+	__shared__ double priceb[CACHE_SIZE + 1];
+	__shared__ double   puta[CACHE_SIZE + 1];
+	__shared__ double   putb[CACHE_SIZE + 1];
+	const int tid = threadIdx.x;
+	int i, base;
+
+	for (i = tid; i <= steps; i += CACHE_SIZE) {
+		d_pricebuf[i] = spot * exp(vdt * (2.0 * i - steps));
+		d_putbuf[i]   = strike - spot * exp(vdt * (2.0 * i - steps));
+		d_putbuf[i]   = d_putbuf[i] > 0.0 ? d_putbuf[i] : 0.0;
 	}
+	for (i = steps; i > 0; i -= CACHE_DELTA)
+		for (base = 0; base < i; base += CACHE_STEP) {
+			int start = min(CACHE_SIZE - 1, i - base);
+			int end   = start - CACHE_DELTA;
+			int k;
+
+			__syncthreads();
+			if (tid <= start) {
+				pricea[tid] = d_pricebuf[base + tid];
+				puta[tid]   = d_putbuf[base + tid];
+			}
+			for (k = start - 1; k >= end;) {
+				double putval;
+
+				__syncthreads();
+				priceb[tid] = exp(-vdt) * pricea[tid + 1];
+				putval = pu * puta[tid + 1] + pd * puta[tid];
+				putb[tid] = putval > (strike - priceb[tid])
+					? putval : (strike - priceb[tid]);
+				k--;
+				__syncthreads();
+				pricea[tid] = exp(-vdt) * priceb[tid + 1];
+				putval = pu * putb[tid + 1] + pd * putb[tid];
+				puta[tid] = putval > (strike - pricea[tid])
+					? putval : (strike - pricea[tid]);
+				k--;
+			}
+			__syncthreads();
+			if (tid <= end) {
+				d_pricebuf[base + tid] = pricea[tid];
+				d_putbuf[base + tid]   = puta[tid];
+			}
+		}
+	if (threadIdx.x == 0)
+		*d_putval = puta[0];
 }
 
 /* FIXME */
@@ -98,10 +152,34 @@ void bi_cuda_amer_call(double spot, double strike, double r, double d, double vo
 	double dn = 1.0 / up;
 	double p_up = (exp((r - d) * dt) - dn) / (up - dn);
 	double p_dn = 1.0 - p_up;
-	double pu = Rinv * p_up;
-	double pd = Rinv * p_dn;
+	double *d_callval;
 
-	bi_amer_call<<<1, CACHE_SIZE>>>(spot, strike, vdt, pu, pd, steps);
-	cudaMemcpy(res, &d_callval, 1, cudaMemcpyDeviceToHost);
+	cudaMalloc((void **)&d_callval, sizeof (double));
+	bi_amer_call<<<1, CACHE_SIZE>>>(spot, strike, vdt, Rinv * p_up, Rinv * p_dn, steps, d_callval);
+	cudaMemcpy(res, d_callval, sizeof (double), cudaMemcpyDeviceToHost);
+	cudaFree(d_callval);
+}
+
+/* FIXME */
+void bi_cuda_amer_put(double spot, double strike, double r, double d, double vol, double expiry,
+	int steps, double *res) {
+	double dt = expiry / steps;
+	/* interest rate for each step */
+	double R = exp(r * dt);
+	/* inverse of interest rate */
+	double Rinv = 1.0 / R;
+	double vdt = vol * sqrt(dt);
+	/* up movement */
+	double up = exp(vdt);
+	/* down movement */
+	double dn = 1.0 / up;
+	double p_up = (exp((r - d) * dt) - dn) / (up - dn);
+	double p_dn = 1.0 - p_up;
+	double *d_putval;
+
+	cudaMalloc((void **)&d_putval, sizeof (double));
+	bi_amer_put<<<1, CACHE_SIZE>>>(spot, strike, vdt, Rinv * p_up, Rinv * p_dn, steps, d_putval);
+	cudaMemcpy(res, d_putval, sizeof (double), cudaMemcpyDeviceToHost);
+	cudaFree(d_putval);
 }
 

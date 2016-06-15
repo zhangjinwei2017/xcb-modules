@@ -36,7 +36,7 @@ double brent(double a, double b, double price,
 		(func2 ? func2(spot, strike, r, d, a, expiry, tsteps) :
 			func3(spot, strike, r, d, a, expiry, ssteps, tsteps));
 	fb = func ? func(spot, strike, r, d, b, expiry) :
-		(func2 ? func2(spot, strike, r, d, b, expiry, ssteps) :
+		(func2 ? func2(spot, strike, r, d, b, expiry, tsteps) :
 			func3(spot, strike, r, d, b, expiry, ssteps, tsteps));
 	/* root is not bracketed */
 	if ((fa - price) * (fb - price) >= 0.0)

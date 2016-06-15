@@ -200,7 +200,7 @@ static int impv3_exec(void *data, void *data2) {
 		if (fabs(last) <= 0.000001)
 			vol = NAN;
 		else
-			vol = impv_trinomial(spot, strike, r, r, expiry, steps, last,
+			vol = impv_tri(spot, strike, r, r, expiry, steps, last,
 				!strcasecmp(type, "C") ? AMER_CALL : AMER_PUT);
 		/* FIXME: bid price 1 */
 		if (fabs(quote->thyquote.m_dMRJG1) <= 0.000001)
@@ -208,7 +208,7 @@ static int impv3_exec(void *data, void *data2) {
 		else if (fabs(quote->thyquote.m_dMRJG1 - last) <= 0.000001)
 			vol2 = vol;
 		else
-			vol2 = impv_trinomial(spot, strike, r, r, expiry, steps, quote->thyquote.m_dMRJG1,
+			vol2 = impv_tri(spot, strike, r, r, expiry, steps, quote->thyquote.m_dMRJG1,
 				!strcasecmp(type, "C") ? AMER_CALL : AMER_PUT);
 		/* FIXME: ask price 1 */
 		if (fabs(quote->thyquote.m_dMCJG1) <= 0.000001)
@@ -216,7 +216,7 @@ static int impv3_exec(void *data, void *data2) {
 		else if (fabs(quote->thyquote.m_dMCJG1 - last) <= 0.000001)
 			vol3 = vol;
 		else
-			vol3 = impv_trinomial(spot, strike, r, r, expiry, steps, quote->thyquote.m_dMCJG1,
+			vol3 = impv_tri(spot, strike, r, r, expiry, steps, quote->thyquote.m_dMCJG1,
 				!strcasecmp(type, "C") ? AMER_CALL : AMER_PUT);
 		if ((res = ALLOC(512))) {
 			time_t t = (time_t)quote->thyquote.m_nTime;

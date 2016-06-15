@@ -37,7 +37,7 @@ extern void   tri_amer_call_greeks(double spot, double strike, double r, double 
 		int steps, double *delta, double *gamma, double *theta, double *vega, double *rho);
 extern void   tri_amer_put_greeks (double spot, double strike, double r, double d, double vol, double expiry,
 		int steps, double *delta, double *gamma, double *theta, double *vega, double *rho);
-extern double impv_trinomial(double spot, double strike, double r, double d, double expiry, int steps,
+extern double impv_tri(double spot, double strike, double r, double d, double expiry, int steps,
 		double price, int type);
 
 #endif /* TRINOMIAL_INCLUDED */

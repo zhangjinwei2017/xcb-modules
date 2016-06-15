@@ -37,7 +37,7 @@ extern void   bi_amer_call_greeks(double spot, double strike, double r, double d
 		int steps, double *delta, double *gamma, double *theta, double *vega, double *rho);
 extern void   bi_amer_put_greeks (double spot, double strike, double r, double d, double vol, double expiry,
 		int steps, double *delta, double *gamma, double *theta, double *vega, double *rho);
-extern double impv_binomial(double spot, double strike, double r, double d, double expiry, int steps,
+extern double impv_bi(double spot, double strike, double r, double d, double expiry, int steps,
 		double price, int type);
 
 #endif /* BINOMIAL_INCLUDED */

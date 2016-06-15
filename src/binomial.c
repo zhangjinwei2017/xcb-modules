@@ -248,7 +248,7 @@ void bi_amer_put_greeks(double spot, double strike, double r, double d, double v
 }
 
 /* FIXME */
-double impv_binomial(double spot, double strike, double r, double d, double expiry, int steps,
+double impv_bi(double spot, double strike, double r, double d, double expiry, int steps,
 	double price, int type) {
 	double low = 0.000001, high = 0.3, ce;
 

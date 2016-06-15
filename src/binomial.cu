@@ -20,6 +20,8 @@
  */
 
 #include <cuda_runtime.h>
+#include "impv.h"
+#include "brent.h"
 
 /* FIXME */
 #define MAX_STEPS   4096
@@ -138,8 +140,7 @@ static __global__ void bi_amer_put(double spot, double strike, double vdt, doubl
 }
 
 /* FIXME */
-void bi_cuda_amer_call(double spot, double strike, double r, double d, double vol, double expiry,
-	int steps, double *res) {
+double bi_cuda_amer_call(double spot, double strike, double r, double d, double vol, double expiry, int steps) {
 	double dt = expiry / steps;
 	/* interest rate for each step */
 	double R = exp(r * dt);
@@ -152,17 +153,17 @@ void bi_cuda_amer_call(double spot, double strike, double r, double d, double vo
 	double dn = 1.0 / up;
 	double p_up = (exp((r - d) * dt) - dn) / (up - dn);
 	double p_dn = 1.0 - p_up;
-	double *d_callval;
+	double *d_callval, res = 0.0;
 
 	cudaMalloc((void **)&d_callval, sizeof (double));
 	bi_amer_call<<<1, CACHE_SIZE>>>(spot, strike, vdt, Rinv * p_up, Rinv * p_dn, steps, d_callval);
-	cudaMemcpy(res, d_callval, sizeof (double), cudaMemcpyDeviceToHost);
+	cudaMemcpy(&res, d_callval, sizeof (double), cudaMemcpyDeviceToHost);
 	cudaFree(d_callval);
+	return res;
 }
 
 /* FIXME */
-void bi_cuda_amer_put(double spot, double strike, double r, double d, double vol, double expiry,
-	int steps, double *res) {
+double bi_cuda_amer_put(double spot, double strike, double r, double d, double vol, double expiry, int steps) {
 	double dt = expiry / steps;
 	/* interest rate for each step */
 	double R = exp(r * dt);
@@ -175,11 +176,34 @@ void bi_cuda_amer_put(double spot, double strike, double r, double d, double vol
 	double dn = 1.0 / up;
 	double p_up = (exp((r - d) * dt) - dn) / (up - dn);
 	double p_dn = 1.0 - p_up;
-	double *d_putval;
+	double *d_putval, res = 0.0;
 
 	cudaMalloc((void **)&d_putval, sizeof (double));
 	bi_amer_put<<<1, CACHE_SIZE>>>(spot, strike, vdt, Rinv * p_up, Rinv * p_dn, steps, d_putval);
-	cudaMemcpy(res, d_putval, sizeof (double), cudaMemcpyDeviceToHost);
+	cudaMemcpy(&res, d_putval, sizeof (double), cudaMemcpyDeviceToHost);
 	cudaFree(d_putval);
+	return res;
+}
+
+/* FIXME */
+double impv_bi_cuda(double spot, double strike, double r, double d, double expiry, int steps,
+	double price, int type) {
+	double low = 0.000001, high = 0.3, ce;
+
+	/* FIXME */
+	if (type != AMER_CALL && type != AMER_PUT)
+		return NAN;
+	ce = type == AMER_CALL ? bi_cuda_amer_call(spot, strike, r, d, high, expiry, steps) :
+		bi_cuda_amer_put(spot, strike, r, d, high, expiry, steps);
+	while (ce < price) {
+		high *= 2.0;
+		if (high > 1e10)
+			return NAN;
+		ce = type == AMER_CALL ? bi_cuda_amer_call(spot, strike, r, d, high, expiry, steps) :
+			bi_cuda_amer_put(spot, strike, r, d, high, expiry, steps);
+	}
+	return type == AMER_CALL
+		? brent(low, high, price, NULL, bi_cuda_amer_call, NULL, spot, strike, r, d, expiry, 0, steps)
+		: brent(low, high, price, NULL, bi_cuda_amer_put,  NULL, spot, strike, r, d, expiry, 0, steps);
 }
 

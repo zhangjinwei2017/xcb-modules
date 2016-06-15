@@ -236,7 +236,7 @@ void tri_amer_put_greeks(double spot, double strike, double r, double d, double 
 }
 
 /* FIXME */
-double impv_trinomial(double spot, double strike, double r, double d, double expiry, int steps,
+double impv_tri(double spot, double strike, double r, double d, double expiry, int steps,
 	double price, int type) {
 	double low = 0.000001, high = 0.3, ce;
 

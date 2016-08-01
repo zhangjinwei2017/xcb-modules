@@ -20,9 +20,6 @@
 
 #include <xcb/fmacros.h>
 #include <ctype.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_multifit.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -38,6 +35,7 @@
 #include <xcb/module.h>
 #include <xcb/utils.h>
 #include <xcb/basics.h>
+#include "lagrange.h"
 
 /* FIXME */
 struct scp {
@@ -51,12 +49,12 @@ struct sd {
 };
 
 /* FIXME */
-static char *app = "vsml";
-static char *desc = "Volatility Smile";
-static char *fmt = "VSML,timestamp,contract,strike1,vol,vol2,vol3,strike2,vol,vol2,vol3,...,"
+static char *app = "vintp";
+static char *desc = "Volatility Interpolation";
+static char *fmt = "VINTP,timestamp,contract,strike1,vol,vol2,vol3,strike2,vol,vol2,vol3,...,"
 	"striken,vol,vol2,vol3";
 static table_t spots;
-static struct msgs *vsml_msgs;
+static struct msgs *vintp_msgs;
 static struct config *cfg;
 static const char *inmsg = "impv_msgs";
 
@@ -69,7 +67,7 @@ static void scpfree(void *value) {
 
 static inline void load_config(void) {
 	/* FIXME */
-	if ((cfg = config_load("/etc/xcb/vsml.conf"))) {
+	if ((cfg = config_load("/etc/xcb/vintp.conf"))) {
 		char *cat = category_browse(cfg, NULL);
 		struct variable *var;
 
@@ -83,7 +81,7 @@ static inline void load_config(void) {
 							inmsg = var->value;
 					} else
 						xcb_log(XCB_LOG_WARNING, "Unknown variable '%s' in "
-							"category '%s' of vsml.conf", var->name, cat);
+							"category '%s' of vintp.conf", var->name, cat);
 					var = var->next;
 				}
 			} else if (!strcasecmp(cat, "expiries")) {
@@ -171,7 +169,7 @@ static inline void load_config(void) {
 	}
 }
 
-static int vsml_exec(void *data, void *data2) {
+static int vintp_exec(void *data, void *data2) {
 	RAII_VAR(struct msg *, msg, (struct msg *)data, msg_decr);
 	struct msgs *out = (struct msgs *)data2;
 	dstr *fields = NULL;
@@ -229,7 +227,7 @@ static int vsml_exec(void *data, void *data2) {
 			scp->pvol3 = vol3;
 		}
 		scp->suffix = *(p - 1) == '-' ? dstr_new(p + 2) : dstr_new(p + 1);
-		if (!isnan(vol2) || !isnan(vol3))
+		if (!isnan(vol) || !isnan(vol2) || !isnan(vol3))
 			scp->flag = 1;
 		if (NEW(sd) == NULL) {
 			xcb_log(XCB_LOG_WARNING, "Error allocating memory for sd");
@@ -256,6 +254,7 @@ static int vsml_exec(void *data, void *data2) {
 					(!isnan(scp->cvol) && !isnan(vol) &&
 					fabs(scp->cvol - vol) > 0.000001)) {
 					scp->cvol  = vol;
+					scp->flag  = 1;
 				}
 				if ((isnan(scp->cvol2) && !isnan(vol2)) ||
 					(!isnan(scp->cvol2) && !isnan(vol2) &&
@@ -274,6 +273,7 @@ static int vsml_exec(void *data, void *data2) {
 					(!isnan(scp->pvol) && !isnan(vol) &&
 					fabs(scp->pvol - vol) > 0.000001)) {
 					scp->pvol  = vol;
+					scp->flag  = 1;
 				}
 				if ((isnan(scp->pvol2) && !isnan(vol2)) ||
 					(!isnan(scp->pvol2) && !isnan(vol2) &&
@@ -312,7 +312,7 @@ static int vsml_exec(void *data, void *data2) {
 				scp->pvol3 = vol3;
 			}
 			scp->suffix = *(p - 1) == '-' ? dstr_new(p + 2) : dstr_new(p + 1);
-			if (!isnan(vol2) || !isnan(vol3))
+			if (!isnan(vol) || !isnan(vol2) || !isnan(vol3))
 				scp->flag = 1;
 			if (node == NULL)
 				dlist_insert_tail(sd->dlist, scp);
@@ -326,60 +326,76 @@ static int vsml_exec(void *data, void *data2) {
 				break;
 		}
 		dlist_iter_free(&iter);
-		if (node) {
-			dlist_node_t prev = dlist_node_prev(node);
-			dlist_node_t next = scp->strike > spot ? node : dlist_node_next(node);
-			dlist_t dlist = dlist_new(NULL, NULL);
-			size_t n;
-			int flag = 0;
+		if (node && dlist_node_prev(node) &&
+			dlist_node_prev(dlist_node_prev(node)) && dlist_node_next(node)) {
+			dlist_node_t node1 = dlist_head(sd->dlist);
+			dlist_node_t node2 = dlist_tail(sd->dlist);
+			struct scp *scp0  = (struct scp *)dlist_node_value(node);
+			struct scp *scp1  = (struct scp *)dlist_node_value(dlist_node_prev(node));
+			struct scp *scp12 = (struct scp *)dlist_node_value(node1);
+			struct scp *scp13 = (struct scp *)dlist_node_value(node2);
+			struct scp *scp22 = (struct scp *)dlist_node_value(node1);
+			struct scp *scp23 = (struct scp *)dlist_node_value(node2);
+			struct scp *scp32 = (struct scp *)dlist_node_value(node1);
+			struct scp *scp33 = (struct scp *)dlist_node_value(node2);
+			int flag1, flag2, flag3;
 
-			/* out-of-the-money puts */
-			while (prev) {
-				scp = (struct scp *)dlist_node_value(prev);
-				if (!isnan(scp->pvol2) && !isnan(scp->pvol3)) {
-					dlist_insert_tail(dlist, scp);
-					if (scp->flag)
-						flag = 1;
-				}
-				prev = dlist_node_prev(prev);
+			/* FIXME: move right */
+			while ((isnan(scp12->cvol) || isnan(scp12->pvol)) &&
+				node1 != dlist_node_prev(dlist_node_prev(node))) {
+				node1 = dlist_node_next(node1);
+				scp12 = (struct scp *)dlist_node_value(node1);
 			}
-			/* out-of-the-money calls */
-			while (next) {
-				scp = (struct scp *)dlist_node_value(next);
-				if (!isnan(scp->cvol2) && !isnan(scp->cvol3)) {
-					dlist_insert_tail(dlist, scp);
-					if (scp->flag)
-						flag = 1;
-				}
-				next = dlist_node_next(next);
+			/* FIXME: move left */
+			while ((isnan(scp13->cvol) || isnan(scp13->pvol)) &&
+				node2 != dlist_node_next(node)) {
+				node2 = dlist_node_prev(node2);
+				scp13 = (struct scp *)dlist_node_value(node2);
 			}
-			if ((n = dlist_length(dlist)) > 2 && flag) {
-				double fm, chisq;
-				size_t i = 0;
-				gsl_matrix *X = gsl_matrix_alloc(n, 3);
-				gsl_vector *y = gsl_vector_alloc(n);
-				gsl_vector *c = gsl_vector_alloc(3);
-				gsl_matrix *cov = gsl_matrix_alloc(3, 3);
-				gsl_multifit_linear_workspace *work = gsl_multifit_linear_alloc(n, 3);
+			/* reset */
+			node1 = dlist_head(sd->dlist), node2 = dlist_tail(sd->dlist);
+			/* FIXME: move right */
+			while ((isnan(scp22->cvol2) || isnan(scp22->pvol2)) &&
+				node1 != dlist_node_prev(dlist_node_prev(node))) {
+				node1 = dlist_node_next(node1);
+				scp22 = (struct scp *)dlist_node_value(node1);
+			}
+			/* FIXME: move left */
+			while ((isnan(scp23->cvol2) || isnan(scp23->pvol2)) &&
+				node2 != dlist_node_next(node)) {
+				node2 = dlist_node_prev(node2);
+				scp23 = (struct scp *)dlist_node_value(node2);
+			}
+			/* reset */
+			node1 = dlist_head(sd->dlist), node2 = dlist_tail(sd->dlist);
+			/* FIXME: move right */
+			while ((isnan(scp32->cvol3) || isnan(scp32->pvol3)) &&
+				node1 != dlist_node_prev(dlist_node_prev(node))) {
+				node1 = dlist_node_next(node1);
+				scp32 = (struct scp *)dlist_node_value(node1);
+			}
+			/* FIXME: move left */
+			while ((isnan(scp33->cvol3) || isnan(scp33->pvol3)) &&
+				node2 != dlist_node_next(node)) {
+				node2 = dlist_node_prev(node2);
+				scp33 = (struct scp *)dlist_node_value(node2);
+			}
+			flag1 = !isnan(scp0->cvol)   && !isnan(scp0->pvol)   &&
+				!isnan(scp1->cvol)   && !isnan(scp1->pvol)   &&
+				!isnan(scp12->cvol)  && !isnan(scp12->pvol)  &&
+				!isnan(scp13->cvol)  && !isnan(scp13->pvol)  ? 1 : 0;
+			flag2 = !isnan(scp0->cvol2)  && !isnan(scp0->pvol2)  &&
+				!isnan(scp1->cvol2)  && !isnan(scp1->pvol2)  &&
+				!isnan(scp22->cvol2) && !isnan(scp22->pvol2) &&
+				!isnan(scp23->cvol2) && !isnan(scp23->pvol2) ? 1 : 0;
+			flag3 = !isnan(scp0->cvol3)  && !isnan(scp0->pvol3)  &&
+				!isnan(scp1->cvol3)  && !isnan(scp1->pvol3)  &&
+				!isnan(scp32->cvol3) && !isnan(scp32->pvol3) &&
+				!isnan(scp33->cvol3) && !isnan(scp33->pvol3) ? 1 : 0;
+			if ((scp0->flag || scp1->flag || scp12->flag || scp13->flag || scp22->flag ||
+				scp23->flag || scp32->flag || scp33->flag) && (flag1 || flag2 || flag3)) {
 				char *res;
 
-				iter = dlist_iter_new(dlist, DLIST_START_HEAD);
-				while ((node = dlist_next(iter))) {
-					scp = (struct scp *)dlist_node_value(node);
-					fm = log(scp->strike / spot);
-					gsl_matrix_set(X, i, 0, 1.0);
-					gsl_matrix_set(X, i, 1, fm);
-					gsl_matrix_set(X, i, 2, fm * fm);
-					if (scp->strike < spot)
-						gsl_vector_set(y, i, (scp->pvol2 + scp->pvol3) / 2);
-					else
-						gsl_vector_set(y, i, (scp->cvol2 + scp->cvol3) / 2);
-					scp->flag = 0;
-					++i;
-				}
-				dlist_iter_free(&iter);
-				/* least squares fitting */
-				gsl_multifit_linear(X, y, c, cov, &chisq, work);
 				if ((res = ALLOC(4096))) {
 					char tmp[4096], tmp2[4096];
 					int off = 0, off2 = 0;
@@ -389,26 +405,81 @@ static int vsml_exec(void *data, void *data2) {
 
 					iter = dlist_iter_new(sd->dlist, DLIST_START_HEAD);
 					while ((node = dlist_next(iter))) {
-						gsl_vector *x = gsl_vector_alloc(3);
-						double y, y_err;
-
 						scp = (struct scp *)dlist_node_value(node);
-						fm = log(scp->strike / spot);
-						gsl_vector_set(x, 0, 1.0);
-						gsl_vector_set(x, 1, fm);
-						gsl_vector_set(x, 2, fm * fm);
-						gsl_multifit_linear_est(x, c, cov, &y, &y_err);
-						off  += snprintf(tmp + off,   4096 - off, "%.f,%f,%f,%f,",
-							scp->strike, y, y, y);
-						off2 += snprintf(tmp2 + off2, 4096 - off2, "%s,%f,%f,%f,",
-							scp->suffix, y, y, y);
-						gsl_vector_free(x);
+						vol = vol2 = vol3 = NAN;
+						if (flag1) {
+							vol = cubic(scp->strike, scp0->strike, scp1->strike,
+								scp12->strike, scp13->strike,
+								(scp0->cvol  + scp0->pvol)  / 2,
+								(scp1->cvol  + scp1->pvol)  / 2,
+								(scp12->cvol + scp12->pvol) / 2,
+								(scp13->cvol + scp13->pvol) / 2);
+							/* FIXME */
+							if (vol < 0.0)
+								vol = NAN;
+						}
+						if (isnan(vol)) {
+							if (!isnan(scp->cvol) && !isnan(scp->pvol))
+								vol = (scp->cvol + scp->pvol) / 2;
+							else if (!isnan(scp->cvol))
+								vol = scp->cvol;
+							else if (!isnan(scp->pvol))
+								vol = scp->pvol;
+						}
+						off  += snprintf(tmp + off,   4096 - off, "%.f,%f,",
+							scp->strike,
+							vol);
+						off2 += snprintf(tmp2 + off2, 4096 - off2, "%s,%f,",
+							scp->suffix,
+							vol);
+						if (flag2) {
+							vol2 = cubic(scp->strike, scp0->strike, scp1->strike,
+								scp22->strike, scp23->strike,
+								(scp0->cvol2  + scp0->pvol2)  / 2,
+								(scp1->cvol2  + scp1->pvol2)  / 2,
+								(scp22->cvol2 + scp22->pvol2) / 2,
+								(scp23->cvol2 + scp23->pvol2) / 2);
+							/* FIXME */
+							if (vol2 < 0.0)
+								vol2 = NAN;
+						}
+						if (isnan(vol2)) {
+							if (!isnan(scp->cvol2) && !isnan(scp->pvol2))
+								vol2 = (scp->cvol2 + scp->pvol2) / 2;
+							else if (!isnan(scp->cvol2))
+								vol2 = scp->cvol2;
+							else if (!isnan(scp->pvol2))
+								vol2 = scp->pvol2;
+						}
+						off  += snprintf(tmp + off,   4096 - off,  "%f,", vol2);
+						off2 += snprintf(tmp2 + off2, 4096 - off2, "%f,", vol2);
+						if (flag3) {
+							vol3 = cubic(scp->strike, scp0->strike, scp1->strike,
+								scp32->strike, scp33->strike,
+								(scp0->cvol3  + scp0->pvol3)  / 2,
+								(scp1->cvol3  + scp1->pvol3)  / 2,
+								(scp32->cvol3 + scp32->pvol3) / 2,
+								(scp33->cvol3 + scp33->pvol3) / 2);
+							/* FIXME */
+							if (vol3 < 0.0)
+								vol3 = NAN;
+						}
+						if (isnan(vol3)) {
+							if (!isnan(scp->cvol3) && !isnan(scp->pvol3))
+								vol3 = (scp->cvol3 + scp->pvol3) / 2;
+							else if (!isnan(scp->cvol3))
+								vol3 = scp->cvol3;
+							else if (!isnan(scp->pvol3))
+								vol3 = scp->pvol3;
+						}
+						off  += snprintf(tmp + off,   4096 - off,  "%f,", vol3);
+						off2 += snprintf(tmp2 + off2, 4096 - off2, "%f,", vol3);
 					}
 					dlist_iter_free(&iter);
 					tmp[strlen(tmp) - 1] = '\0';
 					tmp2[strlen(tmp2) - 1] = '\0';
 					strftime(datestr, sizeof datestr, "%F %T", localtime_r(&t, &lt));
-					snprintf(res, 4096, "VSML,%s.%03d,%s|%s",
+					snprintf(res, 4096, "VINTP,%s.%03d,%s|%s",
 						datestr,
 						msec,
 						spotname,
@@ -419,7 +490,7 @@ static int vsml_exec(void *data, void *data2) {
 					spotname = *(p - 1) == '-'
 						? dstr_new_len(fields[3], p - fields[3] - 1)
 						: dstr_new_len(fields[3], p - fields[3]);
-					snprintf(res, 4096, "VSML,%d,%d,%s,%s,%.2f,%f,%f,%s,%s,%s",
+					snprintf(res, 4096, "VINTP,%d,%d,%s,%s,%.2f,%f,%f,%s,%s,%s",
 						sec,
 						msec,
 						spotname,
@@ -432,15 +503,11 @@ static int vsml_exec(void *data, void *data2) {
 						fields[18]);
 					if (out2msgs(res, out) == -1)
 						FREE(res);
+					scp0->flag = scp1->flag = scp12->flag = scp13->flag =
+						scp22->flag = scp23->flag = scp32->flag = scp33->flag = 0;
 				} else
 					xcb_log(XCB_LOG_WARNING, "Error allocating memory for result");
-				gsl_multifit_linear_free(work);
-				gsl_matrix_free(cov);
-				gsl_vector_free(c);
-				gsl_vector_free(y);
-				gsl_matrix_free(X);
 			}
-			dlist_free(&dlist);
 		}
 		dstr_free(spotname);
 	}
@@ -467,24 +534,24 @@ static int load_module(void) {
 
 	spots = table_new(cmpstr, hashmurmur2, kfree, vfree);
 	load_config();
-	if (msgs_init(&vsml_msgs, "vsml_msgs", mod_info->self) == -1)
+	if (msgs_init(&vintp_msgs, "vintp_msgs", mod_info->self) == -1)
 		return MODULE_LOAD_FAILURE;
-	if (start_msgs(vsml_msgs) == -1)
+	if (start_msgs(vintp_msgs) == -1)
 		return MODULE_LOAD_FAILURE;
-	if ((res = msgs_hook_name(inmsg, vsml_exec, vsml_msgs)) < 0) {
+	if ((res = msgs_hook_name(inmsg, vintp_exec, vintp_msgs)) < 0) {
 		if (res == -2)
 			xcb_log(XCB_LOG_WARNING, "Queue '%s' not found", inmsg);
 		return MODULE_LOAD_FAILURE;
 	}
-	return register_application(app, vsml_exec, desc, fmt, mod_info->self);
+	return register_application(app, vintp_exec, desc, fmt, mod_info->self);
 }
 
 static int unload_module(void) {
-	if (check_msgs(vsml_msgs) == -1)
+	if (check_msgs(vintp_msgs) == -1)
 		return MODULE_LOAD_FAILURE;
-	msgs_unhook_name(inmsg, vsml_exec);
-	stop_msgs(vsml_msgs);
-	msgs_free(vsml_msgs);
+	msgs_unhook_name(inmsg, vintp_exec);
+	stop_msgs(vintp_msgs);
+	msgs_free(vintp_msgs);
 	config_destroy(cfg);
 	table_free(&spots);
 	return unregister_application(app);
@@ -493,11 +560,11 @@ static int unload_module(void) {
 static int reload_module(void) {
 	int res;
 
-	msgs_unhook_name(inmsg, vsml_exec);
+	msgs_unhook_name(inmsg, vintp_exec);
 	config_destroy(cfg);
 	table_clear(spots);
 	load_config();
-	if ((res = msgs_hook_name(inmsg, vsml_exec, vsml_msgs)) < 0) {
+	if ((res = msgs_hook_name(inmsg, vintp_exec, vintp_msgs)) < 0) {
 		if (res == -2)
 			xcb_log(XCB_LOG_WARNING, "Queue '%s' not found", inmsg);
 		return MODULE_LOAD_FAILURE;
@@ -505,5 +572,5 @@ static int reload_module(void) {
 	return MODULE_LOAD_SUCCESS;
 }
 
-MODULE_INFO(load_module, unload_module, reload_module, "Volatility Smile Application");
+MODULE_INFO(load_module, unload_module, reload_module, "Volatility Interpolation Application");
 

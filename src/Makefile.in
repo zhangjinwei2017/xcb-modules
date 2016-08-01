@@ -220,9 +220,15 @@ app_sse50etf_la_OBJECTS = $(am_app_sse50etf_la_OBJECTS)
 app_sse50etf_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_sse50etf_la_CFLAGS) \
 	$(CFLAGS) $(app_sse50etf_la_LDFLAGS) $(LDFLAGS) -o $@
+app_vintp_la_LIBADD =
+am_app_vintp_la_OBJECTS = app_vintp_la-lagrange.lo \
+	app_vintp_la-app_vintp.lo
+app_vintp_la_OBJECTS = $(am_app_vintp_la_OBJECTS)
+app_vintp_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_vintp_la_CFLAGS) \
+	$(CFLAGS) $(app_vintp_la_LDFLAGS) $(LDFLAGS) -o $@
 app_vsml_la_LIBADD =
-am_app_vsml_la_OBJECTS = app_vsml_la-lagrange.lo \
-	app_vsml_la-app_vsml.lo
+am_app_vsml_la_OBJECTS = app_vsml_la-app_vsml.lo
 app_vsml_la_OBJECTS = $(am_app_vsml_la_OBJECTS)
 app_vsml_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_vsml_la_CFLAGS) \
@@ -263,8 +269,8 @@ SOURCES = $(app_csi300_la_SOURCES) $(app_greeks_la_SOURCES) \
 	$(app_otvbaw_la_SOURCES) $(app_otvfd_la_SOURCES) \
 	$(app_otvhs_la_SOURCES) $(app_quote_la_SOURCES) \
 	$(app_sse50_la_SOURCES) $(app_sse50etf_la_SOURCES) \
-	$(app_vsml_la_SOURCES) $(app_vxfc_la_SOURCES) \
-	$(app_vxo_la_SOURCES)
+	$(app_vintp_la_SOURCES) $(app_vsml_la_SOURCES) \
+	$(app_vxfc_la_SOURCES) $(app_vxo_la_SOURCES)
 DIST_SOURCES = $(app_csi300_la_SOURCES) $(app_greeks_la_SOURCES) \
 	$(app_greeks2_la_SOURCES) $(app_greeks3_la_SOURCES) \
 	$(app_greeksbaw_la_SOURCES) $(app_greeksfd_la_SOURCES) \
@@ -276,8 +282,8 @@ DIST_SOURCES = $(app_csi300_la_SOURCES) $(app_greeks_la_SOURCES) \
 	$(app_otvbaw_la_SOURCES) $(app_otvfd_la_SOURCES) \
 	$(app_otvhs_la_SOURCES) $(app_quote_la_SOURCES) \
 	$(app_sse50_la_SOURCES) $(app_sse50etf_la_SOURCES) \
-	$(app_vsml_la_SOURCES) $(app_vxfc_la_SOURCES) \
-	$(app_vxo_la_SOURCES)
+	$(app_vintp_la_SOURCES) $(app_vsml_la_SOURCES) \
+	$(app_vxfc_la_SOURCES) $(app_vxo_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -393,9 +399,9 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = app_impv.la app_impvbaw.la app_impv2.la app_impv3.la         \
 app_impvfd.la app_hsv.la app_greeks.la app_greeksbaw.la app_greeks2.la         \
-app_greeks3.la app_greeksfd.la app_greekshs.la app_vxo.la app_vsml.la          \
-app_otv.la app_otvbaw.la app_otv2.la app_otv3.la app_otvfd.la app_otvhs.la     \
-app_csi300.la app_sse50.la app_sse50etf.la app_vxfc.la app_quote.la
+app_greeks3.la app_greeksfd.la app_greekshs.la app_vxo.la app_vintp.la         \
+app_vsml.la app_otv.la app_otvbaw.la app_otv2.la app_otv3.la app_otvfd.la      \
+app_otvhs.la app_csi300.la app_sse50.la app_sse50etf.la app_vxfc.la app_quote.la
 
 app_impv_la_SOURCES = norms.c brent.c bs.c app_impv.c
 app_impv_la_CPPFLAGS = -I$(top_srcdir)/include
@@ -449,10 +455,14 @@ app_vxo_la_SOURCES = app_vxo.c
 app_vxo_la_CPPFLAGS = -I$(top_srcdir)/include
 app_vxo_la_CFLAGS = -fPIC -Wall
 app_vxo_la_LDFLAGS = -module -avoid-version -ltcmalloc
-app_vsml_la_SOURCES = lagrange.c app_vsml.c
+app_vintp_la_SOURCES = lagrange.c app_vintp.c
+app_vintp_la_CPPFLAGS = -I$(top_srcdir)/include
+app_vintp_la_CFLAGS = -fPIC -Wall
+app_vintp_la_LDFLAGS = -module -avoid-version -ltcmalloc
+app_vsml_la_SOURCES = app_vsml.c
 app_vsml_la_CPPFLAGS = -I$(top_srcdir)/include
 app_vsml_la_CFLAGS = -fPIC -Wall
-app_vsml_la_LDFLAGS = -module -avoid-version -ltcmalloc
+app_vsml_la_LDFLAGS = -module -avoid-version -lgsl -lgslcblas -ltcmalloc
 app_otv_la_SOURCES = norms.c bs.c app_otv.c
 app_otv_la_CPPFLAGS = -I$(top_srcdir)/include
 app_otv_la_CFLAGS = -fPIC -Wall
@@ -606,6 +616,8 @@ app_sse50.la: $(app_sse50_la_OBJECTS) $(app_sse50_la_DEPENDENCIES)
 	$(app_sse50_la_LINK) -rpath $(libdir) $(app_sse50_la_OBJECTS) $(app_sse50_la_LIBADD) $(LIBS)
 app_sse50etf.la: $(app_sse50etf_la_OBJECTS) $(app_sse50etf_la_DEPENDENCIES) 
 	$(app_sse50etf_la_LINK) -rpath $(libdir) $(app_sse50etf_la_OBJECTS) $(app_sse50etf_la_LIBADD) $(LIBS)
+app_vintp.la: $(app_vintp_la_OBJECTS) $(app_vintp_la_DEPENDENCIES) 
+	$(app_vintp_la_LINK) -rpath $(libdir) $(app_vintp_la_OBJECTS) $(app_vintp_la_LIBADD) $(LIBS)
 app_vsml.la: $(app_vsml_la_OBJECTS) $(app_vsml_la_DEPENDENCIES) 
 	$(app_vsml_la_LINK) -rpath $(libdir) $(app_vsml_la_OBJECTS) $(app_vsml_la_LIBADD) $(LIBS)
 app_vxfc.la: $(app_vxfc_la_OBJECTS) $(app_vxfc_la_DEPENDENCIES) 
@@ -676,8 +688,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_quote_la-app_quote.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_sse50_la-app_sse50.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_sse50etf_la-app_sse50etf.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_vintp_la-app_vintp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_vintp_la-lagrange.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_vsml_la-app_vsml.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_vsml_la-lagrange.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_vxfc_la-app_vxfc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_vxo_la-app_vxo.Plo@am__quote@
 
@@ -1101,12 +1114,19 @@ app_sse50etf_la-app_sse50etf.lo: app_sse50etf.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_sse50etf_la_CPPFLAGS) $(CPPFLAGS) $(app_sse50etf_la_CFLAGS) $(CFLAGS) -c -o app_sse50etf_la-app_sse50etf.lo `test -f 'app_sse50etf.c' || echo '$(srcdir)/'`app_sse50etf.c
 
-app_vsml_la-lagrange.lo: lagrange.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_vsml_la_CPPFLAGS) $(CPPFLAGS) $(app_vsml_la_CFLAGS) $(CFLAGS) -MT app_vsml_la-lagrange.lo -MD -MP -MF $(DEPDIR)/app_vsml_la-lagrange.Tpo -c -o app_vsml_la-lagrange.lo `test -f 'lagrange.c' || echo '$(srcdir)/'`lagrange.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_vsml_la-lagrange.Tpo $(DEPDIR)/app_vsml_la-lagrange.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lagrange.c' object='app_vsml_la-lagrange.lo' libtool=yes @AMDEPBACKSLASH@
+app_vintp_la-lagrange.lo: lagrange.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_vintp_la_CPPFLAGS) $(CPPFLAGS) $(app_vintp_la_CFLAGS) $(CFLAGS) -MT app_vintp_la-lagrange.lo -MD -MP -MF $(DEPDIR)/app_vintp_la-lagrange.Tpo -c -o app_vintp_la-lagrange.lo `test -f 'lagrange.c' || echo '$(srcdir)/'`lagrange.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_vintp_la-lagrange.Tpo $(DEPDIR)/app_vintp_la-lagrange.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lagrange.c' object='app_vintp_la-lagrange.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_vsml_la_CPPFLAGS) $(CPPFLAGS) $(app_vsml_la_CFLAGS) $(CFLAGS) -c -o app_vsml_la-lagrange.lo `test -f 'lagrange.c' || echo '$(srcdir)/'`lagrange.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_vintp_la_CPPFLAGS) $(CPPFLAGS) $(app_vintp_la_CFLAGS) $(CFLAGS) -c -o app_vintp_la-lagrange.lo `test -f 'lagrange.c' || echo '$(srcdir)/'`lagrange.c
+
+app_vintp_la-app_vintp.lo: app_vintp.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_vintp_la_CPPFLAGS) $(CPPFLAGS) $(app_vintp_la_CFLAGS) $(CFLAGS) -MT app_vintp_la-app_vintp.lo -MD -MP -MF $(DEPDIR)/app_vintp_la-app_vintp.Tpo -c -o app_vintp_la-app_vintp.lo `test -f 'app_vintp.c' || echo '$(srcdir)/'`app_vintp.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_vintp_la-app_vintp.Tpo $(DEPDIR)/app_vintp_la-app_vintp.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='app_vintp.c' object='app_vintp_la-app_vintp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_vintp_la_CPPFLAGS) $(CPPFLAGS) $(app_vintp_la_CFLAGS) $(CFLAGS) -c -o app_vintp_la-app_vintp.lo `test -f 'app_vintp.c' || echo '$(srcdir)/'`app_vintp.c
 
 app_vsml_la-app_vsml.lo: app_vsml.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_vsml_la_CPPFLAGS) $(CPPFLAGS) $(app_vsml_la_CFLAGS) $(CFLAGS) -MT app_vsml_la-app_vsml.lo -MD -MP -MF $(DEPDIR)/app_vsml_la-app_vsml.Tpo -c -o app_vsml_la-app_vsml.lo `test -f 'app_vsml.c' || echo '$(srcdir)/'`app_vsml.c

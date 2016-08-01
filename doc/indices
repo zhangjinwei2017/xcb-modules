@@ -4,32 +4,32 @@ Xiaoye Meng <mengxiaoye at dce dot com dot cn>
 Black-Scholes-Merton (Euro)
     IMPV ---> GREEKS
          \
-          --> VXO/VSML ---> OTV
+          --> VXO/VINTP/VSML ---> OTV
 
 Barone-Adesi-Whaley (Amer)
     IMPVBAW ---> GREEKSBAW
             \
-             --> VXO/VSML ---> OTVBAW
+             --> VXO/VINTP/VSML ---> OTVBAW
 
 Binomial (Amer)
     IMPV2 ---> GREEKS2
           \
-           --> VXO/VSML ---> OTV2
+           --> VXO/VINTP/VSML ---> OTV2
 
 Trinomial (Amer)
     IMPV3 ---> GREEKS3
           \
-           --> VXO/VSML ---> OTV3
+           --> VXO/VINTP/VSML ---> OTV3
 
 Finite Difference (Amer)
     IMPVFD ---> GREEKSFD
            \
-            --> VXO/VSML ---> OTVFD
+            --> VXO/VINTP/VSML ---> OTVFD
 
 Least-Squares Monte Carlo (Amer)
     IMPVLSM ---> GREEKSLSM
             \
-             --> VXO/VSML ---> OTVLSM
+             --> VXO/VINTP/VSML ---> OTVLSM
 
 Historical
     HSV ---> GREEKSHS

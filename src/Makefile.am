@@ -1,8 +1,8 @@
 lib_LTLIBRARIES = app_impv.la app_impvbaw.la app_impv2.la app_impv3.la         \
 app_impvfd.la app_hsv.la app_greeks.la app_greeksbaw.la app_greeks2.la         \
-app_greeks3.la app_greeksfd.la app_greekshs.la app_vxo.la app_vsml.la          \
-app_otv.la app_otvbaw.la app_otv2.la app_otv3.la app_otvfd.la app_otvhs.la     \
-app_csi300.la app_sse50.la app_sse50etf.la app_vxfc.la app_quote.la
+app_greeks3.la app_greeksfd.la app_greekshs.la app_vxo.la app_vintp.la         \
+app_vsml.la app_otv.la app_otvbaw.la app_otv2.la app_otv3.la app_otvfd.la      \
+app_otvhs.la app_csi300.la app_sse50.la app_sse50etf.la app_vxfc.la app_quote.la
 app_impv_la_SOURCES = norms.c brent.c bs.c app_impv.c
 app_impv_la_CPPFLAGS = -I$(top_srcdir)/include
 app_impv_la_CFLAGS = -fPIC -Wall
@@ -55,10 +55,14 @@ app_vxo_la_SOURCES = app_vxo.c
 app_vxo_la_CPPFLAGS = -I$(top_srcdir)/include
 app_vxo_la_CFLAGS = -fPIC -Wall
 app_vxo_la_LDFLAGS = -module -avoid-version -ltcmalloc
-app_vsml_la_SOURCES = lagrange.c app_vsml.c
+app_vintp_la_SOURCES = lagrange.c app_vintp.c
+app_vintp_la_CPPFLAGS = -I$(top_srcdir)/include
+app_vintp_la_CFLAGS = -fPIC -Wall
+app_vintp_la_LDFLAGS = -module -avoid-version -ltcmalloc
+app_vsml_la_SOURCES = app_vsml.c
 app_vsml_la_CPPFLAGS = -I$(top_srcdir)/include
 app_vsml_la_CFLAGS = -fPIC -Wall
-app_vsml_la_LDFLAGS = -module -avoid-version -ltcmalloc
+app_vsml_la_LDFLAGS = -module -avoid-version -lgsl -lgslcblas -ltcmalloc
 app_otv_la_SOURCES = norms.c bs.c app_otv.c
 app_otv_la_CPPFLAGS = -I$(top_srcdir)/include
 app_otv_la_CFLAGS = -fPIC -Wall

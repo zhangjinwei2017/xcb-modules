@@ -29,7 +29,7 @@ double brent(double a, double b, double price,
 	double func3(double spot, double strike, double r, double d, double vol, double expiry,
 		int ssteps, int tsteps),
 	double spot, double strike, double r, double d, double expiry, int ssteps, int tsteps) {
-	double fa, fb, c, fc, s, fs, dd;
+	double fa, fb, c, fc, s, fs, dd = NAN;
 	int mflag, niters = 0;
 
 	fa = func ? func(spot, strike, r, d, a, expiry) :

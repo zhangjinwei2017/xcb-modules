@@ -425,8 +425,10 @@ static int vintp_exec(void *data, void *data2) {
 								vol = scp->cvol;
 							else if (!isnan(scp->pvol))
 								vol = scp->pvol;
+							else
+								vol = 0.01;
 						}
-						off  += snprintf(tmp + off,   4096 - off, "%.f,%f,",
+						off  += snprintf(tmp + off,   4096 - off,  "%f,%f,",
 							scp->strike,
 							vol);
 						off2 += snprintf(tmp2 + off2, 4096 - off2, "%s,%f,",
@@ -450,6 +452,8 @@ static int vintp_exec(void *data, void *data2) {
 								vol2 = scp->cvol2;
 							else if (!isnan(scp->pvol2))
 								vol2 = scp->pvol2;
+							else
+								vol2 = 0.01;
 						}
 						off  += snprintf(tmp + off,   4096 - off,  "%f,", vol2);
 						off2 += snprintf(tmp2 + off2, 4096 - off2, "%f,", vol2);
@@ -471,6 +475,8 @@ static int vintp_exec(void *data, void *data2) {
 								vol3 = scp->cvol3;
 							else if (!isnan(scp->pvol3))
 								vol3 = scp->pvol3;
+							else
+								vol3 = 0.01;
 						}
 						off  += snprintf(tmp + off,   4096 - off,  "%f,", vol3);
 						off2 += snprintf(tmp2 + off2, 4096 - off2, "%f,", vol3);

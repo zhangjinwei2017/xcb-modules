@@ -41,7 +41,7 @@
 
 /* FIXME */
 struct scp {
-	double	strike, cvol, pvol, cvol2, pvol2, cvol3, pvol3;
+	double	strike, clast, cvol, plast, pvol, cbid, cvol2, pbid, pvol2, cask, cvol3, pask, pvol3;
 	int	flag;
 	dstr	suffix;
 };
@@ -116,8 +116,11 @@ static inline void load_config(void) {
 						if ((sd = table_get_value(spots, spotname)) == NULL) {
 							if (NEW(scp)) {
 								scp->strike = strike;
+								scp->clast  = scp->plast = NAN;
 								scp->cvol   = scp->pvol  = NAN;
+								scp->cbid   = scp->pbid  = NAN;
 								scp->cvol2  = scp->pvol2 = NAN;
+								scp->cask   = scp->pask  = NAN;
 								scp->cvol3  = scp->pvol3 = NAN;
 								scp->flag   = 0;
 								scp->suffix = *(p - 1) == '-'
@@ -147,8 +150,11 @@ static inline void load_config(void) {
 							if (node == NULL || scp->strike > strike) {
 								if (NEW(scp)) {
 									scp->strike = strike;
+									scp->clast  = scp->plast = NAN;
 									scp->cvol   = scp->pvol  = NAN;
+									scp->cbid   = scp->pbid  = NAN;
 									scp->cvol2  = scp->pvol2 = NAN;
+									scp->cask   = scp->pask  = NAN;
 									scp->cvol3  = scp->pvol3 = NAN;
 									scp->flag   = 0;
 									scp->suffix = *(p - 1) == '-'
@@ -176,7 +182,7 @@ static int vsml_exec(void *data, void *data2) {
 	struct msgs *out = (struct msgs *)data2;
 	dstr *fields = NULL;
 	int nfield = 0;
-	double vol, vol2, vol3, spot, strike, r, expiry;
+	double last, vol, bid, vol2, ask, vol3, spot, strike, r, expiry;
 	int sec, msec;
 	dstr spotname;
 	char *type, *p;
@@ -189,8 +195,11 @@ static int vsml_exec(void *data, void *data2) {
 		xcb_log(XCB_LOG_WARNING, "Message '%s' garbled", msg->data);
 		goto end;
 	}
+	last     = !strcasecmp(fields[4], "nan") ? NAN : atof(fields[4]);
 	vol      = !strcasecmp(fields[5], "nan") ? NAN : atof(fields[5]);
+	bid      = !strcasecmp(fields[6], "nan") ? NAN : atof(fields[6]);
 	vol2     = !strcasecmp(fields[7], "nan") ? NAN : atof(fields[7]);
+	ask      = !strcasecmp(fields[8], "nan") ? NAN : atof(fields[8]);
 	vol3     = !strcasecmp(fields[9], "nan") ? NAN : atof(fields[9]);
 	if (isnan(vol) && isnan(vol2) && isnan(vol3))
 		goto end;
@@ -214,18 +223,30 @@ static int vsml_exec(void *data, void *data2) {
 		}
 		scp->strike = strike;
 		if (!strcasecmp(type, "C")) {
+			scp->clast = last;
 			scp->cvol  = vol;
+			scp->plast = NAN;
 			scp->pvol  = NAN;
+			scp->cbid  = bid;
 			scp->cvol2 = vol2;
+			scp->pbid  = NAN;
 			scp->pvol2 = NAN;
+			scp->cask  = ask;
 			scp->cvol3 = vol3;
+			scp->pask  = NAN;
 			scp->pvol3 = NAN;
 		} else {
+			scp->clast = NAN;
 			scp->cvol  = NAN;
+			scp->plast = last;
 			scp->pvol  = vol;
+			scp->cbid  = NAN;
 			scp->cvol2 = NAN;
+			scp->pbid  = bid;
 			scp->pvol2 = vol2;
+			scp->cask  = NAN;
 			scp->cvol3 = NAN;
+			scp->pask  = ask;
 			scp->pvol3 = vol3;
 		}
 		scp->suffix = *(p - 1) == '-' ? dstr_new(p + 2) : dstr_new(p + 1);
@@ -255,17 +276,20 @@ static int vsml_exec(void *data, void *data2) {
 				if ((isnan(scp->cvol) && !isnan(vol)) ||
 					(!isnan(scp->cvol) && !isnan(vol) &&
 					fabs(scp->cvol - vol) > 0.000001)) {
+					scp->clast = last;
 					scp->cvol  = vol;
 				}
 				if ((isnan(scp->cvol2) && !isnan(vol2)) ||
 					(!isnan(scp->cvol2) && !isnan(vol2) &&
 					fabs(scp->cvol2 - vol2) > 0.000001)) {
+					scp->cbid  = bid;
 					scp->cvol2 = vol2;
 					scp->flag  = 1;
 				}
 				if ((isnan(scp->cvol3) && !isnan(vol3)) ||
 					(!isnan(scp->cvol3) && !isnan(vol3) &&
 					fabs(scp->cvol3 - vol3) > 0.000001)) {
+					scp->cask  = ask;
 					scp->cvol3 = vol3;
 					scp->flag  = 1;
 				}
@@ -273,17 +297,20 @@ static int vsml_exec(void *data, void *data2) {
 				if ((isnan(scp->pvol) && !isnan(vol)) ||
 					(!isnan(scp->pvol) && !isnan(vol) &&
 					fabs(scp->pvol - vol) > 0.000001)) {
+					scp->plast = last;
 					scp->pvol  = vol;
 				}
 				if ((isnan(scp->pvol2) && !isnan(vol2)) ||
 					(!isnan(scp->pvol2) && !isnan(vol2) &&
 					fabs(scp->pvol2 - vol2) > 0.000001)) {
+					scp->pbid  = bid;
 					scp->pvol2 = vol2;
 					scp->flag  = 1;
 				}
 				if ((isnan(scp->pvol3) && !isnan(vol3)) ||
 					(!isnan(scp->pvol3) && !isnan(vol3) &&
 					fabs(scp->pvol3 - vol3) > 0.000001)) {
+					scp->pask  = ask;
 					scp->pvol3 = vol3;
 					scp->flag  = 1;
 				}
@@ -297,18 +324,30 @@ static int vsml_exec(void *data, void *data2) {
 			}
 			scp->strike = strike;
 			if (!strcasecmp(type, "C")) {
+				scp->clast = last;
 				scp->cvol  = vol;
+				scp->plast = NAN;
 				scp->pvol  = NAN;
+				scp->cbid  = bid;
 				scp->cvol2 = vol2;
+				scp->pbid  = NAN;
 				scp->pvol2 = NAN;
+				scp->cask  = ask;
 				scp->cvol3 = vol3;
+				scp->pask  = NAN;
 				scp->pvol3 = NAN;
 			} else {
+				scp->clast = NAN;
 				scp->cvol  = NAN;
+				scp->plast = last;
 				scp->pvol  = vol;
+				scp->cbid  = NAN;
 				scp->cvol2 = NAN;
+				scp->pbid  = bid;
 				scp->pvol2 = vol2;
+				scp->cask  = NAN;
 				scp->cvol3 = NAN;
+				scp->pask  = ask;
 				scp->pvol3 = vol3;
 			}
 			scp->suffix = *(p - 1) == '-' ? dstr_new(p + 2) : dstr_new(p + 1);
@@ -329,27 +368,37 @@ static int vsml_exec(void *data, void *data2) {
 		if (node) {
 			dlist_node_t prev = dlist_node_prev(node);
 			dlist_node_t next = scp->strike > spot ? node : dlist_node_next(node);
+			double price, preprice = NAN;
 			dlist_t dlist = dlist_new(NULL, NULL);
-			size_t n;
 			int flag = 0;
+			size_t n;
 
 			/* out-of-the-money puts */
 			while (prev) {
 				scp = (struct scp *)dlist_node_value(prev);
 				if (!isnan(scp->pvol2) && !isnan(scp->pvol3)) {
-					dlist_insert_tail(dlist, scp);
-					if (scp->flag)
-						flag = 1;
+					price = (scp->pbid + scp->pask) / 2;
+					if (isnan(preprice) || price < preprice) {
+						preprice = price;
+						dlist_insert_head(dlist, scp);
+						if (scp->flag)
+							flag = 1;
+					}
 				}
 				prev = dlist_node_prev(prev);
 			}
+			preprice = NAN;
 			/* out-of-the-money calls */
 			while (next) {
 				scp = (struct scp *)dlist_node_value(next);
 				if (!isnan(scp->cvol2) && !isnan(scp->cvol3)) {
-					dlist_insert_tail(dlist, scp);
-					if (scp->flag)
-						flag = 1;
+					price = (scp->cbid + scp->cask) / 2;
+					if (isnan(preprice) || price < preprice) {
+						preprice = price;
+						dlist_insert_tail(dlist, scp);
+						if (scp->flag)
+							flag = 1;
+					}
 				}
 				next = dlist_node_next(next);
 			}
@@ -374,7 +423,6 @@ static int vsml_exec(void *data, void *data2) {
 						gsl_vector_set(y, i, (scp->pvol2 + scp->pvol3) / 2);
 					else
 						gsl_vector_set(y, i, (scp->cvol2 + scp->cvol3) / 2);
-					scp->flag = 0;
 					++i;
 				}
 				dlist_iter_free(&iter);
@@ -398,8 +446,33 @@ static int vsml_exec(void *data, void *data2) {
 						gsl_vector_set(x, 1, fm);
 						gsl_vector_set(x, 2, fm * fm);
 						gsl_multifit_linear_est(x, c, cov, &y, &y_err);
-						off  += snprintf(tmp + off,   4096 - off, "%.f,%f,%f,%f,",
-							scp->strike, y, y, y);
+						if (y < 0.0) {
+							if (scp->strike < spot) {
+								if (!isnan(scp->pvol2) && !isnan(scp->pvol3))
+									y = (scp->pvol2 + scp->pvol3) / 2;
+								else if (!isnan(scp->pvol))
+									y = scp->pvol;
+								else if (!isnan(scp->pvol2))
+									y = scp->pvol2;
+								else if (!isnan(scp->pvol3))
+									y = scp->pvol3;
+								else
+									y = 0.01;
+							} else {
+								if (!isnan(scp->cvol2) && !isnan(scp->cvol3))
+									y = (scp->cvol2 + scp->cvol3) / 2;
+								else if (!isnan(scp->cvol))
+									y = scp->cvol;
+								else if (!isnan(scp->cvol2))
+									y = scp->cvol2;
+								else if (!isnan(scp->cvol3))
+									y = scp->cvol3;
+								else
+									y = 0.01;
+							}
+						}
+						off  += snprintf(tmp + off,   4096 - off,  "%f,%f,",
+							scp->strike, y);
 						off2 += snprintf(tmp2 + off2, 4096 - off2, "%s,%f,%f,%f,",
 							scp->suffix, y, y, y);
 						gsl_vector_free(x);
@@ -432,6 +505,12 @@ static int vsml_exec(void *data, void *data2) {
 						fields[18]);
 					if (out2msgs(res, out) == -1)
 						FREE(res);
+					iter = dlist_iter_new(dlist, DLIST_START_HEAD);
+					while ((node = dlist_next(iter))) {
+						scp = (struct scp *)dlist_node_value(node);
+						scp->flag = 0;
+					}
+					dlist_iter_free(&iter);
 				} else
 					xcb_log(XCB_LOG_WARNING, "Error allocating memory for result");
 				gsl_multifit_linear_free(work);

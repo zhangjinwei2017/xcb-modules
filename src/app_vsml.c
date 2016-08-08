@@ -471,8 +471,8 @@ static int vsml_exec(void *data, void *data2) {
 									y = 0.01;
 							}
 						}
-						off  += snprintf(tmp + off,   4096 - off,  "%f,%f,",
-							scp->strike, y);
+						off  += snprintf(tmp + off,   4096 - off,  "%f,%f,%f,%f,",
+							scp->strike, y, y, y);
 						off2 += snprintf(tmp2 + off2, 4096 - off2, "%s,%f,%f,%f,",
 							scp->suffix, y, y, y);
 						gsl_vector_free(x);

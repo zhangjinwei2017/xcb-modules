@@ -91,7 +91,7 @@ static int otv_exec(void *data, void *data2) {
 		struct tm lt;
 		char datestr[64], res[512];
 		char *q;
-		double strike;
+		double strike, call, put;
 
 		strftime(datestr, sizeof datestr, "%F %T", localtime_r(&t, &lt));
 		q = fields[i] + dstr_length(fields[i]) - 1;
@@ -101,6 +101,10 @@ static int otv_exec(void *data, void *data2) {
 			--q;
 		strike = !strncasecmp(spotname, "SH", 2) || !strncasecmp(spotname, "SZ", 2)
 			? atof(q + 1) / 1000 : atof(q + 1);
+		call   = !strcasecmp(fields[i + 1], "nan") || atof(fields[i + 1]) < 0.0
+			? NAN : bs_call(spot, strike, r, 0, atof(fields[i + 1]), expiry);
+		put    = !strcasecmp(fields[i + 1], "nan") || atof(fields[i + 1]) < 0.0
+			? NAN : bs_put (spot, strike, r, 0, atof(fields[i + 1]), expiry);
 		snprintf(res, sizeof res, "OTV,%s.%03d,%s%sC%s%s|%f,%f,%f",
 			datestr,
 			msec,
@@ -109,15 +113,17 @@ static int otv_exec(void *data, void *data2) {
 			sep,
 			fields[i],
 			/* FIXME */
-			!strcasecmp(fields[i + 1], "nan") || atof(fields[i + 1]) < 0.0
-				? NAN
-				: bs_call(spot, strike, r, 0, atof(fields[i + 1]), expiry),
+			call,
 			!strcasecmp(fields[i + 2], "nan") || atof(fields[i + 2]) < 0.0
 				? NAN
-				: bs_call(spot, strike, r, 0, atof(fields[i + 2]), expiry),
+				: (fabs(atof(fields[i + 2]) - atof(fields[i + 1])) <= 0.000001
+					? call
+					: bs_call(spot, strike, r, 0, atof(fields[i + 2]), expiry)),
 			!strcasecmp(fields[i + 3], "nan") || atof(fields[i + 3]) < 0.0
 				? NAN
-				: bs_call(spot, strike, r, 0, atof(fields[i + 3]), expiry));
+				: (fabs(atof(fields[i + 3]) - atof(fields[i + 1])) <= 0.000001
+					? call
+					: bs_call(spot, strike, r, 0, atof(fields[i + 3]), expiry)));
 		out2rmp(res);
 		snprintf(res, sizeof res, "OTV,%s.%03d,%s%sP%s%s|%f,%f,%f",
 			datestr,
@@ -127,15 +133,17 @@ static int otv_exec(void *data, void *data2) {
 			sep,
 			fields[i],
 			/* FIXME */
-			!strcasecmp(fields[i + 1], "nan") || atof(fields[i + 1]) < 0.0
-				? NAN
-				: bs_put (spot, strike, r, 0, atof(fields[i + 1]), expiry),
+			put,
 			!strcasecmp(fields[i + 2], "nan") || atof(fields[i + 2]) < 0.0
 				? NAN
-				: bs_put (spot, strike, r, 0, atof(fields[i + 2]), expiry),
+				: (fabs(atof(fields[i + 2]) - atof(fields[i + 1])) <= 0.000001
+					? put
+					: bs_put (spot, strike, r, 0, atof(fields[i + 2]), expiry)),
 			!strcasecmp(fields[i + 3], "nan") || atof(fields[i + 3]) < 0.0
 				? NAN
-				: bs_put (spot, strike, r, 0, atof(fields[i + 3]), expiry));
+				: (fabs(atof(fields[i + 3]) - atof(fields[i + 1])) <= 0.000001
+					? put
+					: bs_put (spot, strike, r, 0, atof(fields[i + 3]), expiry)));
 		out2rmp(res);
 	}
 

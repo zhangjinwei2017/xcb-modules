@@ -39,7 +39,7 @@
 
 /* FIXME */
 struct prices {
-	float	prelast, prebid1, preask1, prespot;
+	double	prelast, prebid1, preask1, prespot;
 };
 struct mm {
 	double	min, max;
@@ -99,7 +99,7 @@ static int impvbaw_exec(void *data, void *data2) {
 	Quote *quote = (Quote *)msg->data;
 	struct msgs *out = (struct msgs *)data2;
 	dstr contract;
-	float last;
+	double last;
 	char *p;
 	table_node_t node;
 
@@ -127,7 +127,7 @@ static int impvbaw_exec(void *data, void *data2) {
 	if (p && p != contract && p != contract + dstr_length(contract) - 1 &&
 		((*(p - 1) == '-' && *(p + 1) == '-') || (isdigit(*(p - 1)) && isdigit(*(p + 1))))) {
 		dstr spotname, type;
-		float strike, spot;
+		double strike, spot;
 		struct prices *prices;
 		double expiry, vol, vol2, vol3;
 		struct tm lt;
@@ -144,7 +144,7 @@ static int impvbaw_exec(void *data, void *data2) {
 			dstr_free(spotname);
 			goto end;
 		}
-		spot = table_node_float(node);
+		spot = table_node_double(node);
 		table_unlock(spots);
 		if (fabs(spot) <= 0.000001) {
 			xcb_log(XCB_LOG_WARNING, "The price of spot '%s' be zero", spotname);
@@ -267,9 +267,9 @@ static int impvbaw_exec(void *data, void *data2) {
 		table_lock(spots);
 		if ((node = table_find(spots, contract)) == NULL) {
 			if ((node = table_insert_raw(spots, contract)))
-				table_set_float(node, last);
+				table_set_double(node, last);
 		} else {
-			table_set_float(node, last);
+			table_set_double(node, last);
 			dstr_free(contract);
 		}
 		table_unlock(spots);

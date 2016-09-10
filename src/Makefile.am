@@ -1,8 +1,9 @@
 lib_LTLIBRARIES = app_impv.la app_impvbaw.la app_impv2.la app_impv3.la         \
-app_impvfd.la app_hsv.la app_greeks.la app_greeksbaw.la app_greeks2.la         \
-app_greeks3.la app_greeksfd.la app_greekshs.la app_vxo.la app_vintp.la         \
-app_vsml.la app_otv.la app_otvbaw.la app_otv2.la app_otv3.la app_otvfd.la      \
-app_otvhs.la app_csi300.la app_sse50.la app_sse50etf.la app_vxfc.la app_quote.la
+app_impvfd.la app_impvlsm.la app_hsv.la app_greeks.la app_greeksbaw.la         \
+app_greeks2.la app_greeks3.la app_greeksfd.la app_greekshs.la app_vxo.la       \
+app_vintp.la app_vsml.la app_otv.la app_otvbaw.la app_otv2.la app_otv3.la      \
+app_otvfd.la app_otvhs.la app_csi300.la app_sse50.la app_sse50etf.la           \
+app_vxfc.la app_quote.la
 app_impv_la_SOURCES = norms.c brent.c bs.c app_impv.c
 app_impv_la_CPPFLAGS = -I$(top_srcdir)/include
 app_impv_la_CFLAGS = -fPIC -Wall
@@ -23,6 +24,10 @@ app_impvfd_la_SOURCES = brent.c fd.c app_impvfd.c
 app_impvfd_la_CPPFLAGS = -I$(top_srcdir)/include
 app_impvfd_la_CFLAGS = -fPIC -Wall
 app_impvfd_la_LDFLAGS = -module -avoid-version -lgsl -ltcmalloc
+app_impvlsm_la_SOURCES = brent.c lsm.c app_impvlsm.c
+app_impvlsm_la_CPPFLAGS = -I$(top_srcdir)/include
+app_impvlsm_la_CFLAGS = -fPIC -Wall
+app_impvlsm_la_LDFLAGS = -module -avoid-version -lgsl -ltcmalloc
 app_hsv_la_SOURCES = app_hsv.c
 app_hsv_la_CPPFLAGS = -I$(top_srcdir)/include
 app_hsv_la_CFLAGS = -fPIC -Wall

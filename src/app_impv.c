@@ -36,6 +36,7 @@
 #include <xcb/module.h>
 #include <xcb/utils.h>
 #include <xcb/basics.h>
+#include "utils.h"
 #include "bs.h"
 
 /* FIXME */

@@ -120,50 +120,53 @@ app_greekshs_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_greekshs_la_CFLAGS) \
 	$(CFLAGS) $(app_greekshs_la_LDFLAGS) $(LDFLAGS) -o $@
 app_hsv_la_LIBADD =
-am_app_hsv_la_OBJECTS = app_hsv_la-app_hsv.lo
+am_app_hsv_la_OBJECTS = app_hsv_la-utils.lo app_hsv_la-app_hsv.lo
 app_hsv_la_OBJECTS = $(am_app_hsv_la_OBJECTS)
 app_hsv_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_hsv_la_CFLAGS) \
 	$(CFLAGS) $(app_hsv_la_LDFLAGS) $(LDFLAGS) -o $@
 app_impv_la_LIBADD =
-am_app_impv_la_OBJECTS = app_impv_la-norms.lo app_impv_la-brent.lo \
-	app_impv_la-bs.lo app_impv_la-app_impv.lo
+am_app_impv_la_OBJECTS = app_impv_la-utils.lo app_impv_la-norms.lo \
+	app_impv_la-brent.lo app_impv_la-bs.lo app_impv_la-app_impv.lo
 app_impv_la_OBJECTS = $(am_app_impv_la_OBJECTS)
 app_impv_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_impv_la_CFLAGS) \
 	$(CFLAGS) $(app_impv_la_LDFLAGS) $(LDFLAGS) -o $@
 app_impv2_la_LIBADD =
-am_app_impv2_la_OBJECTS = app_impv2_la-brent.lo \
+am_app_impv2_la_OBJECTS = app_impv2_la-utils.lo app_impv2_la-brent.lo \
 	app_impv2_la-binomial.lo app_impv2_la-app_impv2.lo
 app_impv2_la_OBJECTS = $(am_app_impv2_la_OBJECTS)
 app_impv2_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_impv2_la_CFLAGS) \
 	$(CFLAGS) $(app_impv2_la_LDFLAGS) $(LDFLAGS) -o $@
 app_impv3_la_LIBADD =
-am_app_impv3_la_OBJECTS = app_impv3_la-brent.lo \
+am_app_impv3_la_OBJECTS = app_impv3_la-utils.lo app_impv3_la-brent.lo \
 	app_impv3_la-trinomial.lo app_impv3_la-app_impv3.lo
 app_impv3_la_OBJECTS = $(am_app_impv3_la_OBJECTS)
 app_impv3_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_impv3_la_CFLAGS) \
 	$(CFLAGS) $(app_impv3_la_LDFLAGS) $(LDFLAGS) -o $@
 app_impvbaw_la_LIBADD =
-am_app_impvbaw_la_OBJECTS = app_impvbaw_la-norms.lo \
-	app_impvbaw_la-brent.lo app_impvbaw_la-bs.lo \
-	app_impvbaw_la-baw.lo app_impvbaw_la-app_impvbaw.lo
+am_app_impvbaw_la_OBJECTS = app_impvbaw_la-utils.lo \
+	app_impvbaw_la-norms.lo app_impvbaw_la-brent.lo \
+	app_impvbaw_la-bs.lo app_impvbaw_la-baw.lo \
+	app_impvbaw_la-app_impvbaw.lo
 app_impvbaw_la_OBJECTS = $(am_app_impvbaw_la_OBJECTS)
 app_impvbaw_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_impvbaw_la_CFLAGS) \
 	$(CFLAGS) $(app_impvbaw_la_LDFLAGS) $(LDFLAGS) -o $@
 app_impvfd_la_LIBADD =
-am_app_impvfd_la_OBJECTS = app_impvfd_la-brent.lo app_impvfd_la-fd.lo \
+am_app_impvfd_la_OBJECTS = app_impvfd_la-utils.lo \
+	app_impvfd_la-brent.lo app_impvfd_la-fd.lo \
 	app_impvfd_la-app_impvfd.lo
 app_impvfd_la_OBJECTS = $(am_app_impvfd_la_OBJECTS)
 app_impvfd_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_impvfd_la_CFLAGS) \
 	$(CFLAGS) $(app_impvfd_la_LDFLAGS) $(LDFLAGS) -o $@
 app_impvlsm_la_LIBADD =
-am_app_impvlsm_la_OBJECTS = app_impvlsm_la-brent.lo \
-	app_impvlsm_la-lsm.lo app_impvlsm_la-app_impvlsm.lo
+am_app_impvlsm_la_OBJECTS = app_impvlsm_la-utils.lo \
+	app_impvlsm_la-brent.lo app_impvlsm_la-lsm.lo \
+	app_impvlsm_la-app_impvlsm.lo
 app_impvlsm_la_OBJECTS = $(am_app_impvlsm_la_OBJECTS)
 app_impvlsm_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(app_impvlsm_la_CFLAGS) \
@@ -413,31 +416,31 @@ app_vintp.la app_vsml.la app_otv.la app_otvbaw.la app_otv2.la app_otv3.la      \
 app_otvfd.la app_otvhs.la app_csi300.la app_sse50.la app_sse50etf.la           \
 app_vxfc.la app_quote.la
 
-app_impv_la_SOURCES = norms.c brent.c bs.c app_impv.c
+app_impv_la_SOURCES = utils.c norms.c brent.c bs.c app_impv.c
 app_impv_la_CPPFLAGS = -I$(top_srcdir)/include
 app_impv_la_CFLAGS = -fPIC -Wall
 app_impv_la_LDFLAGS = -module -avoid-version -ltcmalloc
-app_impvbaw_la_SOURCES = norms.c brent.c bs.c baw.c app_impvbaw.c
+app_impvbaw_la_SOURCES = utils.c norms.c brent.c bs.c baw.c app_impvbaw.c
 app_impvbaw_la_CPPFLAGS = -I$(top_srcdir)/include
 app_impvbaw_la_CFLAGS = -fPIC -Wall
 app_impvbaw_la_LDFLAGS = -module -avoid-version -ltcmalloc
-app_impv2_la_SOURCES = brent.c binomial.c app_impv2.c
+app_impv2_la_SOURCES = utils.c brent.c binomial.c app_impv2.c
 app_impv2_la_CPPFLAGS = -I$(top_srcdir)/include
 app_impv2_la_CFLAGS = -fPIC -Wall
 app_impv2_la_LDFLAGS = -module -avoid-version -ltcmalloc
-app_impv3_la_SOURCES = brent.c trinomial.c app_impv3.c
+app_impv3_la_SOURCES = utils.c brent.c trinomial.c app_impv3.c
 app_impv3_la_CPPFLAGS = -I$(top_srcdir)/include
 app_impv3_la_CFLAGS = -fPIC -Wall
 app_impv3_la_LDFLAGS = -module -avoid-version -ltcmalloc
-app_impvfd_la_SOURCES = brent.c fd.c app_impvfd.c
+app_impvfd_la_SOURCES = utils.c brent.c fd.c app_impvfd.c
 app_impvfd_la_CPPFLAGS = -I$(top_srcdir)/include
 app_impvfd_la_CFLAGS = -fPIC -Wall
-app_impvfd_la_LDFLAGS = -module -avoid-version -lgsl -ltcmalloc
-app_impvlsm_la_SOURCES = brent.c lsm.c app_impvlsm.c
+app_impvfd_la_LDFLAGS = -module -avoid-version -lgsl -lgslcblas -ltcmalloc
+app_impvlsm_la_SOURCES = utils.c brent.c lsm.c app_impvlsm.c
 app_impvlsm_la_CPPFLAGS = -I$(top_srcdir)/include
 app_impvlsm_la_CFLAGS = -fPIC -Wall
-app_impvlsm_la_LDFLAGS = -module -avoid-version -lgsl -ltcmalloc
-app_hsv_la_SOURCES = app_hsv.c
+app_impvlsm_la_LDFLAGS = -module -avoid-version -lgsl -lgslcblas -ltcmalloc
+app_hsv_la_SOURCES = utils.c app_hsv.c
 app_hsv_la_CPPFLAGS = -I$(top_srcdir)/include
 app_hsv_la_CFLAGS = -fPIC -Wall
 app_hsv_la_LDFLAGS = -module -avoid-version -ltcmalloc
@@ -460,7 +463,7 @@ app_greeks3_la_LDFLAGS = -module -avoid-version -ltcmalloc
 app_greeksfd_la_SOURCES = fd.c app_greeksfd.c
 app_greeksfd_la_CPPFLAGS = -I$(top_srcdir)/include
 app_greeksfd_la_CFLAGS = -fPIC -Wall
-app_greeksfd_la_LDFLAGS = -module -avoid-version -lgsl -ltcmalloc
+app_greeksfd_la_LDFLAGS = -module -avoid-version -lgsl -lgslcblas -ltcmalloc
 app_greekshs_la_SOURCES = norms.c bs.c baw.c app_greekshs.c
 app_greekshs_la_CPPFLAGS = -I$(top_srcdir)/include
 app_greekshs_la_CFLAGS = -fPIC -Wall
@@ -496,7 +499,7 @@ app_otv3_la_LDFLAGS = -module -avoid-version -ltcmalloc
 app_otvfd_la_SOURCES = fd.c app_otvfd.c
 app_otvfd_la_CPPFLAGS = -I$(top_srcdir)/include
 app_otvfd_la_CFLAGS = -fPIC -Wall
-app_otvfd_la_LDFLAGS = -module -avoid-version -lgsl -ltcmalloc
+app_otvfd_la_LDFLAGS = -module -avoid-version -lgsl -lgslcblas -ltcmalloc
 app_otvhs_la_SOURCES = norms.c bs.c baw.c app_otvhs.c
 app_otvhs_la_CPPFLAGS = -I$(top_srcdir)/include
 app_otvhs_la_CFLAGS = -fPIC -Wall
@@ -666,27 +669,34 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_greekshs_la-bs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_greekshs_la-norms.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_hsv_la-app_hsv.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_hsv_la-utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv2_la-app_impv2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv2_la-binomial.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv2_la-brent.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv2_la-utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv3_la-app_impv3.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv3_la-brent.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv3_la-trinomial.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv3_la-utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv_la-app_impv.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv_la-brent.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv_la-bs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv_la-norms.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impv_la-utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvbaw_la-app_impvbaw.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvbaw_la-baw.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvbaw_la-brent.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvbaw_la-bs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvbaw_la-norms.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvbaw_la-utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvfd_la-app_impvfd.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvfd_la-brent.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvfd_la-fd.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvfd_la-utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvlsm_la-app_impvlsm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvlsm_la-brent.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvlsm_la-lsm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_impvlsm_la-utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_otv2_la-app_otv2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_otv2_la-binomial.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/app_otv3_la-app_otv3.Plo@am__quote@
@@ -860,12 +870,26 @@ app_greekshs_la-app_greekshs.lo: app_greekshs.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_greekshs_la_CPPFLAGS) $(CPPFLAGS) $(app_greekshs_la_CFLAGS) $(CFLAGS) -c -o app_greekshs_la-app_greekshs.lo `test -f 'app_greekshs.c' || echo '$(srcdir)/'`app_greekshs.c
 
+app_hsv_la-utils.lo: utils.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_hsv_la_CPPFLAGS) $(CPPFLAGS) $(app_hsv_la_CFLAGS) $(CFLAGS) -MT app_hsv_la-utils.lo -MD -MP -MF $(DEPDIR)/app_hsv_la-utils.Tpo -c -o app_hsv_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_hsv_la-utils.Tpo $(DEPDIR)/app_hsv_la-utils.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='utils.c' object='app_hsv_la-utils.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_hsv_la_CPPFLAGS) $(CPPFLAGS) $(app_hsv_la_CFLAGS) $(CFLAGS) -c -o app_hsv_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+
 app_hsv_la-app_hsv.lo: app_hsv.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_hsv_la_CPPFLAGS) $(CPPFLAGS) $(app_hsv_la_CFLAGS) $(CFLAGS) -MT app_hsv_la-app_hsv.lo -MD -MP -MF $(DEPDIR)/app_hsv_la-app_hsv.Tpo -c -o app_hsv_la-app_hsv.lo `test -f 'app_hsv.c' || echo '$(srcdir)/'`app_hsv.c
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_hsv_la-app_hsv.Tpo $(DEPDIR)/app_hsv_la-app_hsv.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='app_hsv.c' object='app_hsv_la-app_hsv.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_hsv_la_CPPFLAGS) $(CPPFLAGS) $(app_hsv_la_CFLAGS) $(CFLAGS) -c -o app_hsv_la-app_hsv.lo `test -f 'app_hsv.c' || echo '$(srcdir)/'`app_hsv.c
+
+app_impv_la-utils.lo: utils.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv_la_CPPFLAGS) $(CPPFLAGS) $(app_impv_la_CFLAGS) $(CFLAGS) -MT app_impv_la-utils.lo -MD -MP -MF $(DEPDIR)/app_impv_la-utils.Tpo -c -o app_impv_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_impv_la-utils.Tpo $(DEPDIR)/app_impv_la-utils.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='utils.c' object='app_impv_la-utils.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv_la_CPPFLAGS) $(CPPFLAGS) $(app_impv_la_CFLAGS) $(CFLAGS) -c -o app_impv_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
 
 app_impv_la-norms.lo: norms.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv_la_CPPFLAGS) $(CPPFLAGS) $(app_impv_la_CFLAGS) $(CFLAGS) -MT app_impv_la-norms.lo -MD -MP -MF $(DEPDIR)/app_impv_la-norms.Tpo -c -o app_impv_la-norms.lo `test -f 'norms.c' || echo '$(srcdir)/'`norms.c
@@ -895,6 +919,13 @@ app_impv_la-app_impv.lo: app_impv.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv_la_CPPFLAGS) $(CPPFLAGS) $(app_impv_la_CFLAGS) $(CFLAGS) -c -o app_impv_la-app_impv.lo `test -f 'app_impv.c' || echo '$(srcdir)/'`app_impv.c
 
+app_impv2_la-utils.lo: utils.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv2_la_CPPFLAGS) $(CPPFLAGS) $(app_impv2_la_CFLAGS) $(CFLAGS) -MT app_impv2_la-utils.lo -MD -MP -MF $(DEPDIR)/app_impv2_la-utils.Tpo -c -o app_impv2_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_impv2_la-utils.Tpo $(DEPDIR)/app_impv2_la-utils.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='utils.c' object='app_impv2_la-utils.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv2_la_CPPFLAGS) $(CPPFLAGS) $(app_impv2_la_CFLAGS) $(CFLAGS) -c -o app_impv2_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+
 app_impv2_la-brent.lo: brent.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv2_la_CPPFLAGS) $(CPPFLAGS) $(app_impv2_la_CFLAGS) $(CFLAGS) -MT app_impv2_la-brent.lo -MD -MP -MF $(DEPDIR)/app_impv2_la-brent.Tpo -c -o app_impv2_la-brent.lo `test -f 'brent.c' || echo '$(srcdir)/'`brent.c
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_impv2_la-brent.Tpo $(DEPDIR)/app_impv2_la-brent.Plo
@@ -916,6 +947,13 @@ app_impv2_la-app_impv2.lo: app_impv2.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv2_la_CPPFLAGS) $(CPPFLAGS) $(app_impv2_la_CFLAGS) $(CFLAGS) -c -o app_impv2_la-app_impv2.lo `test -f 'app_impv2.c' || echo '$(srcdir)/'`app_impv2.c
 
+app_impv3_la-utils.lo: utils.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv3_la_CPPFLAGS) $(CPPFLAGS) $(app_impv3_la_CFLAGS) $(CFLAGS) -MT app_impv3_la-utils.lo -MD -MP -MF $(DEPDIR)/app_impv3_la-utils.Tpo -c -o app_impv3_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_impv3_la-utils.Tpo $(DEPDIR)/app_impv3_la-utils.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='utils.c' object='app_impv3_la-utils.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv3_la_CPPFLAGS) $(CPPFLAGS) $(app_impv3_la_CFLAGS) $(CFLAGS) -c -o app_impv3_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+
 app_impv3_la-brent.lo: brent.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv3_la_CPPFLAGS) $(CPPFLAGS) $(app_impv3_la_CFLAGS) $(CFLAGS) -MT app_impv3_la-brent.lo -MD -MP -MF $(DEPDIR)/app_impv3_la-brent.Tpo -c -o app_impv3_la-brent.lo `test -f 'brent.c' || echo '$(srcdir)/'`brent.c
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_impv3_la-brent.Tpo $(DEPDIR)/app_impv3_la-brent.Plo
@@ -936,6 +974,13 @@ app_impv3_la-app_impv3.lo: app_impv3.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='app_impv3.c' object='app_impv3_la-app_impv3.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impv3_la_CPPFLAGS) $(CPPFLAGS) $(app_impv3_la_CFLAGS) $(CFLAGS) -c -o app_impv3_la-app_impv3.lo `test -f 'app_impv3.c' || echo '$(srcdir)/'`app_impv3.c
+
+app_impvbaw_la-utils.lo: utils.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impvbaw_la_CPPFLAGS) $(CPPFLAGS) $(app_impvbaw_la_CFLAGS) $(CFLAGS) -MT app_impvbaw_la-utils.lo -MD -MP -MF $(DEPDIR)/app_impvbaw_la-utils.Tpo -c -o app_impvbaw_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_impvbaw_la-utils.Tpo $(DEPDIR)/app_impvbaw_la-utils.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='utils.c' object='app_impvbaw_la-utils.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impvbaw_la_CPPFLAGS) $(CPPFLAGS) $(app_impvbaw_la_CFLAGS) $(CFLAGS) -c -o app_impvbaw_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
 
 app_impvbaw_la-norms.lo: norms.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impvbaw_la_CPPFLAGS) $(CPPFLAGS) $(app_impvbaw_la_CFLAGS) $(CFLAGS) -MT app_impvbaw_la-norms.lo -MD -MP -MF $(DEPDIR)/app_impvbaw_la-norms.Tpo -c -o app_impvbaw_la-norms.lo `test -f 'norms.c' || echo '$(srcdir)/'`norms.c
@@ -972,6 +1017,13 @@ app_impvbaw_la-app_impvbaw.lo: app_impvbaw.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impvbaw_la_CPPFLAGS) $(CPPFLAGS) $(app_impvbaw_la_CFLAGS) $(CFLAGS) -c -o app_impvbaw_la-app_impvbaw.lo `test -f 'app_impvbaw.c' || echo '$(srcdir)/'`app_impvbaw.c
 
+app_impvfd_la-utils.lo: utils.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impvfd_la_CPPFLAGS) $(CPPFLAGS) $(app_impvfd_la_CFLAGS) $(CFLAGS) -MT app_impvfd_la-utils.lo -MD -MP -MF $(DEPDIR)/app_impvfd_la-utils.Tpo -c -o app_impvfd_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_impvfd_la-utils.Tpo $(DEPDIR)/app_impvfd_la-utils.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='utils.c' object='app_impvfd_la-utils.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impvfd_la_CPPFLAGS) $(CPPFLAGS) $(app_impvfd_la_CFLAGS) $(CFLAGS) -c -o app_impvfd_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+
 app_impvfd_la-brent.lo: brent.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impvfd_la_CPPFLAGS) $(CPPFLAGS) $(app_impvfd_la_CFLAGS) $(CFLAGS) -MT app_impvfd_la-brent.lo -MD -MP -MF $(DEPDIR)/app_impvfd_la-brent.Tpo -c -o app_impvfd_la-brent.lo `test -f 'brent.c' || echo '$(srcdir)/'`brent.c
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_impvfd_la-brent.Tpo $(DEPDIR)/app_impvfd_la-brent.Plo
@@ -992,6 +1044,13 @@ app_impvfd_la-app_impvfd.lo: app_impvfd.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='app_impvfd.c' object='app_impvfd_la-app_impvfd.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impvfd_la_CPPFLAGS) $(CPPFLAGS) $(app_impvfd_la_CFLAGS) $(CFLAGS) -c -o app_impvfd_la-app_impvfd.lo `test -f 'app_impvfd.c' || echo '$(srcdir)/'`app_impvfd.c
+
+app_impvlsm_la-utils.lo: utils.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impvlsm_la_CPPFLAGS) $(CPPFLAGS) $(app_impvlsm_la_CFLAGS) $(CFLAGS) -MT app_impvlsm_la-utils.lo -MD -MP -MF $(DEPDIR)/app_impvlsm_la-utils.Tpo -c -o app_impvlsm_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/app_impvlsm_la-utils.Tpo $(DEPDIR)/app_impvlsm_la-utils.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='utils.c' object='app_impvlsm_la-utils.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impvlsm_la_CPPFLAGS) $(CPPFLAGS) $(app_impvlsm_la_CFLAGS) $(CFLAGS) -c -o app_impvlsm_la-utils.lo `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
 
 app_impvlsm_la-brent.lo: brent.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(app_impvlsm_la_CPPFLAGS) $(CPPFLAGS) $(app_impvlsm_la_CFLAGS) $(CFLAGS) -MT app_impvlsm_la-brent.lo -MD -MP -MF $(DEPDIR)/app_impvlsm_la-brent.Tpo -c -o app_impvlsm_la-brent.lo `test -f 'brent.c' || echo '$(srcdir)/'`brent.c

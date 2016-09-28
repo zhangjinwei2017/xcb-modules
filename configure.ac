@@ -10,6 +10,7 @@ AC_CONFIG_SRCDIR([src/bs.c])
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_LIBTOOL
+AM_PROG_CC_C_O
 
 # Checks for libraries.
 # FIXME
@@ -28,7 +29,8 @@ strncasecmp strrchr])
 AC_CONFIG_FILES([Makefile
                  conf/Makefile
                  misc/Makefile
-                 src/Makefile])
+                 src/Makefile
+                 test/Makefile])
 AC_OUTPUT
 
 echo "

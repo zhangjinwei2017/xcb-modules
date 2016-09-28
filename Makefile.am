@@ -1,3 +1,3 @@
 ACLOCAL_AMFLAGS = -I m4
-SUBDIRS = conf misc src
+SUBDIRS = conf misc src test
 

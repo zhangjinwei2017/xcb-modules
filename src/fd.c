@@ -81,7 +81,7 @@ double fd_amer_call(double spot, double strike, double r, double d, double vol, 
 		for (i = 1; i < M; ++i)
 			gsl_vector_set(x, i, MAX(gsl_vector_get(x, i), prices[i] - strike));
 	}
-	res = gsl_vector_get(x, M / 2);
+	res = gsl_vector_get(x, M / 2 - 1);
 	gsl_vector_free(x);
 	gsl_vector_free(b);
 	gsl_vector_free(f);
@@ -133,7 +133,7 @@ double fd_amer_put(double spot, double strike, double r, double d, double vol, d
 		for (i = 1; i < M; ++i)
 			gsl_vector_set(x, i, MAX(gsl_vector_get(x, i), strike - prices[i]));
 	}
-	res = gsl_vector_get(x, M / 2);
+	res = gsl_vector_get(x, M / 2 - 1);
 	gsl_vector_free(x);
 	gsl_vector_free(b);
 	gsl_vector_free(f);
@@ -186,14 +186,14 @@ void fd_amer_call_greeks(double spot, double strike, double r, double d, double 
 		for (i = 1; i < M; ++i)
 			gsl_vector_set(x, i, MAX(gsl_vector_get(x, i), prices[i] - strike));
 	}
-	f12 = gsl_vector_get(x, M / 2 + 1);
-	f11 = gsl_vector_get(x, M / 2);
-	f10 = gsl_vector_get(x, M / 2 - 1);
+	f12 = gsl_vector_get(x, M / 2);
+	f11 = gsl_vector_get(x, M / 2 - 1);
+	f10 = gsl_vector_get(x, M / 2 - 2);
 	gsl_vector_memcpy(b, x);
 	gsl_linalg_solve_tridiag(diag, e, f, b, x);
 	for (i = 1; i < M; ++i)
 		gsl_vector_set(x, i, MAX(gsl_vector_get(x, i), prices[i] - strike));
-	f00 = gsl_vector_get(x, M / 2);
+	f00 = gsl_vector_get(x, M / 2 - 1);
 	*delta = (f12 - f10) / (2 * ds);
 	*gamma = (f12 - 2 * f11 + f10) / (ds * ds);
 	*theta = (f11 - f00) / dt;
@@ -250,14 +250,14 @@ void fd_amer_put_greeks(double spot, double strike, double r, double d, double v
 		for (i = 1; i < M; ++i)
 			gsl_vector_set(x, i, MAX(gsl_vector_get(x, i), strike - prices[i]));
 	}
-	f12 = gsl_vector_get(x, M / 2 + 1);
-	f11 = gsl_vector_get(x, M / 2);
-	f10 = gsl_vector_get(x, M / 2 - 1);
+	f12 = gsl_vector_get(x, M / 2);
+	f11 = gsl_vector_get(x, M / 2 - 1);
+	f10 = gsl_vector_get(x, M / 2 - 2);
 	gsl_vector_memcpy(b, x);
 	gsl_linalg_solve_tridiag(diag, e, f, b, x);
 	for (i = 1; i < M; ++i)
 		gsl_vector_set(x, i, MAX(gsl_vector_get(x, i), strike - prices[i]));
-	f00 = gsl_vector_get(x, M / 2);
+	f00 = gsl_vector_get(x, M / 2 - 1);
 	*delta = (f12 - f10) / (2 * ds);
 	*gamma = (f12 - 2 * f11 + f10) / (ds * ds);
 	*theta = (f11 - f00) / dt;

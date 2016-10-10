@@ -121,7 +121,7 @@ double lsm_amer_call(double spot, double strike, double r, double d, double vol,
 	gsl_matrix_free(c);
 	gsl_matrix_free(s);
 	gsl_matrix_free(a);
-	return NAN;
+	return res;
 }
 
 /* FIXME */

@@ -1,7 +1,8 @@
 /*
  * Copyright (c) 2013-2016, Dalian Futures Information Technology Co., Ltd.
  *
- * Gaohang Wu <wugaohang at dce dot com dot cn>
+ * Gaohang Wu  <wugaohang at dce dot com dot cn>
+ * Xiaoye Meng <mengxiaoye at dce dot com dot cn>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +19,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <gsl/gsl_blas.h>
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_randist.h>
@@ -68,17 +70,22 @@ double lsm_amer_call(double spot, double strike, double r, double d, double vol,
 		}
 	for (j = tsteps - 1; j >= 1; --j) {
 		int k = 0;
-		gsl_vector *tau, *y, *C, *residual;
 		gsl_matrix *R;
+		gsl_vector *tau, *y, *x, *residual, *cf;
+		gsl_matrix_view X, CF;
 
 		for (i = 0; i < ssteps; ++i)
 			if (gsl_matrix_get(s, i, j) > strike)
 				++k;
+		/* FIXME */
+		if (k == 0)
+			continue;
 		R        = gsl_matrix_alloc(k, 3);
 		tau      = gsl_vector_alloc(3);
 		y        = gsl_vector_alloc(k);
-		C        = gsl_vector_alloc(k);
+		x        = gsl_vector_alloc(3);
 		residual = gsl_vector_alloc(k);
+		cf       = gsl_vector_alloc(k);
 		k = 0;
 		for (i = 0; i < ssteps; ++i)
 			if (gsl_matrix_get(s, i, j) > strike) {
@@ -86,20 +93,24 @@ double lsm_amer_call(double spot, double strike, double r, double d, double vol,
 
 				gsl_matrix_set(R, k, 0, 1);
 				gsl_matrix_set(R, k, 1, 1 - tmp);
-				gsl_matrix_set(R, k, 2, (2 - 4 * tmp - tmp * tmp) / 2);
+				gsl_matrix_set(R, k, 2, 1 - 2 * tmp - tmp * tmp / 2);
 				gsl_vector_set(y, k++, gsl_matrix_get(c, i, j + 1) * exp(-r * dt));
 			}
 		gsl_linalg_QR_decomp(R, tau);
-		gsl_linalg_QR_lssolve(R, tau, y, C, residual);
+		gsl_linalg_QR_lssolve(R, tau, y, x, residual);
+		X  = gsl_matrix_view_vector(x,  3, 1);
+		CF = gsl_matrix_view_vector(cf, k, 1);
+		gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, R, &X.matrix, 0.0, &CF.matrix);
 		k = 0;
 		for (i = 0; i < ssteps; ++i)
 			if (gsl_matrix_get(s, i, j) > strike &&
-				MAX(0.0, gsl_matrix_get(s, i, j) - strike) > gsl_vector_get(C, k++))
+				MAX(0.0, gsl_matrix_get(s, i, j) - strike) > gsl_vector_get(cf, k++))
 				gsl_matrix_set(c, i, j, MAX(0.0, gsl_matrix_get(s, i, j) - strike));
 			else
 				gsl_matrix_set(c, i, j, gsl_matrix_get(c, i, j + 1) * exp(-r * dt));
+		gsl_vector_free(cf);
 		gsl_vector_free(residual);
-		gsl_vector_free(C);
+		gsl_vector_free(x);
 		gsl_vector_free(y);
 		gsl_vector_free(tau);
 		gsl_matrix_free(R);
@@ -136,17 +147,22 @@ double lsm_amer_put(double spot, double strike, double r, double d, double vol, 
 		}
 	for (j = tsteps - 1; j >= 1; --j) {
 		int k = 0;
-		gsl_vector *tau, *y, *C, *residual;
 		gsl_matrix *R;
+		gsl_vector *tau, *y, *x, *residual, *cf;
+		gsl_matrix_view X, CF;
 
 		for (i = 0; i < ssteps; ++i)
 			if (gsl_matrix_get(s, i, j) < strike)
 				++k;
+		/* FIXME */
+		if (k == 0)
+			continue;
 		R        = gsl_matrix_alloc(k, 3);
 		tau      = gsl_vector_alloc(3);
 		y        = gsl_vector_alloc(k);
-		C        = gsl_vector_alloc(k);
+		x        = gsl_vector_alloc(3);
 		residual = gsl_vector_alloc(k);
+		cf       = gsl_vector_alloc(k);
 		k = 0;
 		for (i = 0; i < ssteps; ++i)
 			if (gsl_matrix_get(s, i, j) < strike) {
@@ -154,20 +170,24 @@ double lsm_amer_put(double spot, double strike, double r, double d, double vol, 
 
 				gsl_matrix_set(R, k, 0, 1);
 				gsl_matrix_set(R, k, 1, 1 - tmp);
-				gsl_matrix_set(R, k, 2, (2 - 4 * tmp - tmp * tmp) / 2);
+				gsl_matrix_set(R, k, 2, 1 - 2 * tmp - tmp * tmp / 2);
 				gsl_vector_set(y, k++, gsl_matrix_get(c, i, j + 1) * exp(-r * dt));
 			}
 		gsl_linalg_QR_decomp(R, tau);
-		gsl_linalg_QR_lssolve(R, tau, y, C, residual);
+		gsl_linalg_QR_lssolve(R, tau, y, x, residual);
+		X  = gsl_matrix_view_vector(x,  3, 1);
+		CF = gsl_matrix_view_vector(cf, k, 1);
+		gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, R, &X.matrix, 0.0, &CF.matrix);
 		k = 0;
 		for (i = 0; i < ssteps; ++i)
 			if (gsl_matrix_get(s, i, j) < strike &&
-				MAX(0.0, strike - gsl_matrix_get(s, i, j)) > gsl_vector_get(C, k++))
+				MAX(0.0, strike - gsl_matrix_get(s, i, j)) > gsl_vector_get(cf, k++))
 				gsl_matrix_set(c, i, j, MAX(0.0, strike - gsl_matrix_get(s, i, j)));
 			else
 				gsl_matrix_set(c, i, j, gsl_matrix_get(c, i, j + 1) * exp(-r * dt));
+		gsl_vector_free(cf);
 		gsl_vector_free(residual);
-		gsl_vector_free(C);
+		gsl_vector_free(x);
 		gsl_vector_free(y);
 		gsl_vector_free(tau);
 		gsl_matrix_free(R);

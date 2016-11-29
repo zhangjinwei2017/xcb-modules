@@ -1,7 +1,8 @@
 /*
  * Copyright (c) 2013-2016, Dalian Futures Information Technology Co., Ltd.
  *
- * Gaohang Wu <wugaohang at dce dot com dot cn>
+ * Gaohang Wu  <wugaohang at dce dot com dot cn>
+ * Xiaoye Meng <mengxiaoye at dce dot com dot cn>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

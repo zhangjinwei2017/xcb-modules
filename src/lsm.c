@@ -33,10 +33,10 @@
 
 /* FIXME */
 static gsl_matrix *randn(int m, int n, int antithetic, int moment_matching) {
-	gsl_matrix *a = gsl_matrix_alloc(m, n);
 	const gsl_rng_type *T = gsl_rng_default;
 	gsl_rng *r;
 	int i, j, k = 0;
+	gsl_matrix *a = gsl_matrix_alloc(m, n);
 	double data[m * n];
 
 	gsl_rng_default_seed = time(NULL);
@@ -49,7 +49,7 @@ static gsl_matrix *randn(int m, int n, int antithetic, int moment_matching) {
 				gsl_matrix_set(a, i, j, gsl_ran_gaussian(r, 1.0));
 				data[k++] = gsl_matrix_get(a, i, j);
 				if (i + m2 < m) {
-					gsl_matrix_set(a, i + m2, j, -1.0 * gsl_matrix_get(a, i, j));
+					gsl_matrix_set(a, i + m2, j, -gsl_matrix_get(a, i, j));
 					data[k++] = gsl_matrix_get(a, i + m2, j);
 				}
 			}
@@ -140,7 +140,7 @@ double lsm_amer_call(double spot, double strike, double r, double d, double vol,
 			if (gsl_matrix_get(s, i, j) > strike)
 				++k;
 		/* FIXME */
-		if (k > 1) {
+		if (k > 0) {
 			gsl_matrix *R, *R2;
 			gsl_vector *y, *x, *cf;
 			double sum;
@@ -225,7 +225,7 @@ double lsm_amer_put(double spot, double strike, double r, double d, double vol, 
 			if (gsl_matrix_get(s, i, j) < strike)
 				++k;
 		/* FIXME */
-		if (k > 1) {
+		if (k > 0) {
 			gsl_matrix *R, *R2;
 			gsl_vector *y, *x, *cf;
 			double sum;

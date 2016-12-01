@@ -92,12 +92,12 @@ static gsl_matrix *pinv(gsl_matrix *R) {
 	for (i = 0; i < A->size2; ++i)
 		for (j = 0; j < A->size1; ++j) {
 			int k;
-			double sum = 0.0;
+			double tmp = 0.0;
 
 			for (k = 0; k < A->size2; ++k)
-				sum += gsl_matrix_get(V, i, k) / gsl_vector_get(S, k) *
+				tmp += gsl_matrix_get(V, i, k) / gsl_vector_get(S, k) *
 					gsl_matrix_get(A, j, k);
-			gsl_matrix_set(X, i, j, sum);
+			gsl_matrix_set(X, i, j, tmp);
 		}
 	gsl_vector_free(work);
 	gsl_vector_free(S);
@@ -143,7 +143,7 @@ double lsm_amer_call(double spot, double strike, double r, double d, double vol,
 		if (k > 0) {
 			gsl_matrix *R, *R2;
 			gsl_vector *y, *x, *cf;
-			double sum;
+			double tmp;
 
 			R  = gsl_matrix_alloc(k, 3);
 			y  = gsl_vector_alloc(k);
@@ -152,8 +152,7 @@ double lsm_amer_call(double spot, double strike, double r, double d, double vol,
 			k = 0;
 			for (i = 0; i < ssteps; ++i)
 				if (gsl_matrix_get(s, i, j) > strike) {
-					double tmp = gsl_matrix_get(s, i, j) / spot;
-
+					tmp = gsl_matrix_get(s, i, j) / spot;
 					gsl_matrix_set(R, k, 0, 1);
 					gsl_matrix_set(R, k, 1, 1 - tmp);
 					gsl_matrix_set(R, k, 2, 1 - 2 * tmp - tmp * tmp / 2);
@@ -161,16 +160,16 @@ double lsm_amer_call(double spot, double strike, double r, double d, double vol,
 				}
 			R2 = pinv(R);
 			for (i = 0; i < x->size; ++i) {
-				sum = 0.0;
+				tmp = 0.0;
 				for (k = 0; k < R2->size2; ++k)
-					sum += gsl_matrix_get(R2, i, k) * gsl_vector_get(y, k);
-				gsl_vector_set(x, i, sum);
+					tmp += gsl_matrix_get(R2, i, k) * gsl_vector_get(y, k);
+				gsl_vector_set(x, i, tmp);
 			}
 			for (i = 0; i < cf->size; ++i) {
-				sum = 0.0;
+				tmp = 0.0;
 				for (k = 0; k < R->size2; ++k)
-					sum += gsl_matrix_get(R, i, k) * gsl_vector_get(x, k);
-				gsl_vector_set(cf, i, sum);
+					tmp += gsl_matrix_get(R, i, k) * gsl_vector_get(x, k);
+				gsl_vector_set(cf, i, tmp);
 			}
 			k = 0;
 			for (i = 0; i < ssteps; ++i)
@@ -228,7 +227,7 @@ double lsm_amer_put(double spot, double strike, double r, double d, double vol, 
 		if (k > 0) {
 			gsl_matrix *R, *R2;
 			gsl_vector *y, *x, *cf;
-			double sum;
+			double tmp;
 
 			R  = gsl_matrix_alloc(k, 3);
 			R2 = gsl_matrix_alloc(k, 3);
@@ -238,8 +237,7 @@ double lsm_amer_put(double spot, double strike, double r, double d, double vol, 
 			k = 0;
 			for (i = 0; i < ssteps; ++i)
 				if (gsl_matrix_get(s, i, j) < strike) {
-					double tmp = gsl_matrix_get(s, i, j) / spot;
-
+					tmp = gsl_matrix_get(s, i, j) / spot;
 					gsl_matrix_set(R, k, 0, 1);
 					gsl_matrix_set(R, k, 1, 1 - tmp);
 					gsl_matrix_set(R, k, 2, 1 - 2 * tmp - tmp * tmp / 2);
@@ -247,16 +245,16 @@ double lsm_amer_put(double spot, double strike, double r, double d, double vol, 
 				}
 			R2 = pinv(R);
 			for (i = 0; i < x->size; ++i) {
-				sum = 0.0;
+				tmp = 0.0;
 				for (k = 0; k < R2->size2; ++k)
-					sum += gsl_matrix_get(R2, i, k) * gsl_vector_get(y, k);
-				gsl_vector_set(x, i, sum);
+					tmp += gsl_matrix_get(R2, i, k) * gsl_vector_get(y, k);
+				gsl_vector_set(x, i, tmp);
 			}
 			for (i = 0; i < cf->size; ++i) {
-				sum = 0.0;
+				tmp = 0.0;
 				for (k = 0; k < R->size2; ++k)
-					sum += gsl_matrix_get(R, i, k) * gsl_vector_get(x, k);
-				gsl_vector_set(cf, i, sum);
+					tmp += gsl_matrix_get(R, i, k) * gsl_vector_get(x, k);
+				gsl_vector_set(cf, i, tmp);
 			}
 			k = 0;
 			for (i = 0; i < ssteps; ++i)

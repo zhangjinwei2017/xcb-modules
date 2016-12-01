@@ -16,15 +16,18 @@ AM_PROG_CC_C_O
 # FIXME
 
 # Checks for header files.
-AC_CHECK_HEADERS([stdlib.h string.h strings.h sys/time.h])
+AC_CHECK_HEADERS([stddef.h stdlib.h string.h strings.h sys/time.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_INLINE
+AC_TYPE_SIZE_T
 
 # Checks for library functions.
+AC_FUNC_MALLOC
 AC_FUNC_MKTIME
-AC_CHECK_FUNCS([gettimeofday localtime_r pow sqrt strcasecmp strchr  \
-strncasecmp strrchr])
+AC_FUNC_REALLOC
+AC_CHECK_FUNCS([gettimeofday localtime_r memmove pow sqrt strcasecmp \
+strchr strncasecmp strrchr])
 
 AC_CONFIG_FILES([Makefile
                  conf/Makefile

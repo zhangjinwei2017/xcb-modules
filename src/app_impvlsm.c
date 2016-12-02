@@ -53,8 +53,8 @@ static table_t expiries;
 static struct msgs *impvlsm_msgs;
 static struct config *cfg;
 static double r = 0.1;
-static int ssteps = 100;
-static int tsteps = 1024;
+static int ssteps = 2000;
+static int tsteps = 100;
 
 static inline void load_config(void) {
 	/* FIXME */

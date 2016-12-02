@@ -38,8 +38,8 @@ int main(int argc, char **argv) {
 	printf("%f\n", impv_tri(spot, strike, r, d, expiry, 1024, put,  AMER_PUT));
 	printf("%f\n", impv_fd (spot, strike, r, d, expiry, 100, 1024, call, AMER_CALL));
 	printf("%f\n", impv_fd (spot, strike, r, d, expiry, 100, 1024, put,  AMER_PUT));
-	printf("%f\n", impv_lsm(spot, strike, r, d, expiry, 5000, 100, call, AMER_CALL));
-	printf("%f\n", impv_lsm(spot, strike, r, d, expiry, 5000, 100, put,  AMER_PUT));
+	printf("%f\n", impv_lsm(spot, strike, r, d, expiry, 2000, 100, call, AMER_CALL));
+	printf("%f\n", impv_lsm(spot, strike, r, d, expiry, 2000, 100, put,  AMER_PUT));
 	return 0;
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2016, Dalian Futures Information Technology Co., Ltd.
+ * Copyright (c) 2013-2017, Dalian Futures Information Technology Co., Ltd.
  *
  * Bo Wang
  * Xiaoye Meng <mengxiaoye at dce dot com dot cn>

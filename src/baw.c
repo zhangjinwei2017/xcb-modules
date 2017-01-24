@@ -134,14 +134,14 @@ inline double baw_put_gamma(double spot, double strike, double r, double d, doub
 
 /* FIXME */
 inline double baw_call_theta(double spot, double strike, double r, double d, double vol, double expiry) {
-	return (baw_call(spot, strike, r, d, vol, 1.01 * expiry) -
-		baw_call(spot, strike, r, d, vol, 0.99 * expiry)) / (0.02 * expiry);
+	return (baw_call(spot, strike, r, d, vol, 0.99 * expiry) -
+		baw_call(spot, strike, r, d, vol, 1.01 * expiry)) / (0.02 * expiry);
 }
 
 /* FIXME */
 inline double baw_put_theta(double spot, double strike, double r, double d, double vol, double expiry) {
-	return (baw_put(spot, strike, r, d, vol, 1.01 * expiry) -
-		baw_put(spot, strike, r, d, vol, 0.99 * expiry)) / (0.02 * expiry);
+	return (baw_put(spot, strike, r, d, vol, 0.99 * expiry) -
+		baw_put(spot, strike, r, d, vol, 1.01 * expiry)) / (0.02 * expiry);
 }
 
 /* FIXME */
@@ -158,14 +158,14 @@ inline double baw_put_vega(double spot, double strike, double r, double d, doubl
 
 /* FIXME */
 inline double baw_call_rho(double spot, double strike, double r, double d, double vol, double expiry) {
-	return (baw_call(spot, strike, 1.01 * r, d, vol, expiry) -
-		baw_call(spot, strike, 0.99 * r, d, vol, expiry)) / (0.02 * r);
+	return (baw_call(spot, strike, 1.01 * r, 1.01 * d, vol, expiry) -
+		baw_call(spot, strike, 0.99 * r, 0.99 * d, vol, expiry)) / (0.02 * r);
 }
 
 /* FIXME */
 inline double baw_put_rho(double spot, double strike, double r, double d, double vol, double expiry) {
-	return (baw_put(spot, strike, 1.01 * r, d, vol, expiry) -
-		baw_put(spot, strike, 0.99 * r, d, vol, expiry)) / (0.02 * r);
+	return (baw_put(spot, strike, 1.01 * r, 1.01 * d, vol, expiry) -
+		baw_put(spot, strike, 0.99 * r, 0.99 * d, vol, expiry)) / (0.02 * r);
 }
 
 /* FIXME */

@@ -173,8 +173,6 @@ void tri_amer_call_greeks(double spot, double strike, double r, double d, double
 	*gamma = ((f12 - f11) / (spot * up - spot) - (f11 - f10) / (spot - spot * dn)) /
 		(0.5 * (spot * up - spot * dn));
 	*theta = (f11 - f00) / dt;
-	*vega  = (tri_amer_call(spot, strike, r, d, vol + 0.02, expiry, steps) - f00) / 0.02;
-	*rho   = (tri_amer_call(spot, strike, r + 0.05, d + 0.05, vol, expiry, steps) - f00) / 0.05;
 	FREE(call_values);
 	FREE(prices);
 }
@@ -229,8 +227,6 @@ void tri_amer_put_greeks(double spot, double strike, double r, double d, double 
 	*gamma = ((f12 - f11) / (spot * up - spot) - (f11 - f10) / (spot - spot * dn)) /
 		(0.5 * (spot * up - spot * dn));
 	*theta = (f11 - f00) / dt;
-	*vega  = (tri_amer_put(spot, strike, r, d, vol + 0.02, expiry, steps) - f00) / 0.02;
-	*rho   = (tri_amer_put(spot, strike, r + 0.05, d + 0.05, vol, expiry, steps) - f00) / 0.05;
 	FREE(put_values);
 	FREE(prices);
 }

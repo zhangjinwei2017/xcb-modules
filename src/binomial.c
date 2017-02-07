@@ -178,8 +178,6 @@ void bi_amer_call_greeks(double spot, double strike, double r, double d, double 
 	*gamma = ((f22 - f21) / (spot * uu - spot) - (f21 - f20) / (spot - spot * dn * dn)) /
 		(0.5 * (spot * uu - spot * dn * dn));
 	*theta = (f21 - f00) / (2 * dt);
-	*vega  = (bi_amer_call(spot, strike, r, d, vol + 0.02, expiry, steps) - f00) / 0.02;
-	*rho   = (bi_amer_call(spot, strike, r + 0.05, d + 0.05, vol, expiry, steps) - f00) / 0.05;
 	FREE(call_values);
 	FREE(prices);
 }
@@ -241,8 +239,6 @@ void bi_amer_put_greeks(double spot, double strike, double r, double d, double v
 	*gamma = ((f22 - f21) / (spot * uu - spot) - (f21 - f20) / (spot - spot * dn * dn)) /
 		(0.5 * (spot * uu - spot * dn * dn));
 	*theta = (f21 - f00) / (2 * dt);
-	*vega  = (bi_amer_put(spot, strike, r, d, vol + 0.02, expiry, steps) - f00) / 0.02;
-	*rho   = (bi_amer_put(spot, strike, r + 0.05, d + 0.05, vol, expiry, steps) - f00) / 0.05;
 	FREE(put_values);
 	FREE(prices);
 }

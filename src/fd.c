@@ -197,8 +197,6 @@ void fd_amer_call_greeks(double spot, double strike, double r, double d, double 
 	*delta = (f12 - f10) / (2 * ds);
 	*gamma = (f12 - 2 * f11 + f10) / (ds * ds);
 	*theta = (f11 - f00) / dt;
-	*vega  = (fd_amer_call(spot, strike, r, d, vol + 0.02, expiry, ssteps, tsteps) - f00) / 0.02;
-	*rho   = (fd_amer_call(spot, strike, r + 0.05, d + 0.05, vol, expiry, ssteps, tsteps) - f00) / 0.05;
 	gsl_vector_free(x);
 	gsl_vector_free(b);
 	gsl_vector_free(f);
@@ -261,8 +259,6 @@ void fd_amer_put_greeks(double spot, double strike, double r, double d, double v
 	*delta = (f12 - f10) / (2 * ds);
 	*gamma = (f12 - 2 * f11 + f10) / (ds * ds);
 	*theta = (f11 - f00) / dt;
-	*vega  = (fd_amer_put(spot, strike, r, d, vol + 0.02, expiry, ssteps, tsteps) - f00) / 0.02;
-	*rho   = (fd_amer_put(spot, strike, r + 0.05, d + 0.05, vol, expiry, ssteps, tsteps) - f00) / 0.05;
 	gsl_vector_free(x);
 	gsl_vector_free(b);
 	gsl_vector_free(f);

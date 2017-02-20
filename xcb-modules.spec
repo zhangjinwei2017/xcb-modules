@@ -1,6 +1,6 @@
 Name:		xcb-modules
 Version:	0.0.3
-Release:	4%{?dist}
+Release:	5%{?dist}
 Summary:	Modules for XCUBE
 Group:		Applications/Internet
 License:	GPLv2

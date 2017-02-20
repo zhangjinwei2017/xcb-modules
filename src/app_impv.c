@@ -266,7 +266,7 @@ static int impv_exec(void *data, void *data2) {
 			/* FIXME */
 			if (flag == 2) {
 				dstr_free(spotname);
-				spotname = dstr_new_len(contract, q - contract);
+				spotname = dstr_new_len(contract, q - contract + 1);
 				if ((p = strrchr(spotname, 'P')))
 					*p = 'C';
 			}

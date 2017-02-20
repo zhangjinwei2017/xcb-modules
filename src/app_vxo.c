@@ -102,7 +102,7 @@ static inline void load_config(void) {
 							--q;
 						if (!strncasecmp(var->name, "SH", 2) ||
 							!strncasecmp(var->name, "SZ", 2)) {
-							spotname = dstr_new_len(var->name, q - var->name);
+							spotname = dstr_new_len(var->name, q - var->name + 1);
 							strike   = atof(q + 1) / 1000;
 						} else {
 							spotname = *(p - 1) == '-'

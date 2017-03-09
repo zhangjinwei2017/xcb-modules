@@ -43,9 +43,9 @@ static int quote_exec(void *data, void *data2) {
 	NOT_USED(data2);
 
 	strftime(datestr, sizeof datestr, "%F %T", localtime_r(&t, &lt));
-	snprintf(res, sizeof res, "QUOTE,%s.%03d,%s|%s,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%d,%d,%.2f,%d,%.2f,"
-		"%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%d,%d,%.2f,%.2f,%d,%d,%.2f,%.2f,%d,%d,%.2f,%.2f,"
-		"%d,%d,%.2f,%.2f,%d,%d",
+	snprintf(res, sizeof res, "QUOTE,%s.%03d,%s|%s,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%d,%d,%.4f,%d,%.4f,"
+		"%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%d,%d,%.4f,%.4f,%d,%d,%.4f,%.4f,%d,%d,%.4f,%.4f,"
+		"%d,%d,%.4f,%.4f,%d,%d",
 		datestr,
 		quote->m_nMSec,
 		quote->thyquote.m_cHYDM,

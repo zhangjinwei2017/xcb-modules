@@ -117,8 +117,8 @@ static int greeksfd_exec(void *data, void *data2) {
 					&delta3, &gamma3, &theta3, &vega3, &rho3);
 		}
 		strftime(datestr, sizeof datestr, "%F %T", localtime_r(&t, &lt));
-		snprintf(res, sizeof res, "GREEKSFD,%s.%03d,%s|%.2f,%f,%f,%f,%f,%f,%.2f,%f,%f,%f,%f,%f,"
-			"%.2f,%f,%f,%f,%f,%f",
+		snprintf(res, sizeof res, "GREEKSFD,%s.%03d,%s|%.4f,%f,%f,%f,%f,%f,%.4f,%f,%f,%f,%f,%f,"
+			"%.4f,%f,%f,%f,%f,%f",
 			datestr,
 			atoi(fields[2]),
 			contract,

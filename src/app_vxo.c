@@ -368,7 +368,7 @@ static int vxo_exec(void *data, void *data2) {
 							vxo3);
 					}
 					dlist_iter_free(&iter);
-					snprintf(res + off, 4096 - off, "%.2f,%f,%f,%s,%s,%s",
+					snprintf(res + off, 4096 - off, "%.4f,%f,%f,%s,%s,%s",
 						spot,
 						r,
 						expiry,

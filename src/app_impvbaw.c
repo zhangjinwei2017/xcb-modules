@@ -108,7 +108,7 @@ static int impvbaw_exec(void *data, void *data2) {
 	if (!strcmp(contract, "") || (fabs(quote->thyquote.m_dZXJ) <= 0.000001 &&
 		fabs(quote->thyquote.m_dMRJG1) <= 0.000001 &&
 		fabs(quote->thyquote.m_dMCJG1) <= 0.000001)) {
-		xcb_log(XCB_LOG_WARNING, "Invalid quote: '%d,%d,%s,%.2f,%.2f,%.2f'",
+		xcb_log(XCB_LOG_WARNING, "Invalid quote: '%d,%d,%s,%.4f,%.4f,%.4f'",
 			quote->thyquote.m_nTime,
 			quote->m_nMSec,
 			contract,
@@ -227,7 +227,7 @@ static int impvbaw_exec(void *data, void *data2) {
 			char datestr[64];
 
 			strftime(datestr, sizeof datestr, "%F %T", localtime_r(&t, &lt));
-			snprintf(res, 512, "IMPVBAW,%s.%03d,%s|%.2f,%f,%.2f,%f,%.2f,%f,%.2f",
+			snprintf(res, 512, "IMPVBAW,%s.%03d,%s|%.4f,%f,%.4f,%f,%.4f,%f,%.4f",
 				datestr,
 				quote->m_nMSec,
 				contract,
@@ -239,7 +239,7 @@ static int impvbaw_exec(void *data, void *data2) {
 				vol3,
 				spot);
 			out2rmp(res);
-			snprintf(res, 512, "IMPVBAW,%d,%d,%s,%.2f,%f,%.2f,%f,%.2f,%f,%.2f,%s,%s,%f,%f,%f,%d,"
+			snprintf(res, 512, "IMPVBAW,%d,%d,%s,%.4f,%f,%.4f,%f,%.4f,%f,%.4f,%s,%s,%f,%f,%f,%d,"
 				"0,0",
 				quote->thyquote.m_nTime,
 				quote->m_nMSec,

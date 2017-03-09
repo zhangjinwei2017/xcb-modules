@@ -492,7 +492,7 @@ static int vsml_exec(void *data, void *data2) {
 					spotname = *(p - 1) == '-'
 						? dstr_new_len(fields[3], p - fields[3] - 1)
 						: dstr_new_len(fields[3], p - fields[3]);
-					snprintf(res, 4096, "VSML,%d,%d,%s,%s,%.2f,%f,%f,%s,%s,%s",
+					snprintf(res, 4096, "VSML,%d,%d,%s,%s,%.4f,%f,%f,%s,%s,%s",
 						sec,
 						msec,
 						spotname,

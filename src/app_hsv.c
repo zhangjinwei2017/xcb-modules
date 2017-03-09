@@ -155,7 +155,7 @@ static int hsv_exec(void *data, void *data2) {
 
 	contract = quote->thyquote.m_cHYDM;
 	if (!strcmp(contract, "") || fabs(quote->thyquote.m_dZXJ) <= 0.000001) {
-		xcb_log(XCB_LOG_WARNING, "Invalid quote: '%d,%d,%s,%.2f,%.2f,%.2f'",
+		xcb_log(XCB_LOG_WARNING, "Invalid quote: '%d,%d,%s,%.4f,%.4f,%.4f'",
 			quote->thyquote.m_nTime,
 			quote->m_nMSec,
 			contract,
@@ -190,7 +190,7 @@ static int hsv_exec(void *data, void *data2) {
 					dlist_node_t node;
 
 					strftime(datestr, sizeof datestr, "%F %T", localtime_r(&t, &lt));
-					snprintf(res, 2048, "HSV,%s.%03d,%s|%f,%.2f",
+					snprintf(res, 2048, "HSV,%s.%03d,%s|%f,%.4f",
 						datestr,
 						quote->m_nMSec,
 						contract,
@@ -206,7 +206,7 @@ static int hsv_exec(void *data, void *data2) {
 							(dstr)dlist_node_value(node),
 							sd->hsv);
 					dlist_iter_free(&iter);
-					snprintf(res + off, 2048 - off, "%.2f,%f,%f,%s",
+					snprintf(res + off, 2048 - off, "%.4f,%f,%f,%s",
 						sd->spot,
 						r,
 						sd->expiry,

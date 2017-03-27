@@ -191,7 +191,7 @@ static int vsml_exec(void *data, void *data2) {
 
 	fields = dstr_split_len(msg->data, strlen(msg->data), ",", 1, &nfield);
 	/* FIXME */
-	if (nfield != 19) {
+	if (nfield != 21) {
 		xcb_log(XCB_LOG_WARNING, "Message '%s' garbled", msg->data);
 		goto end;
 	}
@@ -219,6 +219,7 @@ static int vsml_exec(void *data, void *data2) {
 		if (NEW(scp) == NULL) {
 			xcb_log(XCB_LOG_WARNING, "Error allocating memory for scp");
 			table_unlock(spots);
+			dstr_free(spotname);
 			goto end;
 		}
 		scp->strike = strike;
@@ -256,6 +257,7 @@ static int vsml_exec(void *data, void *data2) {
 			xcb_log(XCB_LOG_WARNING, "Error allocating memory for sd");
 			scpfree(scp);
 			table_unlock(spots);
+			dstr_free(spotname);
 			goto end;
 		}
 		sd->sep   = strchr(fields[3], '-') ? "-" : "";
@@ -320,6 +322,7 @@ static int vsml_exec(void *data, void *data2) {
 			if (NEW(scp) == NULL) {
 				xcb_log(XCB_LOG_WARNING, "Error allocating memory for scp");
 				table_unlock(spots);
+				dstr_free(spotname);
 				goto end;
 			}
 			scp->strike = strike;

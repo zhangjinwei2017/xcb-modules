@@ -207,6 +207,7 @@ static int vxo_exec(void *data, void *data2) {
 		if (NEW(scp) == NULL) {
 			xcb_log(XCB_LOG_WARNING, "Error allocating memory for scp");
 			table_unlock(spots);
+			dstr_free(spotname);
 			goto end;
 		}
 		scp->strike = strike;
@@ -230,6 +231,7 @@ static int vxo_exec(void *data, void *data2) {
 			xcb_log(XCB_LOG_WARNING, "Error allocating memory for pd");
 			scpfree(scp);
 			table_unlock(spots);
+			dstr_free(spotname);
 			goto end;
 		}
 		pd->prevxo = pd->prevxo2 = pd->prevxo3 = NAN;
@@ -261,6 +263,7 @@ static int vxo_exec(void *data, void *data2) {
 			if (NEW(scp) == NULL) {
 				xcb_log(XCB_LOG_WARNING, "Error allocating memory for scp");
 				table_unlock(spots);
+				dstr_free(spotname);
 				goto end;
 			}
 			scp->strike = strike;

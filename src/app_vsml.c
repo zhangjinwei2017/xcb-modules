@@ -55,10 +55,10 @@ static char *app = "vsml";
 static char *desc = "Volatility Smile";
 static char *fmt = "VSML,timestamp,contract,strike1,vol,vol2,vol3,strike2,vol,vol2,vol3,...,"
 	"striken,vol,vol2,vol3";
-static table_t spots;
 static struct msgs *vsml_msgs;
 static struct config *cfg;
 static const char *inmsg = "impv_msgs";
+static table_t spots;
 
 static void scpfree(void *value) {
 	struct scp *scp = (struct scp *)value;
@@ -205,12 +205,12 @@ static int vsml_exec(void *data, void *data2) {
 		goto end;
 	sec      = atoi(fields[1]);
 	msec     = atoi(fields[2]);
-	spot     = atof(fields[10]);
-	spotname = dstr_new(fields[11]);
-	type     = fields[12];
-	strike   = atof(fields[13]);
-	r        = atof(fields[14]);
-	expiry   = atof(fields[15]);
+	spot     = atof(fields[12]);
+	spotname = dstr_new(fields[13]);
+	type     = fields[14];
+	strike   = atof(fields[15]);
+	r        = atof(fields[16]);
+	expiry   = atof(fields[17]);
 	if ((p = strrchr(fields[3], 'C')) == NULL)
 		p = strrchr(fields[3], 'P');
 	table_lock(spots);
@@ -501,8 +501,8 @@ static int vsml_exec(void *data, void *data2) {
 						r,
 						expiry,
 						sd->sep,
-						fields[17],
-						fields[18]);
+						fields[19],
+						fields[20]);
 					if (out2msgs(res, out) == -1)
 						FREE(res);
 					iter = dlist_iter_new(dlist, DLIST_START_HEAD);

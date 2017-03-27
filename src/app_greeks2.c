@@ -38,7 +38,8 @@
 static char *app = "greeks2";
 static char *desc = "Delta, Gamma, Theta, Vega, and Rho (Binomial)";
 static char *fmt = "GREEKS2,timestamp,contract,lastprice,delta,gamma,theta,vega,rho,"
-	"bidprice1,delta2,gamma2,theta2,vega2,rho2,askprice1,delta3,gamma3,theta3,vega3,rho3";
+	"bidprice1,delta2,gamma2,theta2,vega2,rho2,askprice1,delta3,gamma3,theta3,vega3,rho3,"
+	"avgprice,delta4,gamma4,theta4,vega4,rho4";
 
 static int greeks2_exec(void *data, void *data2) {
 	RAII_VAR(struct msg *, msg, (struct msg *)data, msg_decr);
@@ -46,31 +47,33 @@ static int greeks2_exec(void *data, void *data2) {
 	int nfield = 0;
 	time_t t;
 	char *contract, *type;
-	double spot, strike, r, vol, vol2, vol3, expiry;
+	double spot, strike, r, vol, vol2, vol3, vol4, expiry;
 	int steps;
 	NOT_USED(data2);
 
 	fields = dstr_split_len(msg->data, strlen(msg->data), ",", 1, &nfield);
 	/* FIXME */
-	if (nfield != 19) {
+	if (nfield != 21) {
 		xcb_log(XCB_LOG_WARNING, "Message '%s' garbled", msg->data);
 		goto end;
 	}
 	t        = (time_t)atoi(fields[1]);
 	contract = fields[3];
-	type     = fields[12];
-	spot     = atof(fields[10]);
-	strike   = atof(fields[13]);
-	r        = atof(fields[14]);
+	type     = fields[14];
+	spot     = atof(fields[12]);
+	strike   = atof(fields[15]);
+	r        = atof(fields[16]);
 	vol      = atof(fields[5]);
 	vol2     = atof(fields[7]);
 	vol3     = atof(fields[9]);
-	expiry   = atof(fields[15]);
-	steps    = atoi(fields[18]);
-	if (!isnan(vol) || !isnan(vol2) || !isnan(vol3)) {
+	vol4     = atof(fields[11]);
+	expiry   = atof(fields[17]);
+	steps    = atoi(fields[20]);
+	if (!isnan(vol) || !isnan(vol2) || !isnan(vol3) || !isnan(vol4)) {
 		double delta, gamma, theta, vega, rho;
 		double delta2, gamma2, theta2, vega2, rho2;
 		double delta3, gamma3, theta3, vega3, rho3;
+		double delta4, gamma4, theta4, vega4, rho4;
 		struct tm lt;
 		char datestr[64], res[512];
 
@@ -116,9 +119,25 @@ static int greeks2_exec(void *data, void *data2) {
 				bi_amer_put_greeks (spot, strike, r, r, vol3, expiry, steps,
 					&delta3, &gamma3, &theta3, &vega3, &rho3);
 		}
+		if (isnan(vol4))
+			delta4 = gamma4 = theta4 = vega4 = rho4 = NAN;
+		else if (fabs(vol4 - vol) <= 0.000001) {
+			delta4 = delta;
+			gamma4 = gamma;
+			theta4 = theta;
+			vega4  = vega;
+			rho4   = rho;
+		} else {
+			if (!strcasecmp(type, "C"))
+				bi_amer_call_greeks(spot, strike, r, r, vol4, expiry, steps,
+					&delta4, &gamma4, &theta4, &vega4, &rho4);
+			else
+				bi_amer_put_greeks (spot, strike, r, r, vol4, expiry, steps,
+					&delta4, &gamma4, &theta4, &vega4, &rho4);
+		}
 		strftime(datestr, sizeof datestr, "%F %T", localtime_r(&t, &lt));
 		snprintf(res, sizeof res, "GREEKS2,%s.%03d,%s|%.4f,%f,%f,%f,%f,%f,%.4f,%f,%f,%f,%f,%f,"
-			"%.4f,%f,%f,%f,%f,%f",
+			"%.4f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
 			datestr,
 			atoi(fields[2]),
 			contract,
@@ -139,7 +158,13 @@ static int greeks2_exec(void *data, void *data2) {
 			gamma3,
 			theta3,
 			vega3,
-			rho3);
+			rho3,
+			atof(fields[10]),
+			delta4,
+			gamma4,
+			theta4,
+			vega4,
+			rho4);
 		out2rmp(res);
 	}
 

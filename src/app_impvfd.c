@@ -40,21 +40,22 @@
 
 /* FIXME */
 struct prices {
-	double	prelast, prebid1, preask1, prespot;
+	double	prelast, prebid1, preask1, preavg, prespot;
 };
 
 /* FIXME */
 static char *app = "impvfd";
 static char *desc = "Implied Volatility (FD)";
-static char *fmt = "IMPVFD,timestamp,contract,lastprice,vol,bidprice1,vol2,askprice1,vol3,spotprice";
+static char *fmt = "IMPVFD,timestamp,contract,lastprice,vol,"
+	"bidprice1,vol2,askprice1,vol3,avgprice,vol4,spotprice";
 static table_t spots;
 static table_t optns;
-static table_t expiries;
 static struct msgs *impvfd_msgs;
 static struct config *cfg;
 static double r = 0.1;
 static int ssteps = 100;
 static int tsteps = 1024;
+static table_t expiries;
 
 static inline void load_config(void) {
 	/* FIXME */
@@ -81,10 +82,10 @@ static inline void load_config(void) {
 					var = var->next;
 				}
 			} else if (!strcasecmp(cat, "expiries")) {
-				table_node_t node;
-
 				var = variable_browse(cfg, cat);
 				while (var) {
+					table_node_t node;
+
 					/* FIXME */
 					if ((node = table_insert_raw(expiries, var->name)))
 						table_set_double(node, diffnow(atoi(var->value)) / 252.0);
@@ -108,14 +109,16 @@ static int impvfd_exec(void *data, void *data2) {
 	contract = dstr_new(quote->thyquote.m_cHYDM);
 	if (!strcmp(contract, "") || (fabs(quote->thyquote.m_dZXJ) <= 0.000001 &&
 		fabs(quote->thyquote.m_dMRJG1) <= 0.000001 &&
-		fabs(quote->thyquote.m_dMCJG1) <= 0.000001)) {
-		xcb_log(XCB_LOG_WARNING, "Invalid quote: '%d,%d,%s,%.4f,%.4f,%.4f'",
+		fabs(quote->thyquote.m_dMCJG1) <= 0.000001 &&
+		fabs(quote->thyquote.m_dCJJJ)  <= 0.000001)) {
+		xcb_log(XCB_LOG_WARNING, "Invalid quote: '%d,%d,%s,%.4f,%.4f,%.4f,%f'",
 			quote->thyquote.m_nTime,
 			quote->m_nMSec,
 			contract,
 			quote->thyquote.m_dZXJ,
 			quote->thyquote.m_dMRJG1,
-			quote->thyquote.m_dMCJG1);
+			quote->thyquote.m_dMCJG1,
+			quote->thyquote.m_dCJJJ);
 		goto end;
 	}
 	/* FIXME */
@@ -131,7 +134,7 @@ static int impvfd_exec(void *data, void *data2) {
 		dstr spotname, type;
 		double strike, spot;
 		struct prices *prices;
-		double expiry, vol, vol2, vol3;
+		double expiry, vol, vol2, vol3, vol4;
 		struct tm lt;
 		char *res;
 
@@ -160,6 +163,7 @@ static int impvfd_exec(void *data, void *data2) {
 				prices->prelast = last;
 				prices->prebid1 = quote->thyquote.m_dMRJG1;
 				prices->preask1 = quote->thyquote.m_dMCJG1;
+				prices->preavg  = quote->thyquote.m_dCJJJ;
 				prices->prespot = spot;
 				table_insert(optns, dstr_new(contract), prices);
 			} else
@@ -170,6 +174,7 @@ static int impvfd_exec(void *data, void *data2) {
 			if (fabs(prices->prelast - last) <= 0.000001 &&
 				fabs(prices->prebid1 - quote->thyquote.m_dMRJG1) <= 0.000001 &&
 				fabs(prices->preask1 - quote->thyquote.m_dMCJG1) <= 0.000001 &&
+				fabs(prices->preavg  - quote->thyquote.m_dCJJJ)  <= 0.000001 &&
 				fabs(prices->prespot - spot) <= 0.000001) {
 				table_unlock(optns);
 				dstr_free(type);
@@ -179,6 +184,7 @@ static int impvfd_exec(void *data, void *data2) {
 				prices->prelast = last;
 				prices->prebid1 = quote->thyquote.m_dMRJG1;
 				prices->preask1 = quote->thyquote.m_dMCJG1;
+				prices->preavg  = quote->thyquote.m_dCJJJ;
 				prices->prespot = spot;
 			}
 		}
@@ -223,12 +229,20 @@ static int impvfd_exec(void *data, void *data2) {
 		else
 			vol3 = impv_fd(spot, strike, r, r, expiry, ssteps, tsteps, quote->thyquote.m_dMCJG1,
 				!strcasecmp(type, "C") ? AMER_CALL : AMER_PUT);
+		/* FIXME: avg price */
+		if (fabs(quote->thyquote.m_dCJJJ) <= 0.000001)
+			vol4 = NAN;
+		else if (fabs(quote->thyquote.m_dMCJG1 - last) <= 0.000001)
+			vol4 = vol;
+		else
+			vol4 = impv_fd(spot, strike, r, r, expiry, ssteps, tsteps, quote->thyquote.m_dCJJJ,
+				!strcasecmp(type, "C") ? AMER_CALL : AMER_PUT);
 		if ((res = ALLOC(512))) {
 			time_t t = (time_t)quote->thyquote.m_nTime;
 			char datestr[64];
 
 			strftime(datestr, sizeof datestr, "%F %T", localtime_r(&t, &lt));
-			snprintf(res, 512, "IMPVFD,%s.%03d,%s|%.4f,%f,%.4f,%f,%.4f,%f,%.4f",
+			snprintf(res, 512, "IMPVFD,%s.%03d,%s|%.4f,%f,%.4f,%f,%.4f,%f,%f,%f,%.4f",
 				datestr,
 				quote->m_nMSec,
 				contract,
@@ -238,10 +252,12 @@ static int impvfd_exec(void *data, void *data2) {
 				vol2,
 				quote->thyquote.m_dMCJG1,
 				vol3,
+				quote->thyquote.m_dCJJJ,
+				vol4,
 				spot);
 			out2rmp(res);
-			snprintf(res, 512, "IMPVFD,%d,%d,%s,%.4f,%f,%.4f,%f,%.4f,%f,%.4f,%s,%s,%f,%f,%f,%d,"
-				"%d,%d",
+			snprintf(res, 512, "IMPVFD,%d,%d,%s,%.4f,%f,%.4f,%f,%.4f,%f,%f,%f,%.4f,"
+				"%s,%s,%f,%f,%f,%d,%d,%d",
 				quote->thyquote.m_nTime,
 				quote->m_nMSec,
 				contract,
@@ -251,6 +267,8 @@ static int impvfd_exec(void *data, void *data2) {
 				vol2,
 				quote->thyquote.m_dMCJG1,
 				vol3,
+				quote->thyquote.m_dCJJJ,
+				vol4,
 				spot,
 				spotname,
 				type,

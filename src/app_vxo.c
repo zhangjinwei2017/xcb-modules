@@ -52,10 +52,10 @@ struct pd {
 static char *app = "vxo";
 static char *desc = "Volatility Index Old";
 static char *fmt = "VXO,timestamp,contract,vxo,vxo2,vxo3";
-static table_t spots;
 static struct msgs *vxo_msgs;
 static struct config *cfg;
 static const char *inmsg = "impv_msgs";
+static table_t spots;
 
 static void scpfree(void *value) {
 	struct scp *scp = (struct scp *)value;
@@ -182,7 +182,7 @@ static int vxo_exec(void *data, void *data2) {
 
 	fields = dstr_split_len(msg->data, strlen(msg->data), ",", 1, &nfield);
 	/* FIXME */
-	if (nfield != 19) {
+	if (nfield != 21) {
 		xcb_log(XCB_LOG_WARNING, "Message '%s' garbled", msg->data);
 		goto end;
 	}
@@ -193,12 +193,12 @@ static int vxo_exec(void *data, void *data2) {
 		goto end;
 	sec      = atoi(fields[1]);
 	msec     = atoi(fields[2]);
-	spot     = atof(fields[10]);
-	spotname = dstr_new(fields[11]);
-	type     = fields[12];
-	strike   = atof(fields[13]);
-	r        = atof(fields[14]);
-	expiry   = atof(fields[15]);
+	spot     = atof(fields[12]);
+	spotname = dstr_new(fields[13]);
+	type     = fields[14];
+	strike   = atof(fields[15]);
+	r        = atof(fields[16]);
+	expiry   = atof(fields[17]);
 	if ((p = strrchr(fields[3], 'C')) == NULL)
 		p = strrchr(fields[3], 'P');
 	table_lock(spots);
@@ -373,8 +373,8 @@ static int vxo_exec(void *data, void *data2) {
 						r,
 						expiry,
 						pd->sep,
-						fields[17],
-						fields[18]);
+						fields[19],
+						fields[20]);
 					if (out2msgs(res, out) == -1)
 						FREE(res);
 				}

@@ -183,7 +183,7 @@ static int vintp_exec(void *data, void *data2) {
 
 	fields = dstr_split_len(msg->data, strlen(msg->data), ",", 1, &nfield);
 	/* FIXME */
-	if (nfield != 21) {
+	if (nfield != 22) {
 		xcb_log(XCB_LOG_WARNING, "Message '%s' garbled", msg->data);
 		goto end;
 	}
@@ -195,11 +195,11 @@ static int vintp_exec(void *data, void *data2) {
 	sec      = atoi(fields[1]);
 	msec     = atoi(fields[2]);
 	spot     = atof(fields[12]);
-	spotname = dstr_new(fields[13]);
-	type     = fields[14];
-	strike   = atof(fields[15]);
-	r        = atof(fields[16]);
-	expiry   = atof(fields[17]);
+	spotname = dstr_new(fields[14]);
+	type     = fields[15];
+	strike   = atof(fields[16]);
+	r        = atof(fields[17]);
+	expiry   = atof(fields[18]);
 	if ((p = strrchr(fields[3], 'C')) == NULL)
 		p = strrchr(fields[3], 'P');
 	table_lock(spots);
@@ -494,7 +494,7 @@ static int vintp_exec(void *data, void *data2) {
 						spotname,
 						tmp);
 					out2rmp(res);
-					/* FIXME */
+					/* FIXME: SH510050CXXXXM -> SH510050 */
 					dstr_free(spotname);
 					spotname = *(p - 1) == '-'
 						? dstr_new_len(fields[3], p - fields[3] - 1)
@@ -508,8 +508,8 @@ static int vintp_exec(void *data, void *data2) {
 						r,
 						expiry,
 						sd->sep,
-						fields[19],
-						fields[20]);
+						fields[20],
+						fields[21]);
 					if (out2msgs(res, out) == -1)
 						FREE(res);
 					scp0->flag = scp1->flag = scp12->flag = scp13->flag =

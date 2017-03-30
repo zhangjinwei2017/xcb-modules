@@ -40,14 +40,17 @@
 
 /* FIXME */
 struct prices {
-	double	prelast, prebid1, preask1, preavg, prespot;
+	double	prelast, prebid1, preask1, preavg, preslast, presavg;
+};
+struct sla {
+	double	slast, savg;
 };
 
 /* FIXME */
 static char *app = "impv3";
 static char *desc = "Implied Volatility (Trinomial)";
 static char *fmt = "IMPV3,timestamp,contract,lastprice,vol,"
-	"bidprice1,vol2,askprice1,vol3,avgprice,vol4,spotprice";
+	"bidprice1,vol2,askprice1,vol3,avgprice,vol4,spotlast,spotavg";
 static table_t spots;
 static table_t optns;
 static struct msgs *impv3_msgs;
@@ -84,7 +87,7 @@ static inline void load_config(void) {
 
 					/* FIXME */
 					if ((node = table_insert_raw(expiries, var->name)))
-						table_set_double(node, diffnow(atoi(var->value)) / 252.0);
+						table_set_double(node, diffnow(atoi(var->value)) / 365.0);
 					var = var->next;
 				}
 			}
@@ -101,6 +104,7 @@ static int impv3_exec(void *data, void *data2) {
 	double last;
 	char *p;
 	table_node_t node;
+	struct sla *sla;
 
 	contract = dstr_new(quote->thyquote.m_cHYDM);
 	if (!strcmp(contract, "") || (fabs(quote->thyquote.m_dZXJ) <= 0.000001 &&
@@ -128,7 +132,7 @@ static int impv3_exec(void *data, void *data2) {
 	if (p && p != contract && p != contract + dstr_length(contract) - 1 &&
 		((*(p - 1) == '-' && *(p + 1) == '-') || (isdigit(*(p - 1)) && isdigit(*(p + 1))))) {
 		dstr spotname, type;
-		double strike, spot;
+		double strike, slast, savg;
 		struct prices *prices;
 		double expiry, vol, vol2, vol3, vol4;
 		struct tm lt;
@@ -145,9 +149,11 @@ static int impv3_exec(void *data, void *data2) {
 			dstr_free(spotname);
 			goto end;
 		}
-		spot = table_node_double(node);
+		sla = (struct sla *)table_node_value(node);
+		slast = sla->slast;
+		savg  = sla->savg;
 		table_unlock(spots);
-		if (fabs(spot) <= 0.000001) {
+		if (fabs(slast) <= 0.000001) {
 			xcb_log(XCB_LOG_WARNING, "The price of spot '%s' be zero", spotname);
 			dstr_free(type);
 			dstr_free(spotname);
@@ -156,11 +162,12 @@ static int impv3_exec(void *data, void *data2) {
 		table_lock(optns);
 		if ((node = table_find(optns, contract)) == NULL) {
 			if (NEW(prices)) {
-				prices->prelast = last;
-				prices->prebid1 = quote->thyquote.m_dMRJG1;
-				prices->preask1 = quote->thyquote.m_dMCJG1;
-				prices->preavg  = quote->thyquote.m_dCJJJ;
-				prices->prespot = spot;
+				prices->prelast  = last;
+				prices->prebid1  = quote->thyquote.m_dMRJG1;
+				prices->preask1  = quote->thyquote.m_dMCJG1;
+				prices->preavg   = quote->thyquote.m_dCJJJ;
+				prices->preslast = slast;
+				prices->presavg  = savg;
 				table_insert(optns, dstr_new(contract), prices);
 			} else
 				xcb_log(XCB_LOG_WARNING, "Error allocating memory for prices");
@@ -168,20 +175,22 @@ static int impv3_exec(void *data, void *data2) {
 			prices = (struct prices *)table_node_value(node);
 
 			if (fabs(prices->prelast - last) <= 0.000001 &&
-				fabs(prices->prebid1 - quote->thyquote.m_dMRJG1) <= 0.000001 &&
-				fabs(prices->preask1 - quote->thyquote.m_dMCJG1) <= 0.000001 &&
-				fabs(prices->preavg  - quote->thyquote.m_dCJJJ)  <= 0.000001 &&
-				fabs(prices->prespot - spot) <= 0.000001) {
+				fabs(prices->prebid1  - quote->thyquote.m_dMRJG1) <= 0.000001 &&
+				fabs(prices->preask1  - quote->thyquote.m_dMCJG1) <= 0.000001 &&
+				fabs(prices->preavg   - quote->thyquote.m_dCJJJ)  <= 0.000001 &&
+				fabs(prices->preslast - slast) <= 0.000001 &&
+				fabs(prices->presavg  - savg)  <= 0.000001) {
 				table_unlock(optns);
 				dstr_free(type);
 				dstr_free(spotname);
 				goto end;
 			} else {
-				prices->prelast = last;
-				prices->prebid1 = quote->thyquote.m_dMRJG1;
-				prices->preask1 = quote->thyquote.m_dMCJG1;
-				prices->preavg  = quote->thyquote.m_dCJJJ;
-				prices->prespot = spot;
+				prices->prelast  = last;
+				prices->prebid1  = quote->thyquote.m_dMRJG1;
+				prices->preask1  = quote->thyquote.m_dMCJG1;
+				prices->preavg   = quote->thyquote.m_dCJJJ;
+				prices->preslast = slast;
+				prices->presavg  = savg;
 			}
 		}
 		table_unlock(optns);
@@ -207,7 +216,7 @@ static int impv3_exec(void *data, void *data2) {
 		if (fabs(last) <= 0.000001)
 			vol = NAN;
 		else
-			vol = impv_tri(spot, strike, r, r, expiry, steps, last,
+			vol = impv_tri(slast, strike, r, r, expiry, steps, last,
 				!strcasecmp(type, "C") ? AMER_CALL : AMER_PUT);
 		/* FIXME: bid price 1 */
 		if (fabs(quote->thyquote.m_dMRJG1) <= 0.000001)
@@ -215,7 +224,7 @@ static int impv3_exec(void *data, void *data2) {
 		else if (fabs(quote->thyquote.m_dMRJG1 - last) <= 0.000001)
 			vol2 = vol;
 		else
-			vol2 = impv_tri(spot, strike, r, r, expiry, steps, quote->thyquote.m_dMRJG1,
+			vol2 = impv_tri(slast, strike, r, r, expiry, steps, quote->thyquote.m_dMRJG1,
 				!strcasecmp(type, "C") ? AMER_CALL : AMER_PUT);
 		/* FIXME: ask price 1 */
 		if (fabs(quote->thyquote.m_dMCJG1) <= 0.000001)
@@ -223,22 +232,20 @@ static int impv3_exec(void *data, void *data2) {
 		else if (fabs(quote->thyquote.m_dMCJG1 - last) <= 0.000001)
 			vol3 = vol;
 		else
-			vol3 = impv_tri(spot, strike, r, r, expiry, steps, quote->thyquote.m_dMCJG1,
+			vol3 = impv_tri(slast, strike, r, r, expiry, steps, quote->thyquote.m_dMCJG1,
 				!strcasecmp(type, "C") ? AMER_CALL : AMER_PUT);
 		/* FIXME: avg price */
 		if (fabs(quote->thyquote.m_dCJJJ) <= 0.000001)
 			vol4 = NAN;
-		else if (fabs(quote->thyquote.m_dCJJJ - last) <= 0.000001)
-			vol4 = vol;
 		else
-			vol4 = impv_tri(spot, strike, r, r, expiry, steps, quote->thyquote.m_dCJJJ,
+			vol4 = impv_tri(savg,  strike, r, r, expiry, steps, quote->thyquote.m_dCJJJ,
 				!strcasecmp(type, "C") ? AMER_CALL : AMER_PUT);
 		if ((res = ALLOC(512))) {
 			time_t t = (time_t)quote->thyquote.m_nTime;
 			char datestr[64];
 
 			strftime(datestr, sizeof datestr, "%F %T", localtime_r(&t, &lt));
-			snprintf(res, 512, "IMPV3,%s.%03d,%s|%.4f,%f,%.4f,%f,%.4f,%f,%f,%f,%.4f",
+			snprintf(res, 512, "IMPV3,%s.%03d,%s|%.4f,%f,%.4f,%f,%.4f,%f,%f,%f,%.4f,%f",
 				datestr,
 				quote->m_nMSec,
 				contract,
@@ -250,9 +257,10 @@ static int impv3_exec(void *data, void *data2) {
 				vol3,
 				quote->thyquote.m_dCJJJ,
 				vol4,
-				spot);
+				slast,
+				savg);
 			out2rmp(res);
-			snprintf(res, 512, "IMPV3,%d,%d,%s,%.4f,%f,%.4f,%f,%.4f,%f,%f,%f,%.4f,"
+			snprintf(res, 512, "IMPV3,%d,%d,%s,%.4f,%f,%.4f,%f,%.4f,%f,%f,%f,%.4f,%f"
 				"%s,%s,%f,%f,%f,%d,0,%d",
 				quote->thyquote.m_nTime,
 				quote->m_nMSec,
@@ -265,7 +273,8 @@ static int impv3_exec(void *data, void *data2) {
 				vol3,
 				quote->thyquote.m_dCJJJ,
 				vol4,
-				spot,
+				slast,
+				savg,
 				spotname,
 				type,
 				strike,
@@ -283,10 +292,18 @@ static int impv3_exec(void *data, void *data2) {
 	} else {
 		table_lock(spots);
 		if ((node = table_find(spots, contract)) == NULL) {
-			if ((node = table_insert_raw(spots, contract)))
-				table_set_double(node, last);
+			if (NEW(sla)) {
+				sla->slast = last;
+				sla->savg  = fabs(quote->thyquote.m_dJJSJ) <= 0.000001
+					? quote->thyquote.m_dCJJJ : quote->thyquote.m_dJJSJ;
+				table_insert(spots, contract, sla);
+			} else
+				dstr_free(contract);
 		} else {
-			table_set_double(node, last);
+			sla = (struct sla *)table_node_value(node);
+			sla->slast = last;
+			sla->savg  = fabs(quote->thyquote.m_dJJSJ) <= 0.000001
+				? quote->thyquote.m_dCJJJ : quote->thyquote.m_dJJSJ;
 			dstr_free(contract);
 		}
 		table_unlock(spots);
@@ -307,7 +324,7 @@ static void vfree(void *value) {
 }
 
 static int load_module(void) {
-	spots    = table_new(cmpstr, hashmurmur2, kfree, NULL);
+	spots    = table_new(cmpstr, hashmurmur2, kfree, vfree);
 	optns    = table_new(cmpstr, hashmurmur2, kfree, vfree);
 	expiries = table_new(cmpstr, hashmurmur2, NULL,  NULL);
 	load_config();

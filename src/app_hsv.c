@@ -101,7 +101,7 @@ static inline void load_config(void) {
 							if (NEW(sd)) {
 								sd->hsv    = NAN;
 								sd->spot   = NAN;
-								sd->expiry = diffnow(atoi(var->value)) / 252.0;
+								sd->expiry = diffnow(atoi(var->value)) / 365.0;
 								sd->sep    = *(p - 1) == '-' ? "-" : "";
 								sd->dlist  = dlist_new(cmpstr, vfree);
 								dlist_insert_tail(sd->dlist, strike);
@@ -113,7 +113,7 @@ static inline void load_config(void) {
 						} else {
 							dlist_node_t node;
 
-							sd->expiry = diffnow(atoi(var->value)) / 252.0;
+							sd->expiry = diffnow(atoi(var->value)) / 365.0;
 							sd->sep    = *(p - 1) == '-' ? "-" : "";
 							if ((node = dlist_find(sd->dlist, strike)) == NULL)
 								dlist_insert_sort(sd->dlist, strike);

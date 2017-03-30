@@ -25,7 +25,7 @@
 int diffday(int startday, int endday) {
 	time_t t = time(NULL);
 	struct tm ls, le;
-	int res, rem;
+	int res;
 
 	localtime_r(&t, &ls);
 	localtime_r(&t, &le);
@@ -36,20 +36,22 @@ int diffday(int startday, int endday) {
 	le.tm_mon  = endday   / 100 % 100 - 1;
 	le.tm_year = endday   / 10000 - 1900;
 	res = difftime(mktime(&le), mktime(&ls)) / (24 * 60 * 60);
-	return res / 7 * 5 + ((rem = res % 7) == 6 ? 5 : rem) + 1;
+	/* return res / 7 * 5 + ((rem = res % 7) == 6 ? 5 : rem) + 1; */
+	return res + 1;
 }
 
 /* FIXME */
 int diffnow(int endday) {
 	time_t t = time(NULL);
 	struct tm le;
-	int res, rem;
+	int res;
 
 	localtime_r(&t, &le);
 	le.tm_mday = endday % 100;
 	le.tm_mon  = endday / 100 % 100 - 1;
 	le.tm_year = endday / 10000 - 1900;
 	res = difftime(mktime(&le), t) / (24 * 60 * 60);
-	return res / 7 * 5 + ((rem = res % 7) == 6 ? 5 : rem) + 1;
+	/* return res / 7 * 5 + ((rem = res % 7) == 6 ? 5 : rem) + 1; */
+	return res + 1;
 }
 

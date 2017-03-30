@@ -28,7 +28,7 @@
 
 int main(int argc, char **argv) {
 	double spot = 2698.00, strike = 2650.00, r = 0.1, d = 0.1;
-	double call = 252.00, put = 289.00, expiry = diffday(20160928, 20170807);
+	double call = 252.00, put = 289.00, expiry = diffday(20160928, 20170807) / 365.0;
 
 	printf("%f\n", impv_baw(spot, strike, r, d, expiry, call, AMER_CALL));
 	printf("%f\n", impv_baw(spot, strike, r, d, expiry, put,  AMER_PUT));

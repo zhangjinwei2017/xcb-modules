@@ -46,29 +46,30 @@ static int greeksfd_exec(void *data, void *data2) {
 	int nfield = 0;
 	time_t t;
 	char *contract, *type;
-	double spot, strike, r, vol, vol2, vol3, vol4, expiry;
+	double slast, savg, strike, r, vol, vol2, vol3, vol4, expiry;
 	int ssteps, tsteps;
 	NOT_USED(data2);
 
 	fields = dstr_split_len(msg->data, strlen(msg->data), ",", 1, &nfield);
 	/* FIXME */
-	if (nfield != 21) {
+	if (nfield != 22) {
 		xcb_log(XCB_LOG_WARNING, "Message '%s' garbled", msg->data);
 		goto end;
 	}
 	t        = (time_t)atoi(fields[1]);
 	contract = fields[3];
-	type     = fields[14];
-	spot     = atof(fields[12]);
-	strike   = atof(fields[15]);
-	r        = atof(fields[16]);
+	type     = fields[15];
+	slast    = atof(fields[12]);
+	savg     = atof(fields[13]);
+	strike   = atof(fields[16]);
+	r        = atof(fields[17]);
 	vol      = atof(fields[5]);
 	vol2     = atof(fields[7]);
 	vol3     = atof(fields[9]);
 	vol4     = atof(fields[11]);
-	expiry   = atof(fields[17]);
-	ssteps   = atoi(fields[19]);
-	tsteps   = atoi(fields[20]);
+	expiry   = atof(fields[18]);
+	ssteps   = atoi(fields[20]);
+	tsteps   = atoi(fields[21]);
 	if (!isnan(vol) || !isnan(vol2) || !isnan(vol3) || !isnan(vol4)) {
 		double delta, gamma, theta, vega, rho;
 		double delta2, gamma2, theta2, vega2, rho2;
@@ -81,10 +82,10 @@ static int greeksfd_exec(void *data, void *data2) {
 			delta = gamma = theta = vega = rho = NAN;
 		else {
 			if (!strcasecmp(type, "C"))
-				fd_amer_call_greeks(spot, strike, r, r, vol, expiry, ssteps, tsteps,
+				fd_amer_call_greeks(slast, strike, r, r, vol, expiry, ssteps, tsteps,
 					&delta, &gamma, &theta, &vega, &rho);
 			else
-				fd_amer_put_greeks (spot, strike, r, r, vol, expiry, ssteps, tsteps,
+				fd_amer_put_greeks (slast, strike, r, r, vol, expiry, ssteps, tsteps,
 					&delta, &gamma, &theta, &vega, &rho);
 		}
 		if (isnan(vol2))
@@ -97,10 +98,10 @@ static int greeksfd_exec(void *data, void *data2) {
 			rho2   = rho;
 		} else {
 			if (!strcasecmp(type, "C"))
-				fd_amer_call_greeks(spot, strike, r, r, vol2, expiry, ssteps, tsteps,
+				fd_amer_call_greeks(slast, strike, r, r, vol2, expiry, ssteps, tsteps,
 					&delta2, &gamma2, &theta2, &vega2, &rho2);
 			else
-				fd_amer_put_greeks (spot, strike, r, r, vol2, expiry, ssteps, tsteps,
+				fd_amer_put_greeks (slast, strike, r, r, vol2, expiry, ssteps, tsteps,
 					&delta2, &gamma2, &theta2, &vega2, &rho2);
 		}
 		if (isnan(vol3))
@@ -113,26 +114,20 @@ static int greeksfd_exec(void *data, void *data2) {
 			rho3   = rho;
 		} else {
 			if (!strcasecmp(type, "C"))
-				fd_amer_call_greeks(spot, strike, r, r, vol3, expiry, ssteps, tsteps,
+				fd_amer_call_greeks(slast, strike, r, r, vol3, expiry, ssteps, tsteps,
 					&delta3, &gamma3, &theta3, &vega3, &rho3);
 			else
-				fd_amer_put_greeks (spot, strike, r, r, vol3, expiry, ssteps, tsteps,
+				fd_amer_put_greeks (slast, strike, r, r, vol3, expiry, ssteps, tsteps,
 					&delta3, &gamma3, &theta3, &vega3, &rho3);
 		}
 		if (isnan(vol4))
 			delta4 = gamma4 = theta4 = vega4 = rho4 = NAN;
-		else if (fabs(vol4 - vol) <= 0.000001) {
-			delta4 = delta;
-			gamma4 = gamma;
-			theta4 = theta;
-			vega4  = vega;
-			rho4   = rho;
-		} else {
+		else {
 			if (!strcasecmp(type, "C"))
-				fd_amer_call_greeks(spot, strike, r, r, vol4, expiry, ssteps, tsteps,
+				fd_amer_call_greeks(savg, strike, r, r, vol4, expiry, ssteps, tsteps,
 					&delta4, &gamma4, &theta4, &vega4, &rho4);
 			else
-				fd_amer_put_greeks (spot, strike, r, r, vol4, expiry, ssteps, tsteps,
+				fd_amer_put_greeks (savg, strike, r, r, vol4, expiry, ssteps, tsteps,
 					&delta4, &gamma4, &theta4, &vega4, &rho4);
 		}
 		strftime(datestr, sizeof datestr, "%F %T", localtime_r(&t, &lt));

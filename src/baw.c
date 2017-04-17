@@ -31,8 +31,8 @@ double baw_call(double spot, double strike, double r, double d, double vol, doub
 	double M = 2.0 * r / (vol * vol);
 	double N = 2.0 * (r - d) / (vol * vol);
 	double K = 1.0 - exp(-r * expiry);
-	double q2 = 0.5 * (-(N - 1) + sqrt((N - 1) * (N - 1) + 4 * M / K));
-	double q2inf = 0.5 *(-(N - 1) + sqrt((N - 1) * (N - 1) + 4 * M));
+	double q2 = 0.5 * (-(N - 1.0) + sqrt((N - 1.0) * (N - 1.0) + 4.0 * M / K));
+	double q2inf = 0.5 *(-(N - 1.0) + sqrt((N - 1.0) * (N - 1.0) + 4.0 * M));
 	double Ssinf = strike / (1.0 - 1.0 / q2inf);
 	double stddev = vol * sqrt(expiry);
 	double h2 = -((r - d) * expiry + 2.0 * stddev) * (strike / (Ssinf - strike));
@@ -44,7 +44,7 @@ double baw_call(double spot, double strike, double r, double d, double vol, doub
 	double Ss;
 	double ca, ce;
 
-	while (fabs(g) > 0.000001 && fabs(gprime) > 0.000001 && ++niters < 500 && Si > 0.0) {
+	while (fabs(g) > 0.000001 && fabs(gprime) > 0.000001 && niters++ < 500 && Si > 0.0) {
 		double ce = bs_call(Si, strike, r, d, vol, expiry);
 		double d1 = (log(Si / strike) + (r - d) * expiry + 0.5 * stddev * stddev) / stddev;
 
@@ -72,8 +72,8 @@ double baw_put(double spot, double strike, double r, double d, double vol, doubl
 	double M = 2.0 * r / (vol * vol);
 	double N = 2.0 * (r - d) / (vol * vol);
 	double K = 1.0 - exp(-r * expiry);
-	double q1 = 0.5 * (-(N - 1) - sqrt((N - 1) * (N - 1) + 4 * M / K));
-	double q1inf = 0.5 *(-(N - 1) - sqrt((N - 1) * (N - 1) + 4 * M));
+	double q1 = 0.5 * (-(N - 1.0) - sqrt((N - 1.0) * (N - 1.0) + 4.0 * M / K));
+	double q1inf = 0.5 *(-(N - 1.0) - sqrt((N - 1.0) * (N - 1.0) + 4.0 * M));
 	double Ssinf = strike / (1.0 - 1.0 / q1inf);
 	double stddev = vol * sqrt(expiry);
 	double h1 = ((r - d) * expiry - 2.0 * stddev) * (strike / (strike - Ssinf));
@@ -85,7 +85,7 @@ double baw_put(double spot, double strike, double r, double d, double vol, doubl
 	double Ss;
 	double pa, pe;
 
-	while (fabs(g) > 0.000001 && fabs(gprime) > 0.000001 && ++niters < 500 && Si > 0.0) {
+	while (fabs(g) > 0.000001 && fabs(gprime) > 0.000001 && niters++ < 500 && Si > 0.0) {
 		double pe = bs_put(Si, strike, r, d, vol, expiry);
 		double d1 = (log(Si / strike) + (r - d) * expiry + 0.5 * stddev * stddev) / stddev;
 
@@ -175,6 +175,12 @@ double impv_baw(double spot, double strike, double r, double d, double expiry, d
 	/* FIXME */
 	if (type != AMER_CALL && type != AMER_PUT)
 		return NAN;
+	/*
+	if (type == AMER_CALL && price < spot - strike)
+		price = spot - strike;
+	if (type == AMER_PUT  && price < strike - spot)
+		price = strike - spot;
+	*/
 	ce = type == AMER_CALL ? baw_call(spot, strike, r, d, high, expiry) :
 		baw_put(spot, strike, r, d, high, expiry);
 	while (ce < price) {

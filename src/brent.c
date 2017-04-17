@@ -52,7 +52,7 @@ double brent(double a, double b, double price,
 	}
 	c = a, fc = fa;
 	mflag = 1;
-	while (++niters < 500) {
+	while (niters++ < 500) {
 		/* convergence */
 		if (fabs(fb - price) <= 0.000001 || fabs(b - a) <= 0.0001)
 			return b;

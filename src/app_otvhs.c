@@ -43,9 +43,11 @@ static int otvhs_exec(void *data, void *data2) {
 	dstr *fields = NULL;
 	int nfield = 0;
 	time_t t;
+	struct tm lt;
 	int msec, i;
 	dstr spotname, sep;
 	double spot, r, expiry;
+	char datestr[64];
 	NOT_USED(data2);
 
 	fields = dstr_split_len(msg->data, strlen(msg->data), ",", 1, &nfield);
@@ -61,11 +63,10 @@ static int otvhs_exec(void *data, void *data2) {
 	r        = atof(fields[nfield - 3]);
 	expiry   = atof(fields[nfield - 2]);
 	sep      = dstr_new(fields[nfield - 1]);
+	strftime(datestr, sizeof datestr, "%F %T", localtime_r(&t, &lt));
 	for (i = 4; i < nfield - 4; i += 2) {
-		struct tm lt;
-		char datestr[64], res[512];
+		char res[512];
 
-		strftime(datestr, sizeof datestr, "%F %T", localtime_r(&t, &lt));
 		snprintf(res, sizeof res, "OTVHS,%s.%03d,%s%sC%s%s|%f",
 			datestr,
 			msec,

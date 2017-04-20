@@ -37,7 +37,7 @@ int diffday(int startday, int endday) {
 	le.tm_year = endday   / 10000 - 1900;
 	res = difftime(mktime(&le), mktime(&ls)) / (24 * 60 * 60);
 	/* return res / 7 * 5 + ((rem = res % 7) == 6 ? 5 : rem) + 1; */
-	return res;
+	return res + 1;
 }
 
 /* FIXME */
@@ -52,6 +52,6 @@ int diffnow(int endday) {
 	le.tm_year = endday / 10000 - 1900;
 	res = difftime(mktime(&le), t) / (24 * 60 * 60);
 	/* return res / 7 * 5 + ((rem = res % 7) == 6 ? 5 : rem) + 1; */
-	return res;
+	return res + 1;
 }
 

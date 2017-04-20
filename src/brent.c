@@ -54,7 +54,7 @@ double brent(double a, double b, double price,
 	mflag = 1;
 	while (niters++ < 500) {
 		/* convergence */
-		if (fabs(fb - price) <= 0.000001 || fabs(b - a) <= 0.0001)
+		if (fabs(fb - price) <= 0.000001 || fabs(b - a) <= 0.00001)
 			return b;
 		if (fabs(fa - fc) > 0.000001 && fabs(fb - fc) > 0.000001)
 			/* inverse quadratic interpolation */
@@ -67,8 +67,8 @@ double brent(double a, double b, double price,
 		if ((s < 0.25 * (3.0 * a + b) || s > b) ||
 			( mflag && fabs(s - b) >= 0.5 * fabs(b - c)) ||
 			(!mflag && fabs(s - b) >= 0.5 * fabs(c - dd)) ||
-			( mflag && fabs(b - c) < 0.0001) ||
-			(!mflag && fabs(c - dd) < 0.0001)) {
+			( mflag && fabs(b - c) < 0.00001) ||
+			(!mflag && fabs(c - dd) < 0.00001)) {
 			/* bisection method */
 			s = 0.5 * (a + b);
 			mflag = 1;

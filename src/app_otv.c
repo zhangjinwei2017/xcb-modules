@@ -69,9 +69,11 @@ static int otv_exec(void *data, void *data2) {
 	dstr *fields = NULL;
 	int nfield = 0;
 	time_t t;
+	struct tm lt;
 	int msec, i;
 	char *spotname, *sep;
 	double spot, r, expiry;
+	char datestr[64];
 	NOT_USED(data2);
 
 	fields = dstr_split_len(msg->data, strlen(msg->data), ",", 1, &nfield);
@@ -87,13 +89,12 @@ static int otv_exec(void *data, void *data2) {
 	r        = atof(fields[nfield - 5]);
 	expiry   = atof(fields[nfield - 4]);
 	sep      = fields[nfield - 3];
+	strftime(datestr, sizeof datestr, "%F %T", localtime_r(&t, &lt));
 	for (i = 4; i < nfield - 6; i += 4) {
-		struct tm lt;
-		char datestr[64], res[512];
 		char *q;
 		double strike, call, put;
+		char res[512];
 
-		strftime(datestr, sizeof datestr, "%F %T", localtime_r(&t, &lt));
 		q = fields[i] + dstr_length(fields[i]) - 1;
 		while (isdigit(*q) && q != fields[i])
 			--q;

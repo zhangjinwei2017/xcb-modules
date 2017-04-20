@@ -69,9 +69,11 @@ static int otv2_exec(void *data, void *data2) {
 	dstr *fields = NULL;
 	int nfield = 0;
 	time_t t;
+	struct tm lt;
 	int msec, i, steps;
 	char *spotname, *sep;
 	double spot, r, expiry;
+	char datestr[64];
 	NOT_USED(data2);
 
 	fields = dstr_split_len(msg->data, strlen(msg->data), ",", 1, &nfield);
@@ -88,12 +90,11 @@ static int otv2_exec(void *data, void *data2) {
 	expiry   = atof(fields[nfield - 4]);
 	sep      = fields[nfield - 3];
 	steps    = atoi(fields[nfield - 1]);
+	strftime(datestr, sizeof datestr, "%F %T", localtime_r(&t, &lt));
 	for (i = 4; i < nfield - 6; i += 4) {
-		struct tm lt;
-		char datestr[64], res[512];
 		double strike, call, put;
+		char res[512];
 
-		strftime(datestr, sizeof datestr, "%F %T", localtime_r(&t, &lt));
 		strike = atof(fields[i]);
 		call   = !strcasecmp(fields[i + 1], "nan") || atof(fields[i + 1]) < 0.0
 			? NAN : bi_amer_call(spot, strike, r, r, atof(fields[i + 1]), expiry, steps);
